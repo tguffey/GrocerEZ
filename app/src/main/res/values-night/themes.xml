@@ -12,5 +12,7 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+        <!-- Color of system icons in the status bar (time, battery, etc.). -->
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 </resources>

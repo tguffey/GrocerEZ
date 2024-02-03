@@ -5,9 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.example.grocerez.R
 import com.example.grocerez.databinding.FragmentHomeBinding
+import androidx.appcompat.widget.Toolbar
 
 class HomeFragment : Fragment() {
 
