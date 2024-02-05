@@ -1,5 +1,5 @@
 package com.example.grocerez.ui.home
-
+// Test Comment to be deleted
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
