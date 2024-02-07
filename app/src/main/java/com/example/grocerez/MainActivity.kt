@@ -20,13 +20,17 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val navView: BottomNavigationView = binding.navView
+        //I added the line below to change the nav color to green001
+        navView.setBackgroundColor(resources.getColor(R.color.green001))
+
 
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications
+                R.id.navigation_dashboard, R.id.navigation_home,
+                R.id.navigation_recipes, R.id.navigation_shopping
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
