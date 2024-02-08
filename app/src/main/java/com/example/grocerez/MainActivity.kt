@@ -8,6 +8,8 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.grocerez.databinding.ActivityMainBinding
+import android.widget.Button
+import android.widget.TextView
 
 class MainActivity : AppCompatActivity() {
 
@@ -35,5 +37,72 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        // The following lines connects the Android app to the server.
+        SocketHandler.setSocket()
+        SocketHandler.establishConnection()
+        // Vals to connect xml object ID's
+        val counterBtn = findViewById<Button>(R.id.counterBtn)
+        val countTextView = findViewById<TextView>(R.id.countTextView)
+        val getTestBtn = findViewById<Button>(R.id.getTestBtn)
+        val postTestBtn = findViewById<Button>(R.id.postTestBtn)
+        val sqlSelectAllButton = findViewById<Button>(R.id.sqlSelectAllBtn)
+
+        val mSocket = SocketHandler.getSocket()
+
+        counterBtn.setOnClickListener{
+            mSocket.emit("counter")
+        }
+
+        getTestBtn.setOnClickListener{
+            mSocket.emit("hello")
+        }
+
+        postTestBtn.setOnClickListener {
+            mSocket.emit("hello_post")
+        }
+        sqlSelectAllButton.setOnClickListener {
+            mSocket.emit("sql_query")
+        }
+
+        mSocket.on("counter") { args ->
+            if (args[0] != null) {
+                val counter = args[0] as Int
+                runOnUiThread {
+                    countTextView.text = counter.toString()
+                }
+            }
+        }
+
+        mSocket.on("hello") { args ->
+            val helloMessage = args[0] as String
+            runOnUiThread {
+                // Update your UI or handle the 'hello' response as needed
+                countTextView.text = helloMessage
+            }
+        }
+
+        // Handle 'hello_post' event
+        mSocket.on("hello_post") { args ->
+            val postMessage = args[0] as String
+            runOnUiThread {
+                // Update your UI or handle the 'hello_post' response as needed
+                countTextView.text = postMessage
+            }
+        }
+        // Handle 'sql_result' event
+        mSocket.on("sql_result") { args ->
+            val result = args[0]
+            runOnUiThread {
+                // Check if the result contains an error
+                if (result is Map<*, *> && result.containsKey("error")) {
+                    // Handle the error, update UI, etc.
+                    countTextView.text = "Database query failed: ${result["error"]}"
+                } else {
+                    // Process the result and update UI as needed
+                    countTextView.text = "Received database query result: $result"
+                }
+            }
+        }
     }
 }
