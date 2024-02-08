@@ -18,30 +18,37 @@ class DashboardFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var itemViewModel: DashboardViewModel
 
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        // Call the superclass onCreateView method
         super.onCreateView(inflater, container, savedInstanceState)
+
+        // Initialize the ViewModel
         itemViewModel = ViewModelProvider(this.requireActivity())[DashboardViewModel::class.java]
 
+        // Inflate the layout using view binding
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
+        // Set OnClickListener for the newItemButton
         binding.newItemButton.setOnClickListener {
+            // Show the NewTaskSheet dialog
             NewTaskSheet().show(parentFragmentManager, "newItemTag")
         }
 
-        itemViewModel.name.observe(viewLifecycleOwner){newValue ->
+        // Observe changes in name LiveData and update the UI accordingly
+        itemViewModel.name.observe(viewLifecycleOwner){ newValue ->
             binding.itemName.text = String.format("Item Name: %s", newValue)
         }
 
+        // Observe changes in value LiveData and animate the progress accordingly
         itemViewModel.value.observe(viewLifecycleOwner) { newValue ->
             val intValue: Int = newValue ?: 0 // Default value if newValue is null or not an Int
 
-            //Animate the progress using ObjectAnimator
+            // Animate the progress using ObjectAnimator
             val objectAnimator = ObjectAnimator.ofInt(
                 binding.itemProgressBar,
                 "progress",
@@ -56,47 +63,13 @@ class DashboardFragment : Fragment() {
             objectAnimator.start()
         }
 
-//        val textView: TextView = binding.textDashboard
-//        dashboardViewModel.text.observe(viewLifecycleOwner) {
-//            textView.text = it
-//        }
-//
-//        // binds the start button from the xml file
-//        val startButton: Button = binding.startProgress
-//        // listens for the user to click the button
-//        startButton.setOnClickListener {
-//            onStart(it)
-//        }
-
+        // Return the root view
         return root
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        // Set the binding variable to null to avoid memory leaks
         _binding = null
     }
-
-    // variable to define the progress of the bar
-//    private val currentProgress = 100
-//
-//    private fun onStart(view: View) {
-//        // Set the maximum value for the ProgressBar
-//        binding.progressBar.max = 100
-//        //binding.startProgress.setOnClickListener()
-//
-//        // Animate the progress using ObjectAnimator
-//        val objectAnimator = ObjectAnimator.ofInt(
-//            binding.progressBar,
-//            "progress",
-//            binding.progressBar.progress,
-//            currentProgress
-//        )
-//
-//        // Set the animation duration
-//        objectAnimator.duration = 2000 // 1000 milliseconds (1 second)
-//
-//        // Start the animation
-//        objectAnimator.start()
-//    }
-
 }

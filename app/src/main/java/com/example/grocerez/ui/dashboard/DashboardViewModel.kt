@@ -5,10 +5,7 @@ import androidx.lifecycle.ViewModel
 
 class DashboardViewModel : ViewModel() {
 
-//    private val _text = MutableLiveData<String>().apply {
-//        value = "GrocerEZ Dashboard Fragment"
-//    }
-//    val text: LiveData<String> = _text
+    // Live data for item name and value for progress bar
     var name = MutableLiveData<String>()
     var value = MutableLiveData<Int>()
 
