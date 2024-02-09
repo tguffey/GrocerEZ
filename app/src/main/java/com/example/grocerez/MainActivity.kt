@@ -33,7 +33,8 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_recipes, R.id.navigation_shopping
             )
         )
-        setupActionBarWithNavController(navController, appBarConfiguration)
+        //THIS IS JOCELYN IM DELETING THIS
+        //setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
     }
 }
