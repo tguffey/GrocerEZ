@@ -5,4 +5,5 @@
     <string name="title_notifications">Notifications</string>
     <string name="title_shopping">Shop</string>
     <string name="title_recipes">Recipes</string>
+    <string name="button_add_item">Add</string>
 </resources>
