@@ -3,6 +3,11 @@
 <!--Creates the order of the buttons from left to right-->
 
     <item
+        android:id="@+id/navigation_myplate"
+        android:icon="@drawable/ic_myplate"
+        android:title="@string/title_myplate" />
+
+    <item
         android:id="@+id/navigation_dashboard"
         android:icon="@drawable/ic_dashboard_black_24dp"
         android:title="@string/title_dashboard" />
@@ -21,5 +26,6 @@
         android:id="@+id/navigation_shopping"
         android:icon="@drawable/ic_shopping_list"
         android:title="@string/title_shopping" />
+
 
 </menu>
