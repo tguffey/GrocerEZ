@@ -7,10 +7,10 @@
 
     <!--TODO: notifications can be turned into the My Plate button later on-->
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.example.grocerez.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        android:id="@+id/navigation_myplate"
+        android:name="com.example.grocerez.ui.myplate.MyPlateFragment"
+        android:label="@string/title_myplate"
+        tools:layout="@layout/fragment_myplate" />
 
     <fragment
         android:id="@+id/navigation_dashboard"

@@ -31,11 +31,12 @@ class MainActivity : AppCompatActivity() {
         // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.navigation_dashboard, R.id.navigation_home,
+                R.id.navigation_myplate, R.id.navigation_dashboard, R.id.navigation_home,
                 R.id.navigation_recipes, R.id.navigation_shopping
             )
         )
-        setupActionBarWithNavController(navController, appBarConfiguration)
+        //THIS IS JOCELYN IM DELETING THIS
+        //setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
         // The following lines connects the Android app to the server.

@@ -2,7 +2,8 @@
     <string name="app_name">GrocerEZ</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_myplate">My Plate</string>
     <string name="title_shopping">Shop</string>
     <string name="title_recipes">Recipes</string>
+    <string name="button_add_item">Add</string>
 </resources>
