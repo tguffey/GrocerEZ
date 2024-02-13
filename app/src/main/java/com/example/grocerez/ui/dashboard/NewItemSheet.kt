@@ -1,6 +1,7 @@
 package com.example.grocerez.ui.dashboard
 
 import android.os.Bundle
+import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,13 +10,24 @@ import com.example.grocerez.databinding.FragmentNewItemSheetBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 // BottomSheetDialogFragment for adding a new task
-class NewTaskSheet : BottomSheetDialogFragment() {
+class NewTaskSheet(var foodItem: FoodItem?) : BottomSheetDialogFragment() {
 
     private lateinit var binding: FragmentNewItemSheetBinding
     private lateinit var itemViewModel: DashboardViewModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        if(foodItem != null)
+        {
+            binding.foodTitle.text = "Edit Item"
+            val editable = Editable.Factory.getInstance()
+            binding.name.text = editable.newEditable(foodItem!!.name)
+            binding.value.text = editable.newEditable(foodItem!!.prog.toString())
+        }
+        else{
+            binding.foodTitle.text = "New Item"
+        }
 
         // Initialize ViewModel
         val activity = requireActivity()
@@ -40,8 +52,16 @@ class NewTaskSheet : BottomSheetDialogFragment() {
     // Function to handle save action
     private fun saveAction() {
         // Set name and value LiveData in ViewModel
-        itemViewModel.name.value = binding.name.text.toString()
-        itemViewModel.value.value = binding.value.text.toString().toInt()
+        val name = binding.name.text.toString()
+        val value = binding.value.text.toString().toInt()
+        if(foodItem == null){
+            val newFood = FoodItem(name, value, null, null)
+            itemViewModel.addFoodItem(newFood)
+        }
+        else{
+            itemViewModel.updateFoodItem(foodItem!!.id, name, value, null)
+        }
+
         // Clear input fields
         binding.name.setText("")
         binding.value.setText("")

@@ -1,12 +1,12 @@
 package com.example.grocerez.ui.dashboard
 
-import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.grocerez.databinding.FragmentDashboardBinding
 
 class DashboardFragment : Fragment() {
@@ -36,32 +36,28 @@ class DashboardFragment : Fragment() {
         // Set OnClickListener for the newItemButton
         binding.newItemButton.setOnClickListener {
             // Show the NewTaskSheet dialog
-            NewTaskSheet().show(parentFragmentManager, "newItemTag")
+            NewTaskSheet(null).show(parentFragmentManager, "newItemTag")
         }
+        setRecyclerView()
 
-        // Observe changes in name LiveData and update the UI accordingly
-        itemViewModel.name.observe(viewLifecycleOwner){ newValue ->
-            binding.itemName.text = String.format("Item Name: %s", newValue)
-        }
-
-        // Observe changes in value LiveData and animate the progress accordingly
-        itemViewModel.value.observe(viewLifecycleOwner) { newValue ->
-            val intValue: Int = newValue ?: 0 // Default value if newValue is null or not an Int
-
-            // Animate the progress using ObjectAnimator
-            val objectAnimator = ObjectAnimator.ofInt(
-                binding.itemProgressBar,
-                "progress",
-                binding.itemProgressBar.progress,
-                intValue
-            )
-
-            // Set the animation duration
-            objectAnimator.duration = 1000 // 1000 milliseconds (1 second)
-
-            // Start the animation
-            objectAnimator.start()
-        }
+//        // Observe changes in value LiveData and animate the progress accordingly
+//        itemViewModel.value.observe(viewLifecycleOwner) { newValue ->
+//            val intValue: Int = newValue ?: 0 // Default value if newValue is null or not an Int
+//
+//            // Animate the progress using ObjectAnimator
+//            val objectAnimator = ObjectAnimator.ofInt(
+//                binding.itemProgressBar,
+//                "progress",
+//                binding.itemProgressBar.progress,
+//                intValue
+//            )
+//
+//            // Set the animation duration
+//            objectAnimator.duration = 1000 // 1000 milliseconds (1 second)
+//
+//            // Start the animation
+//            objectAnimator.start()
+//        }
 
         // Return the root view
         return root
@@ -72,4 +68,17 @@ class DashboardFragment : Fragment() {
         // Set the binding variable to null to avoid memory leaks
         _binding = null
     }
+
+    private fun setRecyclerView(){
+        val mainActivity = this
+        itemViewModel.foodItems.observe(viewLifecycleOwner){
+            binding.foodListRecyclerView.apply{
+                layoutManager = LinearLayoutManager(requireContext())
+                if (it != null) {
+                    adapter = FoodItemAdapter(it.toList())
+                }
+            }
+        }
+    }
+
 }
