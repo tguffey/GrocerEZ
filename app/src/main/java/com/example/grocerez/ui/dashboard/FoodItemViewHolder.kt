@@ -7,11 +7,12 @@ import com.example.grocerez.databinding.FoodItemCellBinding
 
 class FoodItemViewHolder(
     private val context: Context,
-    private val binding: FoodItemCellBinding
-):RecyclerView.ViewHolder(binding.root) {
+    private val binding: FoodItemCellBinding,
+    private val clickListener: FoodItemClickListener
+):RecyclerView.ViewHolder(binding.root)
+{
     fun bindFoodItem(foodItem: FoodItem){
         binding.name.text = foodItem.name
-//        binding.itemProgressBar.progress = foodItem.prog
         val intValue: Int =  foodItem.prog // Default value if newValue is null or not an Int
 
         // Animate the progress using ObjectAnimator
@@ -27,5 +28,10 @@ class FoodItemViewHolder(
 
         // Start the animation
         objectAnimator.start()
+
+        // sets food cell as a clickable button to edit the food item data
+        binding.foodCellContainer.setOnClickListener{
+            clickListener.editFoodItem(foodItem)
+        }
     }
 }

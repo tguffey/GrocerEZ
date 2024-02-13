@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.grocerez.databinding.FragmentDashboardBinding
 
-class DashboardFragment : Fragment() {
+class DashboardFragment : Fragment(), FoodItemClickListener {
 
     private var _binding: FragmentDashboardBinding? = null
 
@@ -40,25 +40,6 @@ class DashboardFragment : Fragment() {
         }
         setRecyclerView()
 
-//        // Observe changes in value LiveData and animate the progress accordingly
-//        itemViewModel.value.observe(viewLifecycleOwner) { newValue ->
-//            val intValue: Int = newValue ?: 0 // Default value if newValue is null or not an Int
-//
-//            // Animate the progress using ObjectAnimator
-//            val objectAnimator = ObjectAnimator.ofInt(
-//                binding.itemProgressBar,
-//                "progress",
-//                binding.itemProgressBar.progress,
-//                intValue
-//            )
-//
-//            // Set the animation duration
-//            objectAnimator.duration = 1000 // 1000 milliseconds (1 second)
-//
-//            // Start the animation
-//            objectAnimator.start()
-//        }
-
         // Return the root view
         return root
     }
@@ -69,16 +50,28 @@ class DashboardFragment : Fragment() {
         _binding = null
     }
 
+    // Function to set up the RecyclerView to display the list of food items
     private fun setRecyclerView(){
         val mainActivity = this
+        // Observe changes in the list of food items in the ViewModel
         itemViewModel.foodItems.observe(viewLifecycleOwner){
+            // Apply changes to the RecyclerView
             binding.foodListRecyclerView.apply{
+                // Set the layout manager
                 layoutManager = LinearLayoutManager(requireContext())
+                // Set the adapter for the RecyclerView
+                // If the list of food items is not null, create an adapter with the list and set it to the RecyclerView
                 if (it != null) {
-                    adapter = FoodItemAdapter(it.toList())
+                    adapter = FoodItemAdapter(it.toList(), mainActivity)
                 }
             }
         }
+    }
+
+    // Method called when a food item is edited
+    override fun editFoodItem(foodItem: FoodItem) {
+        // Show the NewTaskSheet dialog for editing the food item
+        NewTaskSheet(foodItem).show(parentFragmentManager, "newFoodTag")
     }
 
 }
