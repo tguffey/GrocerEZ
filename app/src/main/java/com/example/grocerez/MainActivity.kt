@@ -68,6 +68,7 @@ class MainActivity : AppCompatActivity() {
 
         mSocket.on("counter") { args ->
             if (args[0] != null) {
+                // take the argument sent back from the server as int
                 val counter = args[0] as Int
                 runOnUiThread {
                     countTextView.text = counter.toString()
