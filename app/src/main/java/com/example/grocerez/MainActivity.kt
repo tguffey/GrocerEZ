@@ -1,15 +1,15 @@
 package com.example.grocerez
 
 import android.os.Bundle
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.grocerez.databinding.ActivityMainBinding
-import android.widget.Button
-import android.widget.TextView
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
 
@@ -49,6 +49,15 @@ class MainActivity : AppCompatActivity() {
         val postTestBtn = findViewById<Button>(R.id.postTestBtn)
         val sqlSelectAllButton = findViewById<Button>(R.id.sqlSelectAllBtn)
 
+        val loginButton = findViewById<Button>(R.id.loginButton)
+        var username: EditText? = null
+        var email: EditText? = null
+        var password: EditText? = null
+
+        username = findViewById(R.id.username);
+        email = findViewById(R.id.email);
+        password = findViewById(R.id.password);
+
         val mSocket = SocketHandler.getSocket()
 
         counterBtn.setOnClickListener{
@@ -66,12 +75,30 @@ class MainActivity : AppCompatActivity() {
             mSocket.emit("sql_query")
         }
 
+        loginButton.setOnClickListener {
+            mSocket.emit("save_signup_info", username.getText().toString(), email.getText().toString(), password.getText().toString())
+        };
+
         mSocket.on("counter") { args ->
             if (args[0] != null) {
                 // take the argument sent back from the server as int
                 val counter = args[0] as Int
                 runOnUiThread {
                     countTextView.text = counter.toString()
+                }
+            }
+        }
+
+        mSocket.on("save_signup_result") { args ->
+            if (args[0] != null) {
+                val result = args[0]
+                runOnUiThread {
+                     // Check if the result contains an error
+                    if (result is Map<*, *> && result.containsKey("error")) {
+                        //TODO: Handle the error using fail event, update UI, etc.
+                    } else {
+                        //TODO: Process the result and update UI as needed
+                    }
                 }
             }
         }
