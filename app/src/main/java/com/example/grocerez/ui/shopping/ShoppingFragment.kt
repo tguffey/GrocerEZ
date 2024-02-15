@@ -23,18 +23,6 @@ class ShoppingFragment : Fragment() {
     private lateinit var fromBottomBg: Animation
     private lateinit var toBottomBg: Animation
 
-//    private val fromBottomFabAnim : Animation by lazy {
-//        AnimationUtils.loadAnimation(context , R.anim.from_bottom_fab)
-//    }
-//    private val toBottomFabAnim : Animation by lazy {
-//        AnimationUtils.loadAnimation(context , R.anim.to_bottom_fab)
-//    }
-//    private val fromBottomBgAnim : Animation by lazy {
-//        AnimationUtils.loadAnimation(context , R.anim.from_bottom_anim)
-//    }
-//    private val toBottomBgAnim : Animation by lazy {
-//        AnimationUtils.loadAnimation(context , R.anim.to_bottom_anim)
-//    }
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
