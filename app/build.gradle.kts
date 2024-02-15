@@ -7,9 +7,17 @@ android {
     namespace = "com.example.grocerez"
     compileSdk = 34
 
+    viewBinding{
+        enable = true
+    }
+
+    dataBinding{
+        enable =true
+    }
+
     defaultConfig {
         applicationId = "com.example.grocerez"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
