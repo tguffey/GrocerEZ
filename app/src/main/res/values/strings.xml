@@ -5,5 +5,8 @@
     <string name="title_myplate">My Plate</string>
     <string name="title_shopping">Shop</string>
     <string name="title_recipes">Recipes</string>
-    <string name="button_add_item">Add</string>
+    <string name="button_edit_item">Edit</string>
+    <string name="button_add_item">Add Item</string>
+    <string name="button_add_category">Add Category</string>
+    <string name="button_clear_list">Clear List</string>
 </resources>
