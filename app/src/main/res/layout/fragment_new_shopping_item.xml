@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".ui.shopping.NewGrocerySheet">
+
+    <TextView
+        android:id="@+id/groceryTitle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="New Grocery Item"
+        android:textSize="30sp"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="20dp"
+        style="@style/TextAppearance.AppCompat.Title"
+        />
+
+    <!-- All text input fields-->
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.Material3.AutoCompleteTextView.OutlinedBox.Dense"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/itemName">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/name"
+            android:hint="Name"
+            />
+
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.Material3.AutoCompleteTextView.OutlinedBox.Dense"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/itemCategory">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/category"
+            android:hint="Category"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.Material3.AutoCompleteTextView.OutlinedBox.Dense"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/itemQuantity">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/quantity"
+            android:hint="Quantity (optional)"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.Material3.AutoCompleteTextView.OutlinedBox.Dense"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/itemNote">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/Note"
+            android:hint="Note"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Cancel and Save buttons side-by-side -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/cancelButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginHorizontal="20dp"
+            android:layout_weight="1"
+            android:text="Cancel"
+            />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/saveButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginHorizontal="20dp"
+            android:layout_weight="1"
+            android:text="Save"
+            />
+
+
+    </LinearLayout>
+
+</LinearLayout>
