@@ -66,8 +66,12 @@ class DashboardFragment : Fragment(), FoodItemClickListener {
             val foodItemsList: List<FoodItem> = newFoodItems.orEmpty()
             // Update the adapter with the new list of food items
             foodItemAdapter.updateFoodItems(foodItemsList)
+
+            // Notify the RecyclerView about the change in the dataset
+            foodItemAdapter.notifyDataSetChanged()
         }
     }
+
 
 
     // Method called when a food item is edited
