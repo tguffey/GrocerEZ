@@ -50,23 +50,25 @@ class DashboardFragment : Fragment(), FoodItemClickListener {
         _binding = null
     }
 
-    // Function to set up the RecyclerView to display the list of food items
-    private fun setRecyclerView(){
-        val mainActivity = this
+    private fun setRecyclerView() {
+        // Initialize the adapter
+        val foodItemAdapter = FoodItemAdapter(mutableListOf(), this)
+
+        // Set the layout manager and adapter for the RecyclerView
+        binding.foodListRecyclerView.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = foodItemAdapter
+        }
+
         // Observe changes in the list of food items in the ViewModel
-        itemViewModel.foodItems.observe(viewLifecycleOwner){
-            // Apply changes to the RecyclerView
-            binding.foodListRecyclerView.apply{
-                // Set the layout manager
-                layoutManager = LinearLayoutManager(requireContext())
-                // Set the adapter for the RecyclerView
-                // If the list of food items is not null, create an adapter with the list and set it to the RecyclerView
-                if (it != null) {
-                    adapter = FoodItemAdapter(it.toList(), mainActivity)
-                }
-            }
+        itemViewModel.foodItems.observe(viewLifecycleOwner) { newFoodItems ->
+            // Convert the MutableList to List before passing it to the adapter
+            val foodItemsList: List<FoodItem> = newFoodItems.orEmpty()
+            // Update the adapter with the new list of food items
+            foodItemAdapter.updateFoodItems(foodItemsList)
         }
     }
+
 
     // Method called when a food item is edited
     override fun editFoodItem(foodItem: FoodItem) {

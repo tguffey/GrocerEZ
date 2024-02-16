@@ -15,6 +15,20 @@ class FoodItemViewHolder(
         binding.name.text = foodItem.name
         val intValue: Int =  foodItem.prog // Default value if newValue is null or not an Int
 
+        // sets food cell as a clickable button to edit the food item data
+        binding.foodCellContainer.setOnClickListener{
+            clickListener.editFoodItem(foodItem)
+        }
+
+        // Animate progress bar if necessary
+        animateProgressBar(foodItem.prog)
+    }
+
+    // Method to animate progress bar
+    private fun animateProgressBar(newValue: Int) {
+        // Default value if newValue is null or not an Int
+        val intValue: Int = newValue
+
         // Animate the progress using ObjectAnimator
         val objectAnimator = ObjectAnimator.ofInt(
             binding.itemProgressBar,
@@ -28,10 +42,5 @@ class FoodItemViewHolder(
 
         // Start the animation
         objectAnimator.start()
-
-        // sets food cell as a clickable button to edit the food item data
-        binding.foodCellContainer.setOnClickListener{
-            clickListener.editFoodItem(foodItem)
-        }
     }
 }
