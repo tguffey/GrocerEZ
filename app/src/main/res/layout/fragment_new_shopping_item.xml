@@ -7,6 +7,7 @@
     android:layout_height="wrap_content"
     tools:context=".ui.shopping.NewGrocerySheet">
 
+    <!--Title of the sheet-->
     <TextView
         android:id="@+id/groceryTitle"
         android:layout_width="match_parent"
@@ -18,13 +19,15 @@
         style="@style/TextAppearance.AppCompat.Title"
         />
 
-    <!-- All text input fields-->
+    <!-- ALL TEXT INPUT FIELDS FOR ADDING A NEW ITEM-->
+    <!--Field for the name of the item-->
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.AutoCompleteTextView.OutlinedBox.Dense"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/itemName">
 
+        <!--Label the text input as the name-->
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -32,15 +35,16 @@
             android:hint="Name"
             />
 
-
     </com.google.android.material.textfield.TextInputLayout>
 
+    <!--Field for the category of the item-->
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.AutoCompleteTextView.OutlinedBox.Dense"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/itemCategory">
 
+        <!--Label the text input as the category-->
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -50,12 +54,14 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <!--Field for the quantity of the item-->
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.AutoCompleteTextView.OutlinedBox.Dense"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/itemQuantity">
 
+        <!--Label the text input as quantity of item and that it is optional-->
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -65,12 +71,14 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <!--Field for any notes of the item-->
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.Material3.AutoCompleteTextView.OutlinedBox.Dense"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/itemNote">
 
+        <!--Labels the text input as notes-->
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -86,6 +94,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
+        <!-- Cancel button on the left -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/cancelButton"
             android:layout_width="wrap_content"
@@ -96,6 +105,7 @@
             android:text="Cancel"
             />
 
+        <!-- Save button on the right -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/saveButton"
             android:layout_width="wrap_content"
