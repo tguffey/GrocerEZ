@@ -6,16 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.grocerez.R
 import com.example.grocerez.databinding.FragmentShoppingBinding
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 
 class ShoppingFragment : Fragment() {
 
     private var _binding : FragmentShoppingBinding? = null
+    private lateinit var shoppingViewModel: ShoppingViewModel
     private var isExpanded = false
 
     private lateinit var fabOpen: Animation
@@ -32,16 +31,10 @@ class ShoppingFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val shoppingViewModel =
-            ViewModelProvider(this).get(ShoppingViewModel::class.java)
+        shoppingViewModel = ViewModelProvider(this).get(ShoppingViewModel::class.java)
 
         _binding = FragmentShoppingBinding.inflate(inflater, container, false)
         val root: View = binding.root
-
-        val textView: TextView = binding.textShopping
-        shoppingViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }
 
         // animate the expandable Edit Item button
         val context = requireContext()
@@ -50,6 +43,7 @@ class ShoppingFragment : Fragment() {
         fromBottomBg = AnimationUtils.loadAnimation(context, R.anim.from_bottom_anim)
         toBottomBg = AnimationUtils.loadAnimation(context, R.anim.to_bottom_anim)
 
+        // Determine whether to open or close edit options
         binding.editItemFab.setOnClickListener {
             if (isExpanded) {
                 shrinkFab()
@@ -57,6 +51,12 @@ class ShoppingFragment : Fragment() {
                 expandFab()
             }
         }
+        // Make a new sheet when the Add Item button is pressed
+        binding.addItemFab.setOnClickListener {
+            // Show the NewGrocerySheet dialog
+            NewGrocerySheet().show(parentFragmentManager, "newItemTag")
+        }
+
         return root
     }
 
@@ -65,7 +65,7 @@ class ShoppingFragment : Fragment() {
         _binding = null
     }
 
-    //
+    // Close the edit option buttons
     private fun shrinkFab() {
 
         binding.transparentBg.startAnimation(toBottomBg)
@@ -76,6 +76,7 @@ class ShoppingFragment : Fragment() {
         isExpanded = !isExpanded
     }
 
+    // Open the edit option buttons
     private fun expandFab() {
 
         binding.transparentBg.startAnimation(fromBottomBg)
