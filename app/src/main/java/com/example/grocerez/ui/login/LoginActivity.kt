@@ -109,11 +109,11 @@ class LoginActivity : AppCompatActivity() {
             "$welcome $displayName",
             Toast.LENGTH_LONG
         ).show()
-        // I ADDED AN INTENT TO NAVIGATE TO MAINACTIVITY UPON SUCCESSFUL LOGIN
+        // I added an intent to navigate to Main Activity upon successful login - Jocelyn
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
 
-        // Finish the LoginActivity to prevent going back to it with the back button
+        // Finish the Login Activity to prevent going back to it with the back button
         finish()
     }
 
