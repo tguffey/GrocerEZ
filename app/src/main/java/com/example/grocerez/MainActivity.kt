@@ -89,16 +89,34 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // if registration is sucessful
         mSocket.on("save_signup_result") { args ->
             if (args[0] != null) {
-                val result = args[0]
+                val result = args[0] as String
                 runOnUiThread {
-                     // Check if the result contains an error
-                    if (result is Map<*, *> && result.containsKey("error")) {
-                        //TODO: Handle the error using fail event, update UI, etc.
-                    } else {
-                        //TODO: Process the result and update UI as needed
-                    }
+//                     // Check if the result contains an error
+//                    if (result is Map<*, *> && result.containsKey("error")) {
+//                        //TODO: Handle the error using fail event, update UI, etc.
+//                    } else {
+//                        //TODO: Process the result and update UI as needed
+//                    }
+                    countTextView.text = result
+                }
+            }
+        }
+
+        // if registration fails due to internal error or dupl email
+        mSocket.on("registrationError") { args ->
+            if (args[0] != null) {
+                val result = args[0] as String
+                runOnUiThread {
+//                     // Check if the result contains an error
+//                    if (result is Map<*, *> && result.containsKey("error")) {
+//                        //TODO: Handle the error using fail event, update UI, etc.
+//                    } else {
+//                        //TODO: Process the result and update UI as needed
+//                    }
+                    countTextView.text = result
                 }
             }
         }
