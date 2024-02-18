@@ -14,6 +14,7 @@ class NewGrocerySheet() : BottomSheetDialogFragment() {
     private lateinit var binding: FragmentNewShoppingItemBinding
     private lateinit var itemViewModel: ShoppingViewModel
 
+    // Create the UI for the sheet
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -24,6 +25,7 @@ class NewGrocerySheet() : BottomSheetDialogFragment() {
         return binding.root
     }
 
+    // Assuming the bottom sheet UI is created and showing, listen for button clicks
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -42,8 +44,9 @@ class NewGrocerySheet() : BottomSheetDialogFragment() {
         }
     }
 
+    // Clear input fields and hide the bottom sheet
     private fun clearFields() {
-        // Clear input fields
+        // Set all input fields to empty
         binding.name.setText("")
         binding.category.setText("")
         binding.quantity.setText("")
