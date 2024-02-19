@@ -6,6 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".ui.shopping.ShoppingFragment">
 
+    <!--Dim background-->
+    <!-- Only shows when the edit option buttons are expanded -->
     <View
         android:id="@+id/transparentBg"
         android:layout_width="0dp"
@@ -19,6 +21,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.5"/>
 
+    <!--Says when the shopping list is empty-->
     <TextView
         android:id="@+id/text_shopping"
         android:layout_width="match_parent"
@@ -33,6 +36,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!--Edit Item Button-->
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/edit_item_fab"
         android:layout_width="wrap_content"
@@ -49,6 +53,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         tools:elevation="2dp" />
 
+    <!-- EDIT ITEM OPTION BUTTONS: Only shows when the edit options are expanded -->
+    <!--Edit Item option 1: Clear List button-->
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/clear_list_fab"
         android:layout_width="wrap_content"
@@ -67,6 +73,7 @@
         app:layout_constraintBottom_toTopOf="@id/edit_item_fab"
         app:layout_constraintEnd_toEndOf="@id/edit_item_fab" />
 
+    <!--Edit Item option 2: Add Item button-->
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/add_item_fab"
         android:layout_width="wrap_content"
@@ -85,6 +92,7 @@
         app:layout_constraintBottom_toTopOf="@id/clear_list_fab"
         app:layout_constraintEnd_toEndOf="@id/clear_list_fab" />
 
+    <!--Edit Item option 3: Add Category button-->
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/add_category_fab"
         android:layout_width="wrap_content"
