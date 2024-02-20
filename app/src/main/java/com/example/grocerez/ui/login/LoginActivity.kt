@@ -17,6 +17,7 @@ import com.example.grocerez.MainActivity
 import com.example.grocerez.databinding.ActivityLoginBinding
 
 import com.example.grocerez.R
+import com.example.grocerez.SocketHandler.mSocket
 
 class LoginActivity : AppCompatActivity() {
 
@@ -93,9 +94,11 @@ class LoginActivity : AppCompatActivity() {
                 false
             }
 
+            // THIS IS TYLER, GONNA SET UP INFO SENDING TO SERVER
             login.setOnClickListener {
                 loading.visibility = View.VISIBLE
                 loginViewModel.login(username.text.toString(), password.text.toString())
+                mSocket.emit("save_signup_info")
             }
         }
     }
