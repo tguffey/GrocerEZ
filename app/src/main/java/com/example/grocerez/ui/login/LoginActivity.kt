@@ -97,8 +97,9 @@ class LoginActivity : AppCompatActivity() {
             // THIS IS TYLER, GONNA SET UP INFO SENDING TO SERVER
             login.setOnClickListener {
                 loading.visibility = View.VISIBLE
+                val email = "genericemail@gmail.com"
                 loginViewModel.login(username.text.toString(), password.text.toString())
-                mSocket.emit("save_signup_info")
+                mSocket.emit("save_signup_info",username.getText().toString(), email.toString(), password.getText().toString())
             }
         }
     }
