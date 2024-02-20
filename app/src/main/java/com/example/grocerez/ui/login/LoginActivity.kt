@@ -95,6 +95,7 @@ class LoginActivity : AppCompatActivity() {
             }
 
             // THIS IS TYLER, GONNA SET UP INFO SENDING TO SERVER
+            // TODO: tyler: debug this section and send info to database.
             login.setOnClickListener {
                 loading.visibility = View.VISIBLE
                 val email = "genericemail@gmail.com"
