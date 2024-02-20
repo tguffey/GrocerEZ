@@ -18,9 +18,10 @@ class MainActivity : AppCompatActivity() {
 
 //        // ESTABLISH SOCKET CONNECTION
 //        SocketHandler.setSocket()
-//        val mSocket = SocketHandler.getSocket()
+        // singleton object
+        val mSocket = SocketHandler.getSocket()
 //        mSocket.connect()
-//        mSocket.emit("hello")
+        mSocket.emit("hellotest")
 //        // ______________________________
 
         binding = ActivityMainBinding.inflate(layoutInflater)
