@@ -16,11 +16,12 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // ESTABLISH SOCKET CONNECTION
-        SocketHandler.setSocket()
-        val mSocket = SocketHandler.getSocket()
-        mSocket.connect()
-        // ______________________________
+//        // ESTABLISH SOCKET CONNECTION
+//        SocketHandler.setSocket()
+//        val mSocket = SocketHandler.getSocket()
+//        mSocket.connect()
+//        mSocket.emit("hello")
+//        // ______________________________
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)

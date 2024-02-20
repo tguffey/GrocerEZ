@@ -17,7 +17,7 @@ import com.example.grocerez.MainActivity
 import com.example.grocerez.databinding.ActivityLoginBinding
 
 import com.example.grocerez.R
-import com.example.grocerez.SocketHandler.mSocket
+import com.example.grocerez.SocketHandler
 
 class LoginActivity : AppCompatActivity() {
 
@@ -26,6 +26,13 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // ESTABLISH SOCKET CONNECTION
+        SocketHandler.setSocket()
+        val mSocket = SocketHandler.getSocket()
+        mSocket.connect()
+        mSocket.emit("hello")
+        // ______________________________
 
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
