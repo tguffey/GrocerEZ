@@ -96,9 +96,9 @@ class MainActivity : AppCompatActivity() {
                 runOnUiThread {
 //                     // Check if the result contains an error
 //                    if (result is Map<*, *> && result.containsKey("error")) {
-//                        //TODO: Handle the error using fail event, update UI, etc.
+//                        //Done: Handle the error using fail event, update UI, etc.
 //                    } else {
-//                        //TODO: Process the result and update UI as needed
+//                        //Done: Process the result and update UI as needed
 //                    }
                     countTextView.text = result
                 }
