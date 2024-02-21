@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 class ShoppingViewModel : ViewModel(){
 
     private val _text = MutableLiveData<String>().apply {
-        value = "GrocerEZ Shopping Fragment"
+        value = "Your shopping list is empty"
     }
     val text: LiveData<String> = _text
 }
