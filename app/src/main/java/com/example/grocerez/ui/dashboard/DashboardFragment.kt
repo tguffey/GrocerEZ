@@ -4,74 +4,39 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.grocerez.databinding.FragmentDashboardBinding
 
-class DashboardFragment : Fragment(), FoodItemClickListener {
+class DashboardFragment : Fragment() {
 
     private var _binding: FragmentDashboardBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
-    private lateinit var itemViewModel: DashboardViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Call the superclass onCreateView method
-        super.onCreateView(inflater, container, savedInstanceState)
+        val dashboardViewModel =
+            ViewModelProvider(this).get(DashboardViewModel::class.java)
 
-        // Initialize the ViewModel
-        itemViewModel = ViewModelProvider(this.requireActivity())[DashboardViewModel::class.java]
-
-        // Inflate the layout using view binding
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        // Set OnClickListener for the newItemButton
-        binding.newItemButton.setOnClickListener {
-            // Show the NewTaskSheet dialog
-            NewTaskSheet(null).show(parentFragmentManager, "newItemTag")
+        val textView: TextView = binding.textDashboard
+        dashboardViewModel.text.observe(viewLifecycleOwner) {
+            textView.text = it
         }
-        setRecyclerView()
-
-        // Return the root view
         return root
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        // Set the binding variable to null to avoid memory leaks
         _binding = null
     }
-
-    // Function to set up the RecyclerView to display the list of food items
-    private fun setRecyclerView(){
-        val mainActivity = this
-        // Observe changes in the list of food items in the ViewModel
-        itemViewModel.foodItems.observe(viewLifecycleOwner){
-            // Apply changes to the RecyclerView
-            binding.foodListRecyclerView.apply{
-                // Set the layout manager
-                layoutManager = LinearLayoutManager(requireContext())
-                // Set the adapter for the RecyclerView
-                // If the list of food items is not null, create an adapter with the list and set it to the RecyclerView
-                if (it != null) {
-                    adapter = FoodItemAdapter(it.toList(), mainActivity)
-                }
-            }
-        }
-    }
-
-    // Method called when a food item is edited
-    override fun editFoodItem(foodItem: FoodItem) {
-        // Show the NewTaskSheet dialog for editing the food item
-        NewTaskSheet(foodItem).show(parentFragmentManager, "newFoodTag")
-    }
-
 }

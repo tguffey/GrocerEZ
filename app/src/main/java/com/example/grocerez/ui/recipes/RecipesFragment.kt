@@ -17,7 +17,6 @@ class RecipesFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
-    // Create the UI view
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -29,7 +28,6 @@ class RecipesFragment : Fragment() {
         _binding = FragmentRecipesBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        // Show the fragment text
         val textView: TextView = binding.textRecipes
         recipesViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
@@ -37,7 +35,6 @@ class RecipesFragment : Fragment() {
         return root
     }
 
-    // Destroy the view once the user navigates to a different page
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

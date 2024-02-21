@@ -2,31 +2,26 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 <!--Creates the order of the buttons from left to right-->
 
-    <!-- Create the MyPlate page nav button with the food icon -->
     <item
         android:id="@+id/navigation_myplate"
         android:icon="@drawable/ic_myplate"
         android:title="@string/title_myplate" />
 
-    <!-- Create the Dashboard page nav button with the widget icon -->
     <item
         android:id="@+id/navigation_dashboard"
         android:icon="@drawable/ic_dashboard_black_24dp"
         android:title="@string/title_dashboard" />
 
-    <!-- Create the Home page nav button with the house icon -->
     <item
         android:id="@+id/navigation_home"
         android:icon="@drawable/ic_home_black_24dp"
         android:title="@string/title_home" />
 
-    <!-- Create the Recipes page nav button with pan icon -->
     <item
         android:id="@+id/navigation_recipes"
         android:icon="@drawable/ic_recipes_pan"
         android:title="@string/title_recipes" />
 
-    <!-- Create the Shopping page nav button with checklist icon -->
     <item
         android:id="@+id/navigation_shopping"
         android:icon="@drawable/ic_shopping_list"
