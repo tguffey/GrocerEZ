@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
         //THIS IS JOCELYN IM DELETING THIS
         //setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-
+        val gson = Gson()
         // The following lines connects the Android app to the server.
         SocketHandler.setSocket()
         SocketHandler.establishConnection()
@@ -140,12 +140,14 @@ class MainActivity : AppCompatActivity() {
         }
         // Handle 'sql_result' event
         mSocket.on("sql_result") { args ->
-            val result = args[0]
+            val result = args[0] as String
             runOnUiThread {
                 // Check if the result contains an error
-                if (result is Map<*, *> && result.containsKey("error")) {
+//                if (result is Map<*, *> && result.containsKey("error")) {
+                if (result == ("error")) {
                     // Handle the error, update UI, etc.
-                    countTextView.text = "Database query failed: ${result["error"]}"
+//                    countTextView.text = "Database query failed: ${result["error"]}"
+                    countTextView.text = "Database query failed"
                 } else {
                     // Process the result and update UI as needed
                     countTextView.text = "Received database query result: $result"
