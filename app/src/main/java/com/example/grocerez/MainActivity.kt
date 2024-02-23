@@ -11,6 +11,8 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.grocerez.databinding.ActivityMainBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import org.json.JSONArray
 
 class MainActivity : AppCompatActivity() {
 
@@ -138,19 +140,34 @@ class MainActivity : AppCompatActivity() {
                 countTextView.text = postMessage
             }
         }
+
         // Handle 'sql_result' event
         mSocket.on("sql_result") { args ->
-            val result = args[0] as String
+//            val result = args[0] as String
+            val jsonArray: JSONArray = args[0] as JSONArray
+//            val result = args[0] as List<Map<String, Any>>
+//            val gson = Gson()
+//            val userList = result.map { gson.fromJson(gson.toJsonTree(it), User::class.java) }
+
             runOnUiThread {
                 // Check if the result contains an error
 //                if (result is Map<*, *> && result.containsKey("error")) {
-                if (result == ("error")) {
+                if (jsonArray == null) {
                     // Handle the error, update UI, etc.
 //                    countTextView.text = "Database query failed: ${result["error"]}"
                     countTextView.text = "Database query failed"
                 } else {
+                    // Convert JSONArray to List<Map<String, Any>> using Gson
+                    val listType = object : TypeToken<List<Map<String, Any>>>() {}.type
+                    val result: List<Map<String, Any>> = Gson().fromJson(jsonArray.toString(), listType)
+                    val displayText = buildString {
+                        for (userMap in result) {
+                            append("Username: ${userMap["username"]}\n")
+                            append("Email: ${userMap["email"]}\n\n")
+                        }
+                    }
                     // Process the result and update UI as needed
-                    countTextView.text = "Received database query result: $result"
+                    countTextView.text = "Received database query result: $displayText"
                 }
             }
         }
