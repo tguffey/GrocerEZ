@@ -39,7 +39,7 @@ android {
 }
 
 dependencies {
-
+    implementation ("com.google.code.gson:gson:2.10.1")
     implementation ("io.socket:socket.io-client:2.0.0")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
