@@ -110,8 +110,8 @@ class LoginActivity : AppCompatActivity() {
             Toast.LENGTH_LONG
         ).show()
         // I ADDED AN INTENT TO NAVIGATE TO MAINACTIVITY UPON SUCCESSFUL LOGIN
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
+        val i = Intent(this, MainActivity::class.java)
+        startActivity(i)
 
         // Finish the LoginActivity to prevent going back to it with the back button
         finish()
