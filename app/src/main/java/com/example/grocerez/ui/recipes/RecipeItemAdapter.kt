@@ -10,8 +10,7 @@ import com.example.grocerez.databinding.RecipeItemCellBinding
 class RecipeItemAdapter (
     private var recipeItems: List<RecipeItem>,
     private val clickListener: RecipeItemClickListener
-): RecyclerView.Adapter<RecipeItemViewHolder>()
-{
+): RecyclerView.Adapter<RecipeItemViewHolder>() {
 
     fun updateRecipeItems(newRecipeItems: List<RecipeItem>){
         val diffCallback = RecipeDiffCallback(recipeItems, newRecipeItems)

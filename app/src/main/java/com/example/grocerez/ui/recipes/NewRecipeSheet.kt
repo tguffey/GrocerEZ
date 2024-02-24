@@ -40,6 +40,18 @@ class NewRecipeSheet (var recipeItem: RecipeItem?) : BottomSheetDialogFragment()
             saveAction()
         }
 
+        binding.cancelButton.setOnClickListener{
+            clearFields()
+        }
+
+    }
+
+    private fun clearFields() {
+        binding.name.setText("")
+        binding.description.setText("")
+        binding.ingredients.setText("")
+        binding.notes.setText("")
+        dismiss()
     }
 
     private fun saveAction() {
@@ -60,7 +72,7 @@ class NewRecipeSheet (var recipeItem: RecipeItem?) : BottomSheetDialogFragment()
         binding.description.setText("")
         binding.ingredients.setText("")
         binding.notes.setText("")
-
+        dismiss()
     }
 
     override fun onCreateView(

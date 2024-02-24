@@ -9,11 +9,12 @@ import android.view.animation.AnimationUtils
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.grocerez.R
 import com.example.grocerez.databinding.FragmentRecipesBinding
 import com.example.grocerez.ui.recipes.NewRecipeSheet
 
-class RecipesFragment : Fragment() {
+class RecipesFragment : Fragment(), RecipeItemClickListener {
 
     private var _binding : FragmentRecipesBinding? = null
     private lateinit var recipesViewModel: RecipesViewModel
@@ -37,7 +38,7 @@ class RecipesFragment : Fragment() {
     ): View {
         super.onCreateView(inflater, container, savedInstanceState)
 
-        recipesViewModel = ViewModelProvider(this).get(RecipesViewModel::class.java)
+        recipesViewModel = ViewModelProvider(this.requireActivity())[RecipesViewModel::class.java]
 
         _binding = FragmentRecipesBinding.inflate(inflater, container, false)
         val root: View = binding.root
@@ -48,6 +49,7 @@ class RecipesFragment : Fragment() {
         fromBottomBg = AnimationUtils.loadAnimation(context, R.anim.from_bottom_anim)
         toBottomBg = AnimationUtils.loadAnimation(context, R.anim.to_bottom_anim)
 
+        setRecyclerView()
         // Determine whether to open or close edit options when the edit button is clicked
         binding.editItemFab.setOnClickListener {
             if (isExpanded) {
@@ -62,8 +64,8 @@ class RecipesFragment : Fragment() {
         binding.addItemFab.setOnClickListener {
             // Show New Grocery Item bottom dialog
             NewRecipeSheet(null).show(parentFragmentManager, "newRecipeTag")
+            shrinkFab()
         }
-
 
         return root
     }
@@ -93,6 +95,26 @@ class RecipesFragment : Fragment() {
 
         // Toggle isExpanded
         isExpanded = !isExpanded
+    }
+
+    private fun setRecyclerView(){
+        val recipeItemAdapter = RecipeItemAdapter(mutableListOf(), this)
+
+        binding.recipeListRecyclerView.apply{
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = recipeItemAdapter
+        }
+
+        recipesViewModel.recipeItems.observe(viewLifecycleOwner) {newRecipeItems ->
+            val recipeItemList: List<RecipeItem> = newRecipeItems.orEmpty()
+            recipeItemAdapter.updateRecipeItems(recipeItemList)
+
+            recipeItemAdapter.notifyDataSetChanged()
+        }
+    }
+
+    override fun editRecipeItem(recipeItem: RecipeItem) {
+        NewRecipeSheet(recipeItem).show(parentFragmentManager, "newRecipeTag")
     }
 
 }
