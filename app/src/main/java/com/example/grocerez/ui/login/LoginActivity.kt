@@ -17,6 +17,7 @@ import com.example.grocerez.MainActivity
 import com.example.grocerez.databinding.ActivityLoginBinding
 
 import com.example.grocerez.R
+import com.example.grocerez.SocketHandler
 
 class LoginActivity : AppCompatActivity() {
 
@@ -25,6 +26,13 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // ESTABLISH SOCKET CONNECTION
+        SocketHandler.setSocket()
+        val mSocket = SocketHandler.getSocket()
+        mSocket.connect()
+        mSocket.emit("hello")
+        // ______________________________
 
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -58,6 +66,7 @@ class LoginActivity : AppCompatActivity() {
             if (loginResult.error != null) {
                 showLoginFailed(loginResult.error)
             }
+
             if (loginResult.success != null) {
                 updateUiWithUser(loginResult.success)
             }
@@ -93,9 +102,13 @@ class LoginActivity : AppCompatActivity() {
                 false
             }
 
+            // THIS IS TYLER, GONNA SET UP INFO SENDING TO SERVER
+            // TODO: tyler: debug this section and send info to database.
             login.setOnClickListener {
                 loading.visibility = View.VISIBLE
+                val email = "genericemail@gmail.com"
                 loginViewModel.login(username.text.toString(), password.text.toString())
+                mSocket.emit("save_signup_info",username.getText().toString(), email.toString(), password.getText().toString())
             }
         }
     }
@@ -109,11 +122,11 @@ class LoginActivity : AppCompatActivity() {
             "$welcome $displayName",
             Toast.LENGTH_LONG
         ).show()
-        // I ADDED AN INTENT TO NAVIGATE TO MAINACTIVITY UPON SUCCESSFUL LOGIN
+        // I added an intent to navigate to Main Activity upon successful login - Jocelyn
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
 
-        // Finish the LoginActivity to prevent going back to it with the back button
+        // Finish the Login Activity to prevent going back to it with the back button
         finish()
     }
 
