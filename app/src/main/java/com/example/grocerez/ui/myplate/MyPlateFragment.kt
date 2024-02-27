@@ -52,16 +52,18 @@ class MyPlateFragment : Fragment() {
 
     private fun setupChartView() {
         val pie = AnyChart.pie()
-        val months = arrayOf("January", "February", "March", "April")
-        val salary = intArrayOf(16000, 20000, 30000, 50000)
+        val category = arrayOf("Grains", "Protein", "Vegetables", "Fruits")
+        val amount = floatArrayOf(2.5F, 5F, 5F, 1.5F)
 
         val dataEntries: MutableList<DataEntry> = ArrayList()
 
-        for (i in months.indices) {
-            dataEntries.add(ValueDataEntry(months[i], salary[i]))
+        for (i in category.indices) {
+            dataEntries.add(ValueDataEntry(category[i], amount[i]))
         }
         pie.data(dataEntries)
-        pie.title("Salary")
+        pie.stroke("10px #F1F1F1")
+        pie.title("My Plate")
+        pie.padding(0, 8, 0, 0)
         anyChartView.setChart(pie)
     }
 }
