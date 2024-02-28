@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" >
+    <!--Permission added for socket connections-->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+
+    <!--using cleartextTraffic = true (unencrypted http connection)
+        for offline testing with offline server.
+        TODO: need to find out how to handle data more securely with https after conenction works
+    -->
 
     <application
         android:allowBackup="true"
@@ -11,6 +19,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.GrocerEZ"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
 
         <!-- idk why i had to set exported to = true -->
