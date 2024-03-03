@@ -30,6 +30,5 @@ data class PantryItem(
     val shelfLife: Int,
     val amount: Int,
     val unit: String,
-
     val name: String
 )
