@@ -44,6 +44,7 @@ android {
 
 dependencies {
     implementation ("io.socket:socket.io-client:2.0.0")
+    implementation("androidx.activity:activity:1.8.0")
 
     val room_version = ("2.6.1")
     implementation ("androidx.room:room-runtime:$room_version")

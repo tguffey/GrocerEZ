@@ -51,6 +51,7 @@ class MainActivity : AppCompatActivity() {
         val getTestBtn = findViewById<Button>(R.id.getTestBtn)
         val postTestBtn = findViewById<Button>(R.id.postTestBtn)
         val sqlSelectAllButton = findViewById<Button>(R.id.sqlSelectAllBtn)
+        val goToPg2 = findViewById<Button>(R.id.goToPg2Btn)
 
         val loginButton = findViewById<Button>(R.id.loginButton)
         var username: EditText? = null
@@ -81,6 +82,10 @@ class MainActivity : AppCompatActivity() {
         loginButton.setOnClickListener {
             mSocket.emit("save_signup_info", username.getText().toString(), email.getText().toString(), password.getText().toString())
         };
+
+        goToPg2.setOnClickListener{
+
+        }
 
         mSocket.on("counter") { args ->
             if (args[0] != null) {
