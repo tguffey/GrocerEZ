@@ -2,6 +2,9 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     kotlin("kapt") // Apply the Kotlin Annotation Processing plugin
+//    id("com.google.devtools.ksp") version "1.8.10-1.0.9" apply false
+    id("com.google.devtools.ksp") version "1.9.21-1.0.15"
+//    id("com.google.devtools.ksp")
 }
 
 android {
@@ -47,8 +50,11 @@ dependencies {
     annotationProcessor ("androidx.room:room-compiler:$room_version")
     // To use Kotlin annotation processing tool (kapt)
     kapt ("androidx.room:room-compiler:$room_version")
+
+
 //    // To use Kotlin Symbol Processing (KSP)
-//    ksp ("androidx.room:room-compiler:$room_version")
+    ksp("androidx.room:room-compiler:2.5.0")
+
 
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
