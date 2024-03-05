@@ -1,118 +1,120 @@
 package com.example.grocerez
 
 import android.os.Bundle
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.grocerez.databinding.ActivityMainBinding
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.example.grocerez.databinding.ActivityMainBinding
+import io.socket.client.Socket
+import org.json.JSONObject
 import android.widget.Button
 import android.widget.TextView
+import org.json.JSONArray
+import org.json.JSONException
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var mSocket: Socket // Make sure Socket is correctly imported
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-//        // ESTABLISH SOCKET CONNECTION
-//        SocketHandler.setSocket()
-        // singleton object
-        val mSocket = SocketHandler.getSocket()
-//        mSocket.connect()
-        mSocket.emit("hellotest")
-//        // ______________________________
+        // Initialize SocketHandler and establish connection first
+        SocketHandler.setSocket()
+        SocketHandler.establishConnection()
+        mSocket = SocketHandler.getSocket()
+        mSocket.connect()
 
+        // Setup the layout
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setupNavigation()
+        setupButtonsAndListeners()
+    }
+
+    private fun setupNavigation() {
         val navView: BottomNavigationView = binding.navView
-        //I added the line below to change the nav color to green001
         navView.setBackgroundColor(resources.getColor(R.color.green001))
 
-
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_myplate, R.id.navigation_dashboard, R.id.navigation_home,
-                R.id.navigation_recipes, R.id.navigation_shopping
-            )
+                setOf(
+                        R.id.navigation_myplate, R.id.navigation_dashboard, R.id.navigation_home,
+                        R.id.navigation_recipes, R.id.navigation_shopping
+                )
         )
-        //THIS IS JOCELYN IM DELETING THIS
-        //setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+    }
 
-        // The following lines connects the Android app to the server.
-        SocketHandler.setSocket()
-        SocketHandler.establishConnection()
-        // Vals to connect xml object ID's
+    private fun setupButtonsAndListeners() {
         val counterBtn = findViewById<Button>(R.id.counterBtn)
         val countTextView = findViewById<TextView>(R.id.countTextView)
         val getTestBtn = findViewById<Button>(R.id.getTestBtn)
         val postTestBtn = findViewById<Button>(R.id.postTestBtn)
         val sqlSelectAllButton = findViewById<Button>(R.id.sqlSelectAllBtn)
+        val scrapeIngredientsBtn = findViewById<Button>(R.id.scrapeIngredientsBtn)
 
-        val mSocket = SocketHandler.getSocket()
-
-        counterBtn.setOnClickListener{
-            mSocket.emit("counter")
+        // Setup button listeners
+        counterBtn.setOnClickListener { mSocket.emit("counter") }
+        getTestBtn.setOnClickListener { mSocket.emit("hello") }
+        postTestBtn.setOnClickListener { mSocket.emit("hello_post") }
+        sqlSelectAllButton.setOnClickListener { mSocket.emit("sql_query") }
+        scrapeIngredientsBtn.setOnClickListener {
+            val url = "https://www.budgetbytes.com/homemade-meatballs/"
+            mSocket.emit("get-ingredients", url)
         }
 
-        getTestBtn.setOnClickListener{
-            mSocket.emit("hello")
-        }
+        // Setup socket event listeners
+        setupSocketListeners(countTextView)
+    }
 
-        postTestBtn.setOnClickListener {
-            mSocket.emit("hello_post")
-        }
-        sqlSelectAllButton.setOnClickListener {
-            mSocket.emit("sql_query")
-        }
-
+    private fun setupSocketListeners(countTextView: TextView) {
         mSocket.on("counter") { args ->
-            if (args[0] != null) {
-                // take the argument sent back from the server as int
-                val counter = args[0] as Int
-                runOnUiThread {
-                    countTextView.text = counter.toString()
-                }
-            }
+            runOnUiThread { countTextView.text = (args[0] as? Int)?.toString() ?: "Error" }
         }
 
         mSocket.on("hello") { args ->
-            val helloMessage = args[0] as String
+            runOnUiThread { countTextView.text = args[0] as? String }
+        }
+
+        mSocket.on("hello_post") { args ->
+            runOnUiThread { countTextView.text = args[0] as? String }
+        }
+
+        mSocket.on("sql_result") { args ->
             runOnUiThread {
-                // Update your UI or handle the 'hello' response as needed
-                countTextView.text = helloMessage
+                val result = args[0] as? String ?: "Error"
+                countTextView.text = result
             }
         }
 
-        // Handle 'hello_post' event
-        mSocket.on("hello_post") { args ->
-            val postMessage = args[0] as String
+        mSocket.on("ingredients-result") { args ->
             runOnUiThread {
-                // Update your UI or handle the 'hello_post' response as needed
-                countTextView.text = postMessage
-            }
-        }
-        // Handle 'sql_result' event
-        mSocket.on("sql_result") { args ->
-            val result = args[0]
-            runOnUiThread {
-                // Check if the result contains an error
-                if (result is Map<*, *> && result.containsKey("error")) {
-                    // Handle the error, update UI, etc.
-                    countTextView.text = "Database query failed: ${result["error"]}"
-                } else {
-                    // Process the result and update UI as needed
-                    countTextView.text = "Received database query result: $result"
+                // Attempt to parse the ingredients JSON array
+                val ingredientsJson = args[0]?.toString()
+                try {
+                    // Create a JSON array to store ingredients data
+                    val jsonArray = JSONArray(ingredientsJson)
+                    // For turning the data into a string to be read by kotlin
+                    val ingredientsList = StringBuilder()
+                    for (i in 0 until jsonArray.length()) {
+                        val ingredient = jsonArray.getJSONObject(i)
+                        // The web ingredients are passed as "Amount", "Unit", and "Name"
+                        // Grab each object with the "Name" value
+                        val name = ingredient.getString("Name")
+                        ingredientsList.append(name).append("\n")
+                    }
+                    countTextView.text = ingredientsList.toString()
+                } catch (e: JSONException) {
+                    e.printStackTrace()
+                    countTextView.text = "Error parsing ingredients"
                 }
             }
         }
+
     }
 }
