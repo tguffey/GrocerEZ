@@ -29,6 +29,8 @@
             android:layout_height="match_parent"
             android:id="@+id/name"
             android:hint="Name"
+            android:imeOptions="actionDone"
+            android:inputType="text"
             />
 
 
@@ -45,6 +47,8 @@
             android:layout_height="match_parent"
             android:id="@+id/value"
             android:hint="Value"
+            android:imeOptions="actionDone"
+            android:inputType="text"
             />
 
     </com.google.android.material.textfield.TextInputLayout>
