@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/login_background"
+    android:orientation="vertical"
+    tools:context=".ui.welcome.WelcomeActivity">
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="90dp"
+                android:layout_height="90dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="100dp"
+                android:src="@mipmap/ic_launcher"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="90dp"
+                android:text="WELCOME TO \n     GrocerEZ"
+                android:textColor="@color/white"
+                android:textSize = "50sp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="50dp"
+                android:text="Make Planning Easier"
+                android:textColor="@color/white"
+                android:textSize = "20sp"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/signup_btn"
+                android:layout_width="300dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="40dp"
+                android:paddingStart="30dp"
+                android:layout_gravity="center"
+                android:background="@drawable/round_back_secindary_100"
+                android:text="Get Started"
+                android:textColor="@color/white"
+                android:textAllCaps="false"
+                android:paddingEnd="30dp"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/login_btn"
+                android:layout_width="300dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="40dp"
+                android:paddingStart="30dp"
+                android:layout_gravity="center"
+                android:background="@drawable/round_back_secindary_100"
+                android:text="Login"
+                android:textColor="@color/white"
+                android:textAllCaps="false"
+                android:paddingEnd="30dp"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+
+</LinearLayout>

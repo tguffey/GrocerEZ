@@ -8,6 +8,7 @@ import android.widget.ImageView
 import androidx.appcompat.widget.AppCompatButton
 import com.example.grocerez.R
 import com.example.grocerez.ui.login.LoginActivity
+import com.example.grocerez.ui.welcome.WelcomeActivity
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,7 +41,7 @@ class SettingsActivity : AppCompatActivity() {
         editor.apply()
 
         // Optionally, you can navigate back to the login screen or perform any other logout-related actions
-        val intent = Intent(this, LoginActivity::class.java)
+        val intent = Intent(this, WelcomeActivity::class.java)
         startActivity(intent)
         finish() // Finish the SettingsActivity to prevent going back to it with the back button
     }

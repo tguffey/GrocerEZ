@@ -12,6 +12,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.example.grocerez.databinding.ActivityMainBinding
 import com.example.grocerez.ui.login.LoginActivity
+import com.example.grocerez.ui.welcome.WelcomeActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,11 +27,11 @@ class MainActivity : AppCompatActivity() {
 
         if (username != null) {
             // User is already logged in, show welcome message
-            val welcomeMessage = "Welcome back, $username!"
-            Toast.makeText(this, welcomeMessage, Toast.LENGTH_SHORT).show()
+            //val welcomeMessage = "Welcome back, $username!"
+            //Toast.makeText(this, welcomeMessage, Toast.LENGTH_SHORT).show()
         } else {
-            // User is not logged in, redirect to LoginActivity
-            val intent = Intent(this, LoginActivity::class.java)
+            // User is not logged in, redirect to Welcome
+            val intent = Intent(this, WelcomeActivity::class.java)
             startActivity(intent)
             finish()
             return  // Finish the activity to prevent further execution
