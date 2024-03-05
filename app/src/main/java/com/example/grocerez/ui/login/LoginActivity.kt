@@ -1,6 +1,7 @@
 package com.example.grocerez.ui.login
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -15,7 +16,6 @@ import android.widget.EditText
 import android.widget.Toast
 import com.example.grocerez.MainActivity
 import com.example.grocerez.databinding.ActivityLoginBinding
-
 import com.example.grocerez.R
 
 class LoginActivity : AppCompatActivity() {
@@ -63,7 +63,7 @@ class LoginActivity : AppCompatActivity() {
             }
             setResult(Activity.RESULT_OK)
 
-            //Complete and destroy login activity once successful
+            // Complete and destroy login activity once successful
             finish()
         })
 
@@ -72,6 +72,7 @@ class LoginActivity : AppCompatActivity() {
                 username.text.toString(),
                 password.text.toString()
             )
+
         }
 
         password.apply {
@@ -103,18 +104,32 @@ class LoginActivity : AppCompatActivity() {
     private fun updateUiWithUser(model: LoggedInUserView) {
         val welcome = getString(R.string.welcome)
         val displayName = model.displayName
-        // TODO : initiate successful logged in experience
+
+        // Save user login information to SharedPreferences
+        saveUserToSharedPreferences(model.username, model.password)
+
+        // TODO : initiate successful logged-in experience
         Toast.makeText(
             applicationContext,
             "$welcome $displayName",
             Toast.LENGTH_LONG
         ).show()
-        // I ADDED AN INTENT TO NAVIGATE TO MAINACTIVITY UPON SUCCESSFUL LOGIN
-        val i = Intent(this, MainActivity::class.java)
-        startActivity(i)
+
+        // Intent to navigate to MainActivity upon successful login
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
 
         // Finish the LoginActivity to prevent going back to it with the back button
         finish()
+    }
+
+
+    private fun saveUserToSharedPreferences(username: String, password: String) {
+        val sharedPreferences = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("username", username)
+        editor.putString("password", password)
+        editor.apply()
     }
 
     private fun showLoginFailed(@StringRes errorString: Int) {

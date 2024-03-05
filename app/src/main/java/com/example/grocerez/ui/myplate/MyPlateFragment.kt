@@ -60,6 +60,7 @@ class MyPlateFragment : Fragment() {
         for (i in category.indices) {
             dataEntries.add(ValueDataEntry(category[i], amount[i]))
         }
+
         pie.data(dataEntries)
         pie.stroke("10px #F1F1F1")
         pie.title("My Plate")
