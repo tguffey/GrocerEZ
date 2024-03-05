@@ -15,11 +15,13 @@ import com.example.grocerez.R
 import com.example.grocerez.databinding.FragmentNewShoppingItemBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.example.grocerez.ui.ItemAmount
+import com.example.grocerez.ui.Unit
 
-class NewGrocerySheet() : BottomSheetDialogFragment() {
+class NewGrocerySheet(var groceryItem: GroceryItem?) : BottomSheetDialogFragment() {
 
     private lateinit var binding: FragmentNewShoppingItemBinding
     private lateinit var itemViewModel: ShoppingViewModel
+    private lateinit var selectedUnit: String
 
     // Create the UI for the sheet
     override fun onCreateView(
@@ -42,9 +44,8 @@ class NewGrocerySheet() : BottomSheetDialogFragment() {
 
         setSpinner()
 
-        // TODO: Set OnClickListener for saveButton
         binding.saveButton.setOnClickListener{
-
+            saveAction()
         }
 
         // Dismiss input box when the cancel button is pressed
@@ -101,12 +102,12 @@ class NewGrocerySheet() : BottomSheetDialogFragment() {
 
         binding.quantitySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val selectedItemText = parent?.getItemAtPosition(position) as String
+                selectedUnit = parent?.getItemAtPosition(position) as String
 
                 // Only the units choices can be selected and not the Units label
                 if (position > 0) {
                     Toast.makeText(
-                        context, "Selected : $selectedItemText",
+                        context, "Selected : $selectedUnit",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
@@ -114,5 +115,22 @@ class NewGrocerySheet() : BottomSheetDialogFragment() {
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
+    }
+
+    // Saves the new grocery item to be added to the shopping list
+    private fun saveAction() {
+        val name = binding.name.text.toString()
+        val category = binding.category.text.toString()
+        val quantity = ItemAmount(binding.quantity.text.toString().toFloat(),
+            Unit.valueOf(selectedUnit.uppercase()))
+        val note = binding.Note.text.toString()
+        if (groceryItem == null)
+        {
+            val newGrocery = GroceryItem(name, category, quantity, note)
+            itemViewModel.addGroceryItem(newGrocery)
+        }
+
+        // Clear input fields and dismiss the sheet
+        clearFields()
     }
 }

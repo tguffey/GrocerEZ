@@ -9,6 +9,7 @@ import android.view.animation.AnimationUtils
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.grocerez.R
 import com.example.grocerez.databinding.FragmentShoppingBinding
 
@@ -35,7 +36,7 @@ class ShoppingFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        shoppingViewModel = ViewModelProvider(this).get(ShoppingViewModel::class.java)
+        shoppingViewModel = ViewModelProvider(this.requireActivity()).get(ShoppingViewModel::class.java)
 
         _binding = FragmentShoppingBinding.inflate(inflater, container, false)
         val root: View = binding.root
@@ -66,8 +67,11 @@ class ShoppingFragment : Fragment() {
         // Make a new sheet when the Add Item button is pressed
         binding.addItemFab.setOnClickListener {
             // Show New Grocery Item bottom dialog
-            NewGrocerySheet().show(parentFragmentManager, "newItemTag")
+            NewGrocerySheet(null).show(parentFragmentManager, "newItemTag")
+            binding.textShopping.visibility = View.INVISIBLE
+            shrinkFab()
         }
+        setRecyclerView()
 
         return root
     }
@@ -99,6 +103,25 @@ class ShoppingFragment : Fragment() {
 
         // Toggle isExpanded
         isExpanded = !isExpanded
+    }
+
+    // Sets up the RecyclerView to display the list of grocery items
+    private fun setRecyclerView(){
+        // Observe changes in the list of food item in the ViewModel
+        shoppingViewModel.groceryItems.observe(viewLifecycleOwner){
+            // Apply any changes to the RecyclerView
+            binding.groceryListRecyclerView.apply {
+                // Set the layout manager
+                layoutManager = LinearLayoutManager(requireContext())
+                // Set the adapter for the RecyclerView
+                // If the list of food items is not null, create an adapter for the list
+                // and set it to the RecyclerView
+                if (it != null) {
+                    adapter = GroceryItemAdapter(it.toList())
+
+                }
+            }
+        }
     }
 
 }
