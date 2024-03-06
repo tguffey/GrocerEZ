@@ -20,12 +20,12 @@ class DashboardViewModel : ViewModel() {
         foodItems.postValue(list)
     }
 
-    fun updateFoodItem(id: UUID, name: String, prog: Int, dueTime: LocalTime?){
+    fun updateFoodItem(id: UUID, name: String, prog: Int, expireDate: LocalDate?){
         val list = foodItems.value
         val food = list!!.find{it.id == id}
         food!!.name = name
         food.prog = prog
-        food.dueTime = dueTime
+        food.expirationDate = expireDate
         foodItems.postValue(list)
     }
 
