@@ -32,6 +32,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.093" />
 
+
     <EditText
         android:id="@+id/itemnameText"
         android:layout_width="231dp"
@@ -46,7 +47,7 @@
         app:layout_constraintHorizontal_bias="0.255"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.452" />
+        app:layout_constraintVertical_bias="0.311" />
 
     <EditText
         android:id="@+id/itemcategoryText"
@@ -63,8 +64,7 @@
         app:layout_constraintHorizontal_bias="0.255"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.35" />
-
+        app:layout_constraintVertical_bias="0.424" />
 
     <TextView
         android:id="@+id/displayText"

@@ -11,8 +11,8 @@ import androidx.room.OnConflictStrategy
 
 @Dao
 interface ItemDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(item: Item)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insert(item: Item) : Long
 
     @Update
     suspend fun update(item: Item)
@@ -22,4 +22,8 @@ interface ItemDao {
 
     @Query("SELECT * FROM items")
     suspend fun getAllItems(): List<Item>
+
+    @Query("SELECT * FROM items WHERE name = :name AND category = :category")
+    suspend fun findItemByNameAndCategory(name: String, category: String): Item?
+
 }

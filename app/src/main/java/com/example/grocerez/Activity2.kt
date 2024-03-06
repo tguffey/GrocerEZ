@@ -67,14 +67,46 @@ class Activity2 : AppCompatActivity() {
         val itemName = findViewById<EditText>(R.id.itemnameText).text.toString()
         val itemCategory = findViewById<EditText>(R.id.itemcategoryText).text.toString()
 
-//        messageTextView = findViewById<TextView>(R.id.displayText)
-        // Create new Item object
+        // check for blanks
+        if(itemName.isEmpty() || itemCategory.isEmpty()){
+            messageTextView.text = "Please enter both category and item name."
+            return // Exit the function if fields are empty
+        }
+
+        // actual insertion:
+        // 1. create item object
+        // 2. try catch block
+        // 3. within try block, find if item is already in db with DAO function findItemByNameAndCategory()
+        // 4. if not already in, insert the item and display sucess message.
+        // 5. another if else loop within that to check for insert error
+        // 6. else (item already exists): display item already in there message
         val newItem = Item(name = itemName, category = itemCategory)
         CoroutineScope(Dispatchers.IO).launch{
             try {
-                itemDao.insert(newItem)
-                withContext(Dispatchers.Main){
-                    messageTextView.text = "Item added successfully! Details: Name: ${newItem.name}, Category: ${newItem.category}"
+                //find the item first to see if there's anythign in there
+                val existingItem = itemDao.findItemByNameAndCategory(itemName, itemCategory)
+
+                // Handle conflict (item already exists)
+                if (existingItem == null){
+                    val insertedId = itemDao.insert(newItem)
+                    withContext(Dispatchers.Main){
+                        if (insertedId > 0) {
+
+                            messageTextView.text = "Item added successfully! Details: Name: ${newItem.name}, Category: ${newItem.category}"
+
+                            //clear up the textboxes upon sucessful insert
+                            findViewById<EditText>(R.id.itemnameText).text = null
+                            findViewById<EditText>(R.id.itemcategoryText).text = null
+
+                        } else {
+                            // originally just this
+                            messageTextView.text = "Failed to add item! Please try again later"
+                        }
+                    }
+                }else{
+                    withContext(Dispatchers.Main) {
+                        messageTextView.text = "Item already exists in pantry!"
+                    }
                 }
             } catch (e: Exception){
                 withContext(Dispatchers.Main) {
