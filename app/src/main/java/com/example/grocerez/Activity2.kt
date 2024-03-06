@@ -58,6 +58,11 @@ class Activity2 : AppCompatActivity() {
             getAllItemsAndShow()
         }
 
+        val deleteItemBtn = findViewById<Button>(R.id.deleteItemBtn)
+        deleteItemBtn.setOnClickListener {
+            deleteFromDatabase()
+        }
+
 //        val displayText = findViewById<TextView>(R.id.displayText)
     }
 
@@ -144,5 +149,46 @@ class Activity2 : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun deleteFromDatabase(){
+        val itemName = findViewById<EditText>(R.id.itemnameText).text.toString()
+        val itemCategory = findViewById<EditText>(R.id.itemcategoryText).text.toString()
+        val itemToDelete = Item(name = itemName, category = itemCategory)
+        if(itemName.isEmpty() || itemCategory.isEmpty()){
+            messageTextView.text = "Please enter both category and item name."
+            return
+        } // Exit the function if fields are empty
+        CoroutineScope(Dispatchers.IO).launch{
+            try {
+                // use findItemByNameAndCategory for now because it is more reliable to find if item is in there or not
+                val itemToDelete = itemDao.findItemByNameAndCategory(itemName, itemCategory)
+                // successful deletion
+                if (itemToDelete != null){
+                    itemDao.delete(itemToDelete)
+                    withContext(Dispatchers.Main) {
+                        messageTextView.text = "Item deleted successfully!Details: Name: ${itemToDelete.name}, Category: ${itemToDelete.category}"
+
+                        //clear up the textboxes upon sucessful delete
+                        findViewById<EditText>(R.id.itemnameText).text = null
+                        findViewById<EditText>(R.id.itemcategoryText).text = null
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        messageTextView.text = "Item not found in pantry!"
+                    }
+                }
+
+                withContext(Dispatchers.Main){
+
+                }
+            } catch (e: Exception){
+                messageTextView.text = "Error deleting item: ${e.message}"
+            }
+
+        }
+
+
+
     }
 }
