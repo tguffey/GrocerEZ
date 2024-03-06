@@ -18,7 +18,7 @@
         app:layout_constraintHorizontal_bias="0.2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.628" />
+        app:layout_constraintVertical_bias="0.631" />
 
     <Button
         android:id="@+id/backBtn"
@@ -65,17 +65,16 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.35" />
 
+
     <TextView
         android:id="@+id/displayText"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:text=""
+        android:layout_height="200dp"
+        android:layout_marginBottom="52dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
-
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/inputItemBtn"
