@@ -10,6 +10,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
 class Activity2 : AppCompatActivity() {
+    private lateinit var itemDao: ItemDao
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -20,6 +21,11 @@ class Activity2 : AppCompatActivity() {
             insets
         }
 
+        // Initialize database with context
+        val database = AppDatabase.getInstance(this)
+
+        // Get the DAO using the database instance
+        itemDao = database.itemDao()
 
         val backButton = findViewById<Button>(R.id.backBtn)
         backButton.setOnClickListener {
