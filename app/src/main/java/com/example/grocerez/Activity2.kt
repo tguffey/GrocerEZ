@@ -29,6 +29,8 @@ class Activity2 : AppCompatActivity() {
             insets
         }
 
+        messageTextView = findViewById<TextView>(R.id.displayText)
+
         // Initialize database with context
         val database = AppDatabase.getInstance(this)
 
@@ -53,7 +55,7 @@ class Activity2 : AppCompatActivity() {
 
         val displayAllItems = findViewById<Button>(R.id.displayBtn)
         displayAllItems.setOnClickListener{
-
+            getAllItemsAndShow()
         }
 
 //        val displayText = findViewById<TextView>(R.id.displayText)
@@ -65,7 +67,7 @@ class Activity2 : AppCompatActivity() {
         val itemName = findViewById<EditText>(R.id.itemnameText).text.toString()
         val itemCategory = findViewById<EditText>(R.id.itemcategoryText).text.toString()
 
-        messageTextView = findViewById<TextView>(R.id.displayText)
+//        messageTextView = findViewById<TextView>(R.id.displayText)
         // Create new Item object
         val newItem = Item(name = itemName, category = itemCategory)
         CoroutineScope(Dispatchers.IO).launch{
@@ -83,6 +85,30 @@ class Activity2 : AppCompatActivity() {
                         messageTextView.text = "Error adding item: ${e.message}"
                     }
 
+                }
+            }
+        }
+    }
+    private fun getAllItemsAndShow(){
+        messageTextView = findViewById<TextView>(R.id.displayText)
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val items = itemDao.getAllItems()
+                withContext(Dispatchers.Main) {
+                    if(items.isEmpty()){
+                        // Build formatted string of items
+                        messageTextView.text = "No items found in the database!"
+                    } else {
+                        val stringBuilder = StringBuilder()
+                        for (item in items) {
+                            stringBuilder.append("ID: ${item.id}, Name: ${item.name}, Category: ${item.category}\n")
+                        }
+                        messageTextView.text = stringBuilder.toString()
+                    }
+                }
+            }catch(e: Exception){
+                withContext(Dispatchers.Main) {
+                    messageTextView.text = "Error reading items: ${e.message}"
                 }
             }
         }
