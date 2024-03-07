@@ -26,11 +26,9 @@ class MainActivity : AppCompatActivity() {
         val username = sharedPreferences.getString("username", null)
 
         if (username != null) {
-            // User is already logged in, show welcome message
-            //val welcomeMessage = "Welcome back, $username!"
-            //Toast.makeText(this, welcomeMessage, Toast.LENGTH_SHORT).show()
+            // If username is logged in, do nothing
         } else {
-            // User is not logged in, redirect to Welcome
+            // User is not logged in, redirect to Welcome screen
             val intent = Intent(this, WelcomeActivity::class.java)
             startActivity(intent)
             finish()
