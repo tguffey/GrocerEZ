@@ -126,6 +126,7 @@ class Activity2 : AppCompatActivity() {
             }
         }
     }
+
     private fun getAllItemsAndShow(){
         messageTextView = findViewById<TextView>(R.id.displayText)
         CoroutineScope(Dispatchers.IO).launch {
