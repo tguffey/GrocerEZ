@@ -6,4 +6,8 @@
     <string name="title_shopping">Shop</string>
     <string name="title_recipes">Recipes</string>
     <string name="button_add_item">Add</string>
+    <string name="title_activity_edit_item">EditItemActivity</string>
+    <string name="extra_item_name">EXTRA_ITEM_NAME</string>
+    <string name="extra_item_category">EXTRA_ITEM_CATEGORY</string>
+
 </resources>

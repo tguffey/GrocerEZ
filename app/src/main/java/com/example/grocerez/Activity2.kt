@@ -1,7 +1,10 @@
 package com.example.grocerez
 
+import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -61,6 +64,41 @@ class Activity2 : AppCompatActivity() {
         val deleteItemBtn = findViewById<Button>(R.id.deleteItemBtn)
         deleteItemBtn.setOnClickListener {
             deleteFromDatabase()
+        }
+
+        val editItemBtn = findViewById<Button>(R.id.editItemBtn)
+        editItemBtn.setOnClickListener {
+            val itemName = findViewById<EditText>(R.id.itemnameText).text.toString()
+            val itemCategory = findViewById<EditText>(R.id.itemcategoryText).text.toString()
+
+            val activity = this as Activity2
+            val intent = Intent(activity, EditItemActivity::class.java)
+            startActivity(intent)
+//            CoroutineScope(Dispatchers.IO).launch {
+//                val itemToEdit = itemDao.findItemByNameAndCategory(itemName, itemCategory)
+//                if (itemToEdit != null) {
+//                    //item is found, show edit dialog
+//                    val activity = this as Activity2
+//                    val intent = Intent(activity, EditItemActivity::class.java)
+//
+//
+////                    val itemNameExtra = getString(R.string.extra_item_name)
+////                    val itemCategoryExtra = getString(R.string.extra_item_category)
+////                    intent.putExtra(itemNameExtra, itemName)
+////                    intent.putExtra(itemCategoryExtra, itemCategory)
+//
+//                    startActivity(intent)
+//                    // willl only work if item is definitely not null, or else, itemToEdit will be of type <Item?>
+//                } else {
+//                    //item is not found. display message:
+//                    withContext(Dispatchers.Main){
+//                        messageTextView.text = "Item not found in database"
+//                    }
+//                }
+//            }
+
+
+
         }
 
 //        val displayText = findViewById<TextView>(R.id.displayText)
@@ -191,5 +229,18 @@ class Activity2 : AppCompatActivity() {
 
 
 
+    }
+
+
+    private fun showEditItemDialog(item: Item){
+        val dialog = AlertDialog.Builder(this).create()
+        // Inflate the custom layout for the dialog
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.edit_item_dialog, null)
+
+        dialogView.findViewById<Button>(R.id.back_button).setOnClickListener {
+            dialog.dismiss() // Dismiss the dialog
+        }
+        dialog.setView(dialogView)
+        dialog.show()
     }
 }
