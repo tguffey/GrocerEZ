@@ -68,34 +68,44 @@ class Activity2 : AppCompatActivity() {
 
         val editItemBtn = findViewById<Button>(R.id.editItemBtn)
         editItemBtn.setOnClickListener {
+
+
+
             val itemName = findViewById<EditText>(R.id.itemnameText).text.toString()
             val itemCategory = findViewById<EditText>(R.id.itemcategoryText).text.toString()
 
-            val activity = this as Activity2
-            val intent = Intent(activity, EditItemActivity::class.java)
-            startActivity(intent)
-//            CoroutineScope(Dispatchers.IO).launch {
-//                val itemToEdit = itemDao.findItemByNameAndCategory(itemName, itemCategory)
-//                if (itemToEdit != null) {
-//                    //item is found, show edit dialog
-//                    val activity = this as Activity2
-//                    val intent = Intent(activity, EditItemActivity::class.java)
-//
-//
-////                    val itemNameExtra = getString(R.string.extra_item_name)
-////                    val itemCategoryExtra = getString(R.string.extra_item_category)
-////                    intent.putExtra(itemNameExtra, itemName)
-////                    intent.putExtra(itemCategoryExtra, itemCategory)
-//
-//                    startActivity(intent)
-//                    // willl only work if item is definitely not null, or else, itemToEdit will be of type <Item?>
-//                } else {
-//                    //item is not found. display message:
-//                    withContext(Dispatchers.Main){
-//                        messageTextView.text = "Item not found in database"
-//                    }
-//                }
-//            }
+            //_____________works so far______________________________
+//            val itemNameExtra = getString(R.string.extra_item_name)
+//            val itemCategoryExtra = getString(R.string.extra_item_category)
+//            intent.putExtra(itemNameExtra, itemName)
+//            intent.putExtra(itemCategoryExtra, itemCategory)
+//            val activity = this as Activity2
+//            val intent = Intent(activity, EditItemActivity::class.java)
+//            startActivity(intent)
+
+            // ____________the block above works
+            CoroutineScope(Dispatchers.IO).launch {
+                val itemToEdit = itemDao.findItemByNameAndCategory(itemName, itemCategory)
+                if (itemToEdit != null) {
+                    //item is found, show edit dialog
+////                    val activity = this as Activity2
+////                    val intent = Intent(activity, EditItemActivity::class.java)
+////
+////
+//////                    val itemNameExtra = getString(R.string.extra_item_name)
+//////                    val itemCategoryExtra = getString(R.string.extra_item_category)
+//////                    intent.putExtra(itemNameExtra, itemName)
+//////                    intent.putExtra(itemCategoryExtra, itemCategory)
+////
+////                    startActivity(intent)
+////                    // willl only work if item is definitely not null, or else, itemToEdit will be of type <Item?>
+////                } else {
+////                    //item is not found. display message:
+////                    withContext(Dispatchers.Main){
+////                        messageTextView.text = "Item not found in database"
+////                    }
+                }
+            }
 
 
 
