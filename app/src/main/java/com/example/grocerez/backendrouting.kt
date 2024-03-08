@@ -1,10 +1,10 @@
 package com.example.grocerez
 
 // Address where remote nodeJS server is
-val routeAddr = "http://3.19.53.211:3000"
+//val routeAddr = "http://3.19.53.211:3000"
 
 // Address for local nodeJS server is
-//val routeAddr = "http://10.0.2.2:3000"
+val routeAddr = "http://10.0.2.2:3000"
 
 // "http://10.0.2.2:3000" for local
 // "http://localhost:3000/" will NOT work

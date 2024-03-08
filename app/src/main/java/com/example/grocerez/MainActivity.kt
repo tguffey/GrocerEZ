@@ -21,6 +21,14 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
+        // ESTABLISH SOCKET CONNECTION
+        SocketHandler.setSocket()
+        val mSocket = SocketHandler.getSocket()
+        mSocket.connect()
+        mSocket.emit("hello")
+        // ______________________________
+
         // Check if the user is already logged in (by checking SharedPreferences)
         val sharedPreferences = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
         val username = sharedPreferences.getString("username", null)
@@ -35,7 +43,15 @@ class MainActivity : AppCompatActivity() {
             return  // Finish the activity to prevent further execution
         }
 
-        // Inflate the binding after checking the user's login status
+//
+////        // ESTABLISH SOCKET CONNECTION
+////        SocketHandler.setSocket()
+//        // singleton object
+//        val mSocket = SocketHandler.getSocket()
+////        mSocket.connect()
+//        mSocket.emit("hellotest")
+////        // ______________________________
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
