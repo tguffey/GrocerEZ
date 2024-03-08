@@ -16,6 +16,7 @@ import com.example.grocerez.databinding.FragmentNewItemSheetBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.text.SimpleDateFormat
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
 import java.util.Calendar
 import java.util.Locale
@@ -38,6 +39,7 @@ class NewTaskSheet(var foodItem: FoodItem?) : BottomSheetDialogFragment() {
             binding.foodTitle.text = "Edit Item"
             val editable = Editable.Factory.getInstance()
             binding.name.text = editable.newEditable(foodItem!!.name)
+            binding.startingDate.text = "Date: ${foodItem!!.startingDate?.format(dateFormatter)}"
             binding.expirationDate.text = "Date: ${foodItem!!.expirationDate?.format(dateFormatter)}"
         } else {
             binding.foodTitle.text = "New Item"
@@ -57,9 +59,13 @@ class NewTaskSheet(var foodItem: FoodItem?) : BottomSheetDialogFragment() {
             saveAction()
         }
 
+        binding.btnShowStartDatePicker.setOnClickListener{
+            showStartDatePicker()
+        }
+
         // Set OnClickListener for datePickerButton
         binding.btnShowDatePicker.setOnClickListener {
-            showDatePicker()
+            showExpDatePicker()
         }
 
         // Set OnEditorActionListener for the TextInputEditText "name"
@@ -79,7 +85,25 @@ class NewTaskSheet(var foodItem: FoodItem?) : BottomSheetDialogFragment() {
         }
     }
 
-    private fun showDatePicker() {
+    private fun showStartDatePicker() {
+        val datePickerDialog = DatePickerDialog(
+            requireContext(), { datePicker, year: Int, monthOfYear: Int, dayOfMonth: Int ->
+                val selectedDate = Calendar.getInstance()
+                selectedDate.set(year, monthOfYear, dayOfMonth)
+                val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                val formattedDate = dateFormat.format(selectedDate.time)
+                binding.startingDate.text = "Date: $formattedDate"
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        )
+//        val colorInt: Int = Color.parseColor("#99D982")
+//        datePickerDialog.datePicker.setBackgroundColor(colorInt)
+        datePickerDialog.show()
+    }
+
+    private fun showExpDatePicker() {
         val datePickerDialog = DatePickerDialog(
             requireContext(), { datePicker, year: Int, monthOfYear: Int, dayOfMonth: Int ->
                 val selectedDate = Calendar.getInstance()
@@ -114,14 +138,15 @@ class NewTaskSheet(var foodItem: FoodItem?) : BottomSheetDialogFragment() {
 
     // Function to handle save action
     private fun saveAction() {
-        // Get name and expiration date from the input fields
         val name = binding.name.text.toString()
         val expirationDateText = binding.expirationDate.text.toString().replace("Date: ", "")
+        val startingDateText = binding.startingDate.text.toString().replace("Date: ", "")
+
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         val expirationDate = dateFormat.parse(expirationDateText)
+        val startingDate = dateFormat.parse(startingDateText)
 
-        // Convert expirationDate to LocalDate
-        val localDate = if (expirationDate != null) {
+        val expirationLocalDate = if (expirationDate != null) {
             Instant.ofEpochMilli(expirationDate.time)
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate()
@@ -129,42 +154,32 @@ class NewTaskSheet(var foodItem: FoodItem?) : BottomSheetDialogFragment() {
             null
         }
 
-        // Calculate the time difference in milliseconds
-        val currentTime = Calendar.getInstance().timeInMillis
-        val timeDifferenceMillis = expirationDate!!.time - currentTime
-
-        // Calculate the total time difference in milliseconds (for example, 30 days)
-        val totalDifferenceMillis: Long = 30L * 24 * 60 * 60 * 1000 // Assuming the expiration is 30 days from the current date
-
-        // Calculate the time difference in hours
-        val timeDifferenceHours = TimeUnit.MILLISECONDS.toHours(timeDifferenceMillis).toDouble()
-
-        // Calculate the total time difference in hours
-        val totalDifferenceHours = TimeUnit.MILLISECONDS.toHours(totalDifferenceMillis).toDouble()
-
-        // Calculate the percentage
-        val percentage = (timeDifferenceHours / totalDifferenceHours) * 100
-
-        // Set the percentage as the value
-        val value = percentage.toInt()
-
-        // Add or update the food item in the ViewModel
-        if (foodItem == null) {
-            val newFood = FoodItem(name, value, localDate, null)
-            itemViewModel.addFoodItem(newFood)
+        val startingLocalDate = if (startingDate != null) {
+            Instant.ofEpochMilli(startingDate.time)
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate()
         } else {
-            itemViewModel.updateFoodItem(foodItem!!.id, name, value, localDate)
+            null
         }
 
-        // Clear input fields
+        val value = foodItem?.calculateProgress(startingLocalDate, expirationLocalDate) ?: 0
+
+        if (foodItem == null) {
+            val newFood = FoodItem(name, expirationLocalDate, startingLocalDate)
+            itemViewModel.addFoodItem(newFood)
+        } else {
+            itemViewModel.updateFoodItem(foodItem!!.id, name, startingLocalDate, expirationLocalDate)
+        }
+
         binding.name.setText("")
         binding.expirationDate.text = "Date: "
+        binding.startingDate.text = "Date: "
 
-        // Dismiss the bottom sheet
         dismiss()
     }
-
-
 }
+
+
+
 
 

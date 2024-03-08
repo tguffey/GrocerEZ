@@ -20,11 +20,11 @@ class DashboardViewModel : ViewModel() {
         foodItems.postValue(list)
     }
 
-    fun updateFoodItem(id: UUID, name: String, prog: Int, expireDate: LocalDate?){
+    fun updateFoodItem(id: UUID, name: String, startingDate: LocalDate?, expireDate: LocalDate?){
         val list = foodItems.value
         val food = list!!.find{it.id == id}
         food!!.name = name
-        food.prog = prog
+        food.startingDate = startingDate
         food.expirationDate = expireDate
         foodItems.postValue(list)
     }
@@ -32,8 +32,8 @@ class DashboardViewModel : ViewModel() {
     fun setCompleted(foodItem: FoodItem){
         val list = foodItems.value
         val food = list!!.find { it.id == foodItem.id }!!
-        if(food.completedDate == null)
-            food.completedDate = LocalDate.now()
+        if(food.startingDate == null)
+            food.startingDate = LocalDate.now()
         foodItems.postValue(list)
     }
 
