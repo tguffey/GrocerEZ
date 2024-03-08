@@ -12,3 +12,4 @@ val routeAddr = "http://10.0.2.2:3000"
 // If you want to use your physical phone you could use your ip address plus :3000
 // This will allow your Android Emulator and physical device at your home to connect to the server
 
+// random comment
