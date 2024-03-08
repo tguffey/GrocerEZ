@@ -23,7 +23,7 @@ class WelcomeActivity : AppCompatActivity() {
             window.statusBarColor = Color.TRANSPARENT
         }
 
-        val loginButton = findViewById<AppCompatButton>(R.id.login_btn)
+        val loginButton = findViewById<AppCompatButton>(R.id.welcome_login_btn)
 
         // Set OnClickListener for the Login button
         loginButton.setOnClickListener {
