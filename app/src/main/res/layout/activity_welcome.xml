@@ -44,7 +44,7 @@
                 android:textSize = "20sp"/>
 
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/signup_btn"
+                android:id="@+id/welcome_signup_btn"
                 android:layout_width="300dp"
                 android:layout_height="50dp"
                 android:layout_marginTop="40dp"

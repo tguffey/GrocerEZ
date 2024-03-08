@@ -12,9 +12,11 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
+import android.text.method.PasswordTransformationMethod
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.Toast
 import com.example.grocerez.MainActivity
 import com.example.grocerez.databinding.ActivityLoginBinding
@@ -28,6 +30,7 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
 
 
         // Make the status bar transparent
@@ -130,6 +133,20 @@ class LoginActivity : AppCompatActivity() {
                 mSocket.emit("save_signup_info",username.getText().toString(), email.toString(), password.getText().toString())
             }
         }
+    }
+
+    private var isPasswordVisible = false
+    fun togglePasswordVisibility(view: View) {
+        val passwordEditText = findViewById<EditText>(R.id.login_pg_password_entry)
+        isPasswordVisible = !isPasswordVisible
+
+        passwordEditText.transformationMethod =
+            if (isPasswordVisible) null else PasswordTransformationMethod.getInstance()
+
+        val eyeButton = findViewById<ImageButton>(R.id.eyeButton)
+        eyeButton.setImageResource(
+            if (isPasswordVisible) R.drawable.eye_closed_green001 else R.drawable.eye_closed
+        )
     }
 
     private fun updateUiWithUser(model: LoggedInUserView) {

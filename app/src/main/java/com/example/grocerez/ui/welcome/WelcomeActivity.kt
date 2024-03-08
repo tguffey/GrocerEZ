@@ -9,6 +9,7 @@ import android.view.View
 import androidx.appcompat.widget.AppCompatButton
 import com.example.grocerez.R
 import com.example.grocerez.ui.login.LoginActivity
+import com.example.grocerez.ui.register.RegisterActivity
 
 class WelcomeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,11 +25,17 @@ class WelcomeActivity : AppCompatActivity() {
         }
 
         val loginButton = findViewById<AppCompatButton>(R.id.welcome_login_btn)
-
+        val registerButton = findViewById<AppCompatButton>(R.id.welcome_signup_btn)
         // Set OnClickListener for the Login button
         loginButton.setOnClickListener {
             // Launch LoginActivity when the button is clicked
             val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+        }
+        // Set OnClickListener for the Register button
+        registerButton.setOnClickListener {
+            // Launch LoginActivity when the button is clicked
+            val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
         }
     }
