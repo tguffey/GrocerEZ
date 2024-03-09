@@ -2,7 +2,7 @@ package com.example.grocerez.ui.recipes
 
 import java.util.UUID
 
-// Represents a food item with its properties
+// Represents a recipe item with its properties
 class RecipeItem(
     var name: String, // Name of the food item
     var description: String,

@@ -12,16 +12,20 @@ import com.example.grocerez.databinding.FragmentNewRecipeSheetBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 
+// BottomSheetDialogFragment for adding a new recipe
 class NewRecipeSheet (var recipeItem: RecipeItem?) : BottomSheetDialogFragment() {
 
-    private lateinit var binding: FragmentNewRecipeSheetBinding
-    private lateinit var recipeViewModel: RecipesViewModel
+    private lateinit var binding: FragmentNewRecipeSheetBinding // View binding for the layout
+    private lateinit var recipeViewModel: RecipesViewModel // ViewModel for managing recipe data
 
+    // Initialize the view and ViewModel when the view is created
     override fun onViewCreated(view: View, savedInstanceState: Bundle?){
         super.onViewCreated(view, savedInstanceState)
 
+        // Check if a recipe item is provided for editing
         if(recipeItem != null)
         {
+            // Set title and populate fields for editing
             binding.recipeTitle.text = "Edit Recipe"
             val editable = Editable.Factory.getInstance()
             binding.name.text = editable.newEditable(recipeItem!!.name)
@@ -30,22 +34,27 @@ class NewRecipeSheet (var recipeItem: RecipeItem?) : BottomSheetDialogFragment()
             binding.notes.text = editable.newEditable(recipeItem!!.note)
         }
         else{
+            // Set title for creating a new recipe
             binding.recipeTitle.text = "New Recipe"
         }
 
+        // Initialize ViewModel
         val activity = requireActivity()
         recipeViewModel = ViewModelProvider(activity)[RecipesViewModel::class.java]
 
+        // Set OnClickListener for save button
         binding.saveButton.setOnClickListener{
             saveAction()
         }
 
+        // Set OnClickListener for cancel button
         binding.cancelButton.setOnClickListener{
             clearFields()
         }
 
     }
 
+    // Clear all input fields
     private fun clearFields() {
         binding.name.setText("")
         binding.description.setText("")
@@ -54,12 +63,14 @@ class NewRecipeSheet (var recipeItem: RecipeItem?) : BottomSheetDialogFragment()
         dismiss()
     }
 
+    // Save action to add or update a recipe item
     private fun saveAction() {
         val name = binding.name.text.toString()
         val description = binding.description.text.toString()
         val ingredients = binding.ingredients.text.toString()
         val notes = binding.notes.text.toString()
 
+        // Add or update the recipe item based on the provided recipeItem
         if (recipeItem == null){
             val newRecipe = RecipeItem(name, description, ingredients, notes)
             recipeViewModel.addRecipeItem(newRecipe)
@@ -68,6 +79,7 @@ class NewRecipeSheet (var recipeItem: RecipeItem?) : BottomSheetDialogFragment()
             recipeViewModel.updateRecipeItem(recipeItem!!.id, name, description, ingredients, notes)
         }
 
+        // Clear all input fields
         binding.name.setText("")
         binding.description.setText("")
         binding.ingredients.setText("")
@@ -75,6 +87,7 @@ class NewRecipeSheet (var recipeItem: RecipeItem?) : BottomSheetDialogFragment()
         dismiss()
     }
 
+    // Inflate the layout for this fragment and initialize view binding
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

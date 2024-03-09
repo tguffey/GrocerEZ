@@ -14,10 +14,16 @@ import com.example.grocerez.R
 import com.example.grocerez.databinding.FragmentRecipesBinding
 import com.example.grocerez.ui.recipes.NewRecipeSheet
 
+// Fragment for displaying and managing recipes
 class RecipesFragment : Fragment(), RecipeItemClickListener {
 
+    // View binding instance
     private var _binding : FragmentRecipesBinding? = null
+
+    // ViewModel for managing recipes
     private lateinit var recipesViewModel: RecipesViewModel
+
+    // Flag to track whether the edit options are expanded or not
     private var isExpanded = false
 
     // Animation variables
@@ -26,8 +32,7 @@ class RecipesFragment : Fragment(), RecipeItemClickListener {
     private lateinit var fromBottomBg: Animation
     private lateinit var toBottomBg: Animation
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
+    // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
 
     // Create the UI view
@@ -38,19 +43,24 @@ class RecipesFragment : Fragment(), RecipeItemClickListener {
     ): View {
         super.onCreateView(inflater, container, savedInstanceState)
 
+        // Initialize ViewModel
         recipesViewModel = ViewModelProvider(this.requireActivity())[RecipesViewModel::class.java]
 
+        // Inflate the layout for this fragment using view binding
         _binding = FragmentRecipesBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
+        // Load animations
         val context = requireContext()
         fabOpen = AnimationUtils.loadAnimation(context, R.anim.from_bottom_fab)
         fabClose = AnimationUtils.loadAnimation(context, R.anim.to_bottom_fab)
         fromBottomBg = AnimationUtils.loadAnimation(context, R.anim.from_bottom_anim)
         toBottomBg = AnimationUtils.loadAnimation(context, R.anim.to_bottom_anim)
 
+        // Set up RecyclerView
         setRecyclerView()
-        // Determine whether to open or close edit options when the edit button is clicked
+
+        // Set OnClickListener for editItemFab
         binding.editItemFab.setOnClickListener {
             if (isExpanded) {
                 // Close the edit options if the options are expanded
@@ -60,9 +70,10 @@ class RecipesFragment : Fragment(), RecipeItemClickListener {
                 expandFab()
             }
         }
-        // Make a new sheet when the Add Item button is pressed
+
+        // Set OnClickListener for addItemFab
         binding.addItemFab.setOnClickListener {
-            // Show New Grocery Item bottom dialog
+            // Show New Recipe bottom dialog
             NewRecipeSheet(null).show(parentFragmentManager, "newRecipeTag")
             shrinkFab()
         }
@@ -88,7 +99,6 @@ class RecipesFragment : Fragment(), RecipeItemClickListener {
 
     // Open the edit option buttons
     private fun expandFab() {
-
         binding.transparentBg.startAnimation(fromBottomBg)
         binding.clearListFab.startAnimation(fabOpen)
         binding.addItemFab.startAnimation(fabOpen)
@@ -97,6 +107,7 @@ class RecipesFragment : Fragment(), RecipeItemClickListener {
         isExpanded = !isExpanded
     }
 
+    // Set up the RecyclerView with adapter and observer
     private fun setRecyclerView(){
         val recipeItemAdapter = RecipeItemAdapter(mutableListOf(), this)
 
@@ -105,14 +116,15 @@ class RecipesFragment : Fragment(), RecipeItemClickListener {
             adapter = recipeItemAdapter
         }
 
+        // Observe changes in recipe items and update the RecyclerView
         recipesViewModel.recipeItems.observe(viewLifecycleOwner) {newRecipeItems ->
             val recipeItemList: List<RecipeItem> = newRecipeItems.orEmpty()
             recipeItemAdapter.updateRecipeItems(recipeItemList)
-
             recipeItemAdapter.notifyDataSetChanged()
         }
     }
 
+    // Handle the edit action for a recipe item
     override fun editRecipeItem(recipeItem: RecipeItem) {
         NewRecipeSheet(recipeItem).show(parentFragmentManager, "newRecipeTag")
     }

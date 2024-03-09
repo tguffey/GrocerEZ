@@ -36,11 +36,4 @@ class DashboardViewModel : ViewModel() {
             food.startingDate = LocalDate.now()
         foodItems.postValue(list)
     }
-
-
-
-    // Live data for item name and value for progress bar
-//    var name = MutableLiveData<String>()
-//    var value = MutableLiveData<Int>()
-
 }
