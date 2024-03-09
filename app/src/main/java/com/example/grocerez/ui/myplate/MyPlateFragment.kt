@@ -1,5 +1,8 @@
 package com.example.grocerez.ui.myplate
 
+import android.content.res.Configuration
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -28,16 +31,24 @@ class MyPlateFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        // Make the status bar transparent
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            val window = activity?.window
+            window?.decorView?.systemUiVisibility =
+                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            window?.statusBarColor = Color.TRANSPARENT
+        }
+
         val notificationsViewModel =
             ViewModelProvider(this).get(MyPlateViewModel::class.java)
 
         _binding = FragmentMyplateBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView: TextView = binding.textNotifications
-        notificationsViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }
+        //val textView: TextView = binding.textNotifications
+//        notificationsViewModel.text.observe(viewLifecycleOwner) {
+//            textView.text = it
+//        }
 
         anyChartView = root.findViewById(R.id.anyChartView)
         setupChartView()
@@ -51,9 +62,19 @@ class MyPlateFragment : Fragment() {
     }
 
     private fun setupChartView() {
+        // I added a condition to check if the user is in dark or light mode
+        val isDarkMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
         val pie = AnyChart.pie()
+         //Use the appropriate background color
+        //val backgroundColor = if (isDarkMode) "#333333" /* Dark grey color */ else "#FFFFFF" /* White color */
+        if (isDarkMode){
+            pie.background().fill("#333333")
+        }else{
+            pie.background().fill("#FFFFFF")
+        }
+        var background = pie.background();
         val category = arrayOf("Grains", "Protein", "Vegetables", "Fruits")
-        val amount = floatArrayOf(2.5F, 5F, 5F, 1.5F)
+        val amount = floatArrayOf(0.28F, 0.22F, 0.28F, 0.22F)
 
         val dataEntries: MutableList<DataEntry> = ArrayList()
 
@@ -62,9 +83,10 @@ class MyPlateFragment : Fragment() {
         }
 
         pie.data(dataEntries)
-        pie.stroke("10px #F1F1F1")
+        //pie.background().fill("#72A0C1")
+        pie.stroke("6px #F1F1F1")
         pie.title("My Plate")
-        pie.padding(0, 8, 0, 0)
+        pie.padding(0, 0, 0, 0)
         anyChartView.setChart(pie)
     }
 }

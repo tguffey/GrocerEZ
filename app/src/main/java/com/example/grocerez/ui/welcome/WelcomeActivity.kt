@@ -38,5 +38,13 @@ class WelcomeActivity : AppCompatActivity() {
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
         }
+
+    }
+    // Override the onBackPressed method to control the back button behavior
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        // Do nothing or show a message indicating that the user is logged out
+        // Optionally, you can finish the activity to prevent going back to it
+        super.onBackPressed()
     }
 }

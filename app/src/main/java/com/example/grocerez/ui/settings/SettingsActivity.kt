@@ -42,6 +42,7 @@ class SettingsActivity : AppCompatActivity() {
 
         // Optionally, you can navigate back to the login screen or perform any other logout-related actions
         val intent = Intent(this, WelcomeActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish() // Finish the SettingsActivity to prevent going back to it with the back button
     }
