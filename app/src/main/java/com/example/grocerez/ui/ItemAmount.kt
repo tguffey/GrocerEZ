@@ -32,5 +32,10 @@ enum class Unit (val symbol: String) {
     GRAM("g"),
     KILOGRAM("kg"),
     POUND("lb"),
-    COUNT("count")
+    COUNT("count");
+
+    // Look up enum value by symbol
+    companion object {
+        fun getBySymbol(symb: String) = entries.firstOrNull { it.symbol == symb }
+    }
 }

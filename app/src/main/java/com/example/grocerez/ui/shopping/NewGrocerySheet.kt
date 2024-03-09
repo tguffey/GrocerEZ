@@ -121,13 +121,19 @@ class NewGrocerySheet(var groceryItem: GroceryItem?) : BottomSheetDialogFragment
     private fun saveAction() {
         val name = binding.name.text.toString()
         val category = binding.category.text.toString()
-        val quantity = ItemAmount(binding.quantity.text.toString().toFloat(),
-            Unit.valueOf(selectedUnit.uppercase()))
+        val quantity =
+            Unit.getBySymbol(selectedUnit)?.let {
+                ItemAmount(binding.quantity.text.toString().toFloat(),
+                    it
+                )
+            }
         val note = binding.Note.text.toString()
         if (groceryItem == null)
         {
-            val newGrocery = GroceryItem(name, category, quantity, note)
-            itemViewModel.addGroceryItem(newGrocery)
+            val newGrocery = quantity?.let { GroceryItem(name, category, it, note) }
+            if (newGrocery != null) {
+                itemViewModel.addGroceryItem(newGrocery)
+            }
         }
 
         // Clear input fields and dismiss the sheet
