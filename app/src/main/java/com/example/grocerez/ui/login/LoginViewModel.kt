@@ -1,5 +1,6 @@
 package com.example.grocerez.ui.login
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -21,11 +22,20 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
         // can be launched in a separate asynchronous job
         val result = loginRepository.login(username, password)
 
-        if (result is Result.Success) {
-            _loginResult.value =
-                LoginResult(success = LoggedInUserView(displayName = result.data.displayName))
-        } else {
-            _loginResult.value = LoginResult(error = R.string.login_failed)
+        when (result) {
+            is Result.Success -> {
+                // Include username and password in LoggedInUserView
+                _loginResult.value = LoginResult(
+                    success = LoggedInUserView(
+                        displayName = result.data.displayName,
+                        username = username,
+                        password = password
+                    )
+                )
+            }
+            is Result.Error -> {
+                _loginResult.value = LoginResult(error = R.string.login_failed)
+            }
         }
     }
 
@@ -52,4 +62,5 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
     private fun isPasswordValid(password: String): Boolean {
         return password.length > 5
     }
+
 }
