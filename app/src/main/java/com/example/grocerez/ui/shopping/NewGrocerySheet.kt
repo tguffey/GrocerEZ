@@ -130,7 +130,7 @@ class NewGrocerySheet(var groceryItem: GroceryItem?) : BottomSheetDialogFragment
         val note = binding.Note.text.toString()
         if (groceryItem == null)
         {
-            val newGrocery = quantity?.let { GroceryItem(name, category, it, note) }
+            val newGrocery = quantity?.let { GroceryItem(name, category, it, note, false) }
             if (newGrocery != null) {
                 itemViewModel.addGroceryItem(newGrocery)
             }

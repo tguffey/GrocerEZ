@@ -25,10 +25,12 @@ class GroceryItemAdapter(
                 if (binding.name.getCurrentTextColor() == Color.BLACK) {
                     binding.name.setTextColor(Color.GRAY)
                     binding.name.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
+                    groceryItem.isChecked = true
                 }
                 else {
                     binding.name.setTextColor(Color.BLACK)
                     binding.name.paintFlags = 0
+                    groceryItem.isChecked = false
                 }
             }
         }
@@ -43,10 +45,6 @@ class GroceryItemAdapter(
         return GroceryItemViewHolder(parent.context, binding)
     }
 
-    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
-        super.onDetachedFromRecyclerView(recyclerView)
-    }
-
     // Called by RecyclerView to display the data at the specified position
     override fun onBindViewHolder(holder: GroceryItemViewHolder, position: Int) {
         holder.bindGroceryItem(groceryItems[position])
@@ -54,9 +52,4 @@ class GroceryItemAdapter(
 
     // Returns the total number of items in shopping list
     override fun getItemCount(): Int = groceryItems.size
-
-    fun removeItem(grocery: GroceryItem) {
-        groceryItems.remove(grocery)
-        notifyDataSetChanged()
-    }
 }

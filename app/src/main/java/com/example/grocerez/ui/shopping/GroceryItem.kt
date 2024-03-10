@@ -8,5 +8,6 @@ class GroceryItem (
     var category: String,
     var quantity: ItemAmount,
     var note: String,
+    var isChecked: Boolean,
     var id: UUID = UUID.randomUUID()
 )

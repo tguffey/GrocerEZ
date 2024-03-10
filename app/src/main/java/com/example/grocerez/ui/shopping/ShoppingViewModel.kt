@@ -23,4 +23,26 @@ class ShoppingViewModel : ViewModel(){
         list!!.add(newGrocery)
         groceryItems.postValue(list)
     }
+
+    fun removeCheckedItems() {
+        val list = groceryItems.value
+        val iterator = list!!.iterator()
+        while(iterator.hasNext()) {
+            val item = iterator.next()
+            if(item.isChecked){
+                iterator.remove()
+            }
+        }
+        groceryItems.postValue(list)
+    }
+
+    fun anyChecked() : Boolean {
+        val list = groceryItems.value
+        list!!.forEach { it ->
+            if (it.isChecked) {
+                return true
+            }
+        }
+        return false
+    }
 }
