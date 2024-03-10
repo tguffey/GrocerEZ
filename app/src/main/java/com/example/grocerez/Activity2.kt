@@ -88,22 +88,27 @@ class Activity2 : AppCompatActivity() {
                 val itemToEdit = itemDao.findItemByNameAndCategory(itemName, itemCategory)
                 if (itemToEdit != null) {
                     //item is found, show edit dialog
-////                    val activity = this as Activity2
-////                    val intent = Intent(activity, EditItemActivity::class.java)
-////
-////
-//////                    val itemNameExtra = getString(R.string.extra_item_name)
-//////                    val itemCategoryExtra = getString(R.string.extra_item_category)
-//////                    intent.putExtra(itemNameExtra, itemName)
-//////                    intent.putExtra(itemCategoryExtra, itemCategory)
-////
-////                    startActivity(intent)
-////                    // willl only work if item is definitely not null, or else, itemToEdit will be of type <Item?>
-////                } else {
-////                    //item is not found. display message:
-////                    withContext(Dispatchers.Main){
-////                        messageTextView.text = "Item not found in database"
-////                    }
+                    // this code currently works
+                    val intent = Intent(this@Activity2, EditItemActivity::class.java)
+
+                    // get the strings from resources, under res/values/strings
+                    //<string name="extra_item_name">EXTRA_ITEM_NAME</string>
+                    //<string name="extra_item_category">EXTRA_ITEM_CATEGORY</string>
+                    val itemNameExtra = getString(R.string.extra_item_name)
+                    val itemCategoryExtra = getString(R.string.extra_item_category)
+
+                    // pass the strings into the next page, as key value pairs (?)
+                    intent.putExtra(itemNameExtra, itemToEdit.name)
+                    intent.putExtra(itemCategoryExtra, itemToEdit.category)
+                    intent.putExtra("item_id", itemToEdit.id)
+//
+                    startActivity(intent)
+//                    // willl only work if item is definitely not null, or else, itemToEdit will be of type <Item?>
+                } else {
+//                    //item is not found. display message:
+                    withContext(Dispatchers.Main){
+                        messageTextView.text = "Item not found in database"
+                    }
                 }
             }
 
