@@ -31,7 +31,7 @@ class MyPlateFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Make the status bar transparent
+        // Make the status bar transparent-jocelyn
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             val window = activity?.window
             window?.decorView?.systemUiVisibility =
@@ -61,6 +61,7 @@ class MyPlateFragment : Fragment() {
         _binding = null
     }
 
+    //-jocelyn set up the chart with logic
     private fun setupChartView() {
         // I added a condition to check if the user is in dark or light mode
         val isDarkMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
