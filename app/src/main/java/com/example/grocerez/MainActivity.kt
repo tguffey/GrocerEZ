@@ -57,6 +57,7 @@ class MainActivity : AppCompatActivity() {
         val postTestBtn = findViewById<Button>(R.id.postTestBtn)
         val sqlSelectAllButton = findViewById<Button>(R.id.sqlSelectAllBtn)
         val scrapeIngredientsBtn = findViewById<Button>(R.id.scrapeIngredientsBtn)
+        val nutrientTestBtn = findViewById<Button>(R.id.nutrientTestBtn)
 
         // Setup button listeners
         counterBtn.setOnClickListener { mSocket.emit("counter") }
@@ -66,6 +67,12 @@ class MainActivity : AppCompatActivity() {
         scrapeIngredientsBtn.setOnClickListener {
             val url = "https://www.budgetbytes.com/homemade-meatballs/"
             mSocket.emit("get-ingredients", url)
+        }
+        nutrientTestBtn.setOnClickListener {
+            val foodName = "Chicken"
+            val quantity = 1
+            val unit = "pound"
+            mSocket.emit("get-nutritional-data", foodName, quantity, unit)
         }
 
         // Setup socket event listeners
@@ -114,6 +121,15 @@ class MainActivity : AppCompatActivity() {
                     countTextView.text = "Error parsing ingredients"
                 }
             }
+        }
+
+        // Socket function for grabbing nutritional data
+        mSocket.on("nutritional-data-result") { args ->
+            runOnUiThread {
+                val nutritionalOutput = args[0] as? String ?: "MainActivity.kt String Error"
+                countTextView.text = nutritionalOutput
+            }
+
         }
 
     }
