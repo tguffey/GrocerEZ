@@ -42,7 +42,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="580dp"
-        android:hint="New Name (optional)"
+        android:hint="New Name (required)"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:layout_editor_absoluteX="16dp" />
 
@@ -51,7 +51,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="456dp"
-        android:hint="New Category (optional)"
+        android:hint="New Category (required)"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:layout_editor_absoluteX="-21dp" />
 
