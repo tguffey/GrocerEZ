@@ -13,6 +13,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.grocerez.R
 import com.example.grocerez.databinding.FragmentShoppingBinding
 
@@ -70,15 +71,15 @@ class ShoppingFragment : Fragment() {
         // Make a new sheet when the Add Item button is pressed
         binding.addItemFab.setOnClickListener {
             // Show New Grocery Item bottom dialog
-            NewGrocerySheet(null).show(parentFragmentManager, "newItemTag")
+            NewGrocerySheet(null, null).show(parentFragmentManager, "newItemTag")
             binding.textShopping.visibility = View.INVISIBLE
             shrinkFab()
         }
         // Ask if the user wants to clear the selected items
         binding.clearListFab.setOnClickListener{
-            val numItems = shoppingViewModel.groceryItems.value!!.size
+            val numItems = shoppingViewModel.categoryItems.value!!.size
             // Show Clear List dialog if there are checked off items
-            if ((numItems > 0) && (shoppingViewModel.anyChecked())){
+            if ((numItems > 0) /*&& (shoppingViewModel.anyChecked())*/){
                 buildClearItemDialog()
             }
             else {
@@ -122,18 +123,34 @@ class ShoppingFragment : Fragment() {
 
     // Sets up the RecyclerView to display the list of grocery items
     private fun setRecyclerView() {
-        // Observe changes in the list of food item in the ViewModel
-        shoppingViewModel.groceryItems.observe(viewLifecycleOwner){
-            // Apply any changes to the RecyclerView
-            binding.groceryListRecyclerView.apply {
+        // Observe changes in the list of category items in the ViewModel
+        shoppingViewModel.categoryItems.observe(viewLifecycleOwner){
+            // Apply any changes to the category RecyclerView
+            binding.categoryListRecyclerView.apply {
                 // Set the layout manager
                 layoutManager = LinearLayoutManager(requireContext())
-                // Set the adapter for the RecyclerView
-                // If the list of food items is not null, create an adapter for the list
-                // and set it to the RecyclerView
+                // Set the adapter for the category RecyclerView
+                // If the list of categories is not null, create an adapter for the list
+                // and set it to the category RecyclerView
                 if (it != null) {
-                    adapter = GroceryItemAdapter(it)
+                    adapter = CategoryItemAdapter(it)
 
+                }
+            }
+        }
+
+        // Observe changes in the list of grocery items in the ViewModel
+        shoppingViewModel.groceryItems.observe(viewLifecycleOwner){
+            // Apply any changes to the item RecyclerView
+            val groceryRecyclerView = view?.findViewById<RecyclerView>(R.id.groceryListRecyclerView)
+            groceryRecyclerView?.apply {
+                // Set the layout manager
+                groceryRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+                // Set the adapter for the grocery RecyclerView
+                // If the list of grocery is not null, create an adapter for the list
+                // and set it to the grocery RecyclerView
+                if (it != null) {
+                    groceryRecyclerView.adapter = GroceryItemAdapter(it)
                 }
             }
         }

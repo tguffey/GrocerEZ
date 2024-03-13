@@ -5,7 +5,6 @@ import java.util.UUID
 
 class GroceryItem (
     var name: String,
-    var category: String,
     var quantity: ItemAmount,
     var note: String,
     var isChecked: Boolean,

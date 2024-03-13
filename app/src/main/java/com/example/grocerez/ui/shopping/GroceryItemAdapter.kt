@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.grocerez.databinding.GroceryItemCellBinding
 
 class GroceryItemAdapter(
-    private var groceryItems: MutableList<GroceryItem> // List of grocery items to display
+    private var groceryItems: List<GroceryItem> // List of grocery items to display
 ) : RecyclerView.Adapter<GroceryItemAdapter.GroceryItemViewHolder>() {
 
     inner class GroceryItemViewHolder(
@@ -19,7 +19,6 @@ class GroceryItemAdapter(
 
         fun bindGroceryItem(groceryItem: GroceryItem){
             binding.name.text = groceryItem.name
-            binding.category.text = groceryItem.category
 
             binding.checkbox.setOnClickListener {
                 if (binding.name.getCurrentTextColor() == Color.BLACK) {

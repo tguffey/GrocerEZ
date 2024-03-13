@@ -29,6 +29,7 @@ class ItemAmount (private val value: Float, private val unit: Unit) {
 }
 
 enum class Unit (val symbol: String) {
+    NONE(""),
     GRAM("g"),
     KILOGRAM("kg"),
     POUND("lb"),
