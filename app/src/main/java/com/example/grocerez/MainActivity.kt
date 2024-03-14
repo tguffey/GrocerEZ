@@ -126,11 +126,34 @@ class MainActivity : AppCompatActivity() {
         // Socket function for grabbing nutritional data
         mSocket.on("nutritional-data-result") { args ->
             runOnUiThread {
-                val nutritionalOutput = args[0] as? String ?: "MainActivity.kt String Error"
-                countTextView.text = nutritionalOutput
-            }
+                try {
+                    val nutritionalJson = args[0]?.toString() ?: return@runOnUiThread
+                    val jsonObject = JSONObject(nutritionalJson)
 
+                    val description = jsonObject.getString("description")
+                    val myPlateCategory = jsonObject.getString("myPlateCategory")
+                    val nutrients = jsonObject.getJSONObject("nutrients")
+                    val nutritionalOutput = StringBuilder()
+                    nutritionalOutput.append("$description\nMyPlate Category: $myPlateCategory\n")
+
+                    // Iterate over the keys of the nutrients JSONObject
+                    val keysIterator = nutrients.keys()
+                    while (keysIterator.hasNext()) {
+                        val key = keysIterator.next() as String // Explicitly cast key to String
+                        val value = nutrients.getString(key) // Now safe to use getString with key
+                        nutritionalOutput.append("$key: $value\n")
+                    }
+
+                    countTextView.text = nutritionalOutput.toString()
+
+                } catch (e: JSONException) {
+                    e.printStackTrace()
+                    countTextView.text = "Error parsing nutritional data"
+                }
+            }
         }
+
+
 
     }
 }
