@@ -1,60 +1,97 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
-    android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginBottom="56dp"
-    tools:context=".ui.dashboard.DashboardFragment">
+    android:layout_height="match_parent">
 
+    <!--RecyclerView-->
+
+    <!--Transparent Background-->
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/foodListRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/foodListRecyclerView"
-        android:backgroundTint="@color/design_default_color_background"
-        />
-    
-<!--    <LinearLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:orientation="vertical">-->
+        android:backgroundTint="@color/design_default_color_background" />
 
-<!--        <TextView-->
-<!--            android:id="@+id/itemName"-->
-<!--            style="@style/TextAppearance.AppCompat.Title"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_gravity="center"-->
-<!--            android:layout_margin="20dp"-->
-<!--            android:text="Item Name:" />-->
+    <View
+        android:id="@+id/transparentBg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#66000000"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5"/>
 
-<!--        <ProgressBar-->
-<!--            android:id="@+id/itemProgressBar"-->
-<!--            style="?android:attr/progressBarStyleHorizontal"-->
-<!--            android:layout_width="250dp"-->
-<!--            android:layout_height="15dp"-->
-<!--            android:layout_gravity="center"-->
-<!--            android:progressDrawable="@drawable/custom_progress_bg"-->
-<!--            android:max="100"-->
-<!--            />-->
-
-<!--    </LinearLayout>-->
-
-
+    <!--Edit Item Button-->
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/newItemButton"
+        android:id="@+id/edit_item_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Item"
-        android:textColor="#FFFFFF"
-        android:backgroundTint="?attr/colorPrimary"
-        android:padding="5dp"
-        android:layout_margin="20dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        app:icon="@drawable/baseline_add_24"
-        app:iconTint="?colorOnPrimary"
-        />
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:contentDescription="@string/button_edit_item"
+        android:padding="5dp"
+        app:backgroundTint="?attr/colorPrimary"
+        app:icon="@drawable/ic_add_24"
+        app:iconTint="@color/white" />
+
+    <!--Edit Item option 1: Clear List button-->
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/add_category_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/edit_item_fab"
+        android:layout_alignParentEnd="true"
+        android:padding="5dp"
+        android:contentDescription="@string/button_add_category"
+        android:text="@string/button_clear_list"
+        android:textColor="?colorOnPrimary"
+        android:visibility="invisible"
+        app:backgroundTint="?attr/colorPrimary"
+        app:icon="@drawable/ic_check_24"
+        app:iconTint="@color/white" />
+
+    <!--Edit Item option 2: Add Item button-->
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/add_item_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:layout_alignParentEnd="true"
+        android:padding="5dp"
+        android:layout_above="@id/add_category_fab"
+        android:contentDescription="@string/button_add_item"
+        android:text="@string/button_add_item"
+        android:textSize="16sp"
+        android:textColor="?colorOnPrimary"
+        android:visibility="invisible"
+        app:backgroundTint="?attr/colorPrimary"
+        app:icon="@drawable/ic_add_24"
+        app:iconTint="@color/white" />
+
+    <!--Edit Item option 3: Scan Barcode-->
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/scan_barcode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:layout_alignParentEnd="true"
+        android:padding="15dp"
+        android:layout_above="@id/add_item_fab"
+        android:contentDescription="@string/button_scan_barcode"
+        android:text="@string/button_scan_barcode"
+        android:textColor="?colorOnPrimary"
+        android:textSize="16sp"
+        android:visibility="invisible"
+        app:icon="@drawable/icons8_barcode_scanner_50"
+        app:backgroundTint="?attr/colorPrimary"
+        app:iconTint="@color/white" />
+
 </RelativeLayout>

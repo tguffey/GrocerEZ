@@ -7,8 +7,10 @@ import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.grocerez.R
 import com.example.grocerez.databinding.FragmentShoppingBinding
 
@@ -35,7 +37,7 @@ class ShoppingFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        shoppingViewModel = ViewModelProvider(this).get(ShoppingViewModel::class.java)
+        shoppingViewModel = ViewModelProvider(this.requireActivity()).get(ShoppingViewModel::class.java)
 
         _binding = FragmentShoppingBinding.inflate(inflater, container, false)
         val root: View = binding.root
@@ -66,8 +68,20 @@ class ShoppingFragment : Fragment() {
         // Make a new sheet when the Add Item button is pressed
         binding.addItemFab.setOnClickListener {
             // Show New Grocery Item bottom dialog
-            NewGrocerySheet().show(parentFragmentManager, "newItemTag")
+            NewGrocerySheet(null).show(parentFragmentManager, "newItemTag")
+            binding.textShopping.visibility = View.INVISIBLE
+            shrinkFab()
         }
+        // Ask if the user wants to clear the selected items
+        binding.clearListFab.setOnClickListener{
+            val numItems = shoppingViewModel.groceryItems.value!!.size
+            // Show Clear List dialog if there are items on the list
+            if (numItems == 0) {
+                notifyNone()
+            }
+            shrinkFab()
+        }
+        setRecyclerView()
 
         return root
     }
@@ -99,6 +113,33 @@ class ShoppingFragment : Fragment() {
 
         // Toggle isExpanded
         isExpanded = !isExpanded
+    }
+
+    // Sets up the RecyclerView to display the list of grocery items
+    private fun setRecyclerView() {
+        // Observe changes in the list of food item in the ViewModel
+        shoppingViewModel.groceryItems.observe(viewLifecycleOwner){
+            // Apply any changes to the RecyclerView
+            binding.groceryListRecyclerView.apply {
+                // Set the layout manager
+                layoutManager = LinearLayoutManager(requireContext())
+                // Set the adapter for the RecyclerView
+                // If the list of food items is not null, create an adapter for the list
+                // and set it to the RecyclerView
+                if (it != null) {
+                    adapter = GroceryItemAdapter(it)
+
+                }
+            }
+        }
+    }
+
+    // Tells the user that there are no grocery items in the list
+    private fun notifyNone() {
+        Toast.makeText(
+            context, "There are no items to remove",
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
 }

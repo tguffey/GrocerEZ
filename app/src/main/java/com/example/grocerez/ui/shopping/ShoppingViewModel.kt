@@ -10,4 +10,17 @@ class ShoppingViewModel : ViewModel(){
         value = "Your shopping list is empty"
     }
     val text: LiveData<String> = _text
+
+    var groceryItems = MutableLiveData<MutableList<GroceryItem>?>()
+
+    init {
+        groceryItems.value = mutableListOf()
+    }
+
+    // adds a new grocery item to the shopping list
+    fun addGroceryItem(newGrocery: GroceryItem) {
+        val list = groceryItems.value
+        list!!.add(newGrocery)
+        groceryItems.postValue(list)
+    }
 }
