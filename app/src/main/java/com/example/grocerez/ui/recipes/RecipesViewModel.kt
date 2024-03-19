@@ -24,14 +24,15 @@ class RecipesViewModel : ViewModel(){
     }
 
     // Function to update an existing recipe item
-    fun updateRecipeItem(id: UUID, name: String, description: String, ingredients: String, notes: String){
+    // Function to update an existing recipe item
+    fun updateRecipeItem(recipeItem: RecipeItem) {
         val list = recipeItems.value
-        val recipe = list!!.find{it.id == id}
-        recipe!!.name = name
-        recipe.description = description
-        recipe.ingredients = ingredients
-        recipe.note = notes
-        recipeItems.postValue(list)
+        val index = list!!.indexOfFirst { it.id == recipeItem.id }
+        if (index != -1) {
+            list[index] = recipeItem
+            recipeItems.postValue(list)
+        }
     }
+
 
 }
