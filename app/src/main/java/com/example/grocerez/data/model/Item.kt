@@ -26,6 +26,7 @@ import androidx.room.Index
     // TODO: what does indices do?
     indices = [
         //Index(value = ["name", "category"], unique = true) // Unique constraint, ensure that no combination is the same.
+        Index(value = ["name"], unique = true), // Ensure name is unique
         Index(value = ["category_name"]),
         Index(value = ["unit_name"])
     ]

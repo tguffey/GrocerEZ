@@ -3,7 +3,7 @@ package com.example.grocerez.data.model
 import androidx.room.Entity
 
 @Entity(tableName = "category",
-    primaryKeys = ["name"]
+    primaryKeys = ["name"] //declaring name is unique
 )
 data class Category(
     val name: String
