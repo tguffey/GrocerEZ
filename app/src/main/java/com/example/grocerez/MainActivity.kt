@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import com.example.grocerez.database.AppDatabase
 import com.example.grocerez.databinding.ActivityMainBinding
 import com.example.grocerez.ui.login.LoginActivity
 import com.example.grocerez.ui.welcome.WelcomeActivity
@@ -17,9 +18,15 @@ import com.example.grocerez.ui.welcome.WelcomeActivity
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var appDatabase: AppDatabase
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Thong: Initialize the AppDatabase instance. here goes nothing
+        appDatabase = AppDatabase.getInstance(applicationContext)
+        //WORKS!!!!!!! NO ERRORRR!!!!
 
 
         // ESTABLISH SOCKET CONNECTION
