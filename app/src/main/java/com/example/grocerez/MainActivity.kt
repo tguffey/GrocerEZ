@@ -39,6 +39,7 @@ class MainActivity : AppCompatActivity() {
         // Check if the user is already logged in (by checking SharedPreferences)
         val sharedPreferences = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
         val username = sharedPreferences.getString("username", null)
+        // TODO: sharedpreferences for email and password
 
         if (username != null) {
             // If username is logged in, do nothing
