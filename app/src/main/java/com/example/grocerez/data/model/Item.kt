@@ -5,7 +5,7 @@ import androidx.room.ColumnInfo
 import androidx.room.ForeignKey
 import androidx.room.Index
 
-
+// TODO: create dao objects in a new folder for these.
 // for fundamental testing of database, item will only have name and category
 @Entity(tableName = "items",
     // adding list of foreign keys, parent is what's in that table, child is on this
