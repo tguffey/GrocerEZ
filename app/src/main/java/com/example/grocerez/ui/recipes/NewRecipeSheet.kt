@@ -1,49 +1,48 @@
-package com.example.grocerez.ui.recipes
-
-import android.app.Dialog
 import android.os.Bundle
 import android.text.Editable
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.grocerez.databinding.FragmentNewRecipeSheetBinding
-import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.example.grocerez.ui.recipes.IngredentItemClickListener
+import com.example.grocerez.ui.recipes.IngredientItem
+import com.example.grocerez.ui.recipes.RecipeItem
+import com.example.grocerez.ui.recipes.RecipeIngredientAdapter
+import com.example.grocerez.ui.recipes.RecipesViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
 
-// BottomSheetDialogFragment for adding a new recipe
-class NewRecipeSheet (var recipeItem: RecipeItem?) : BottomSheetDialogFragment() {
+class NewRecipeSheet(var recipeItem: RecipeItem?) : BottomSheetDialogFragment(),  IngredentItemClickListener{
 
-    private lateinit var binding: FragmentNewRecipeSheetBinding // View binding for the layout
-    private lateinit var recipeViewModel: RecipesViewModel // ViewModel for managing recipe data
+    private var _binding: FragmentNewRecipeSheetBinding? = null
+    private val binding get() = _binding!!
+
+    private lateinit var recipeViewModel: RecipesViewModel
     private lateinit var ingredientItemAdapter: RecipeIngredientAdapter
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return BottomSheetDialog(requireContext(), theme)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentNewRecipeSheetBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    // Initialize the view and ViewModel when the view is created
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Initialize ViewModel
-        val activity = requireActivity()
-        recipeViewModel = ViewModelProvider(activity)[RecipesViewModel::class.java]
+        recipeViewModel = ViewModelProvider(requireActivity()).get(RecipesViewModel::class.java)
 
-        ingredientItemAdapter = RecipeIngredientAdapter(mutableListOf()) // Initialize the adapter here
+        ingredientItemAdapter = RecipeIngredientAdapter(mutableListOf(), this)
 
-        // Check if a recipe item is provided for editing
         if (recipeItem != null) {
             binding.recipeTitle.text = "Edit Recipe"
             val editable = Editable.Factory.getInstance()
             binding.name.text = editable.newEditable(recipeItem!!.name)
             binding.description.text = editable.newEditable(recipeItem!!.description)
-            // Populate the ingredientItemAdapter with existing ingredients
             recipeItem!!.ingredients.forEach { ingredient ->
                 ingredientItemAdapter.addIngredients(ingredient)
             }
@@ -52,35 +51,28 @@ class NewRecipeSheet (var recipeItem: RecipeItem?) : BottomSheetDialogFragment()
             binding.recipeTitle.text = "New Recipe"
         }
 
-        // Set OnClickListener for save button
-        binding.saveButton.setOnClickListener{
+        binding.saveButton.setOnClickListener {
             saveAction()
         }
 
-        // Set OnClickListener for cancel button
-        binding.cancelButton.setOnClickListener{
+        binding.cancelButton.setOnClickListener {
             clearFields()
+        }
+
+        binding.addIngredientButton.setOnClickListener {
+            showIngredientInputDialog()
         }
 
         binding.ingredientRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = ingredientItemAdapter
         }
-
-        // Set OnClickListener for add ingredient button
-        binding.addIngredientButton.setOnClickListener {
-            addIngredient()
-        }
     }
 
-
-    private fun addIngredient() {
-        val ingredientName = binding.ingredientName.text.toString()
-        if (ingredientName.isNotBlank()) {
-            val ingredientItem = IngredientItem(ingredientName)
-            ingredientItemAdapter.addIngredients(ingredientItem)
-            binding.ingredientName.text?.clear()
-        }
+    private fun showIngredientInputDialog() {
+        val dialog = IngredientInputDialog(null)
+        dialog.ingredientItemAdapter = ingredientItemAdapter
+        dialog.show(childFragmentManager, "newIngredientTag")
     }
 
     private fun saveAction() {
@@ -94,40 +86,33 @@ class NewRecipeSheet (var recipeItem: RecipeItem?) : BottomSheetDialogFragment()
             val newRecipe = RecipeItem(name, description, ingredients, notes)
             recipeViewModel.addRecipeItem(newRecipe)
         } else {
-            // Update the existing recipeItem with new values
             recipeItem!!.name = name
             recipeItem!!.description = description
             recipeItem!!.note = notes
-            // Clear existing ingredient items and replace with new ones
             recipeItem!!.ingredients.clear()
             recipeItem!!.ingredients.addAll(ingredients)
-            // Update the recipe item in the ViewModel
             recipeViewModel.updateRecipeItem(recipeItem!!)
         }
 
-        // Clear all input fields
-        binding.name.setText("")
-        binding.description.setText("")
-        binding.notes.setText("")
-        dismiss()
+        clearFields()
     }
 
-    // Clear all input fields
     private fun clearFields() {
         binding.name.setText("")
         binding.description.setText("")
-        binding.ingredientName.setText("")
         binding.notes.setText("")
         dismiss()
     }
 
-    // Inflate the layout for this fragment and initialize view binding
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ) : View {
-        binding = FragmentNewRecipeSheetBinding.inflate(inflater, container, false)
-        return binding.root
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    override fun editIngredientItem(ingredientItem: IngredientItem) {
+        // Open the dialog window to update the ingredient item
+        val dialog = IngredientInputDialog(ingredientItem)
+        dialog.ingredientItemAdapter = ingredientItemAdapter
+        dialog.show(childFragmentManager, "editIngredientTag")
     }
 }
