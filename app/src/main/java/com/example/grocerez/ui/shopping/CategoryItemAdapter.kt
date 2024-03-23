@@ -23,7 +23,7 @@ class CategoryItemAdapter(
 
             val layoutManager = LinearLayoutManager(
                 binding.groceryListRecyclerView.context,
-                LinearLayoutManager.HORIZONTAL,
+                LinearLayoutManager.VERTICAL,
                 false
             )
             layoutManager.initialPrefetchItemCount = categoryItem.groceryItems.size

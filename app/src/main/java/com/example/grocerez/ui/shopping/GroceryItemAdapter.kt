@@ -19,16 +19,26 @@ class GroceryItemAdapter(
 
         fun bindGroceryItem(groceryItem: GroceryItem){
             binding.name.text = groceryItem.name
+            binding.quantity.text = "Qty: " + groceryItem.quantity.toString()
+            binding.notes.text = groceryItem.note
 
             binding.checkbox.setOnClickListener {
                 if (binding.name.getCurrentTextColor() == Color.BLACK) {
                     binding.name.setTextColor(Color.GRAY)
                     binding.name.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
+                    binding.quantity.setTextColor(Color.GRAY)
+                    binding.quantity.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
+                    binding.notes.setTextColor(Color.GRAY)
+                    binding.notes.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
                     groceryItem.isChecked = true
                 }
                 else {
                     binding.name.setTextColor(Color.BLACK)
                     binding.name.paintFlags = 0
+                    binding.quantity.setTextColor(Color.BLACK)
+                    binding.quantity.paintFlags = 0
+                    binding.notes.setTextColor(Color.BLACK)
+                    binding.notes.paintFlags = 0
                     groceryItem.isChecked = false
                 }
             }
