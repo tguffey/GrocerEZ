@@ -17,6 +17,18 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".databaseActivities.NewItemActivity"
+            android:exported="false" />
+        <activity
+            android:name=".databaseActivities.NewCategoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".databaseActivities.NewUnitActivity"
+            android:exported="false" />
+        <activity
+            android:name=".databaseActivities.DatabaseActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.register.RegisterActivity"
             android:exported="false" />
         <activity

@@ -4,15 +4,15 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
-import android.widget.Toast
+import android.widget.Button
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.example.grocerez.database.AppDatabase
+import com.example.grocerez.databaseActivities.DatabaseActivity
 import com.example.grocerez.databinding.ActivityMainBinding
-import com.example.grocerez.ui.login.LoginActivity
 import com.example.grocerez.ui.welcome.WelcomeActivity
 
 class MainActivity : AppCompatActivity() {
@@ -87,6 +87,17 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_recipes, R.id.navigation_shopping
             )
         )
+
+        // THONG: im gonna createa a button to test out the funcitons of the database
+        val testDB_btn = findViewById<Button>(R.id.testDB_btn)
+
+        testDB_btn.setOnClickListener {
+            val intent = Intent(this, DatabaseActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
+
         // THIS IS JOCELYN Im deleting this to remove Action Bar bug
         // setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)

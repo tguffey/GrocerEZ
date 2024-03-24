@@ -55,6 +55,7 @@ dependencies {
 
     // socket connection dependency
     implementation ("io.socket:socket.io-client:2.0.0")
+    implementation("androidx.activity:activity:1.8.0")
 
     // add room dependencies
     val room_version = ("2.6.1")
