@@ -9,6 +9,10 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.lifecycle.ViewModelProvider
+import com.example.grocerez.dao.CategoryDao
+import com.example.grocerez.dao.ItemDao
+import com.example.grocerez.dao.UnitDao
+import com.example.grocerez.database.AppDatabase
 import com.example.grocerez.databinding.FragmentNewItemSheetBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
@@ -18,8 +22,23 @@ class NewTaskSheet(var foodItem: FoodItem?) : BottomSheetDialogFragment() {
     private lateinit var binding: FragmentNewItemSheetBinding
     private lateinit var itemViewModel: DashboardViewModel
 
+    // declaring all the things related to the database operations
+    private lateinit var categoryDao: CategoryDao
+    private lateinit var unitDao: UnitDao
+    private lateinit var itemDao: ItemDao
+    private lateinit var appDatabase: AppDatabase
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Initialize database and DAO objects
+//        appDatabase = AppDatabase.getInstance(context)
+        // Thong: I dont know how contexts work in this case
+
+//        categoryDao = appDatabase.categoryDao()
+//        unitDao = appDatabase.unitDao()
+//        itemDao = appDatabase.itemDao()
+
 
         if(foodItem != null)
         {
