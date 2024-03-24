@@ -55,8 +55,8 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
         val gson = Gson()
         // The following lines connects the Android app to the server.
-        SocketHandler.setSocket()
-        SocketHandler.establishConnection()
+        SocketHandler.getSocket()
+
         // Vals to connect xml object ID's
         val counterBtn = findViewById<Button>(R.id.counterBtn)
         val countTextView = findViewById<TextView>(R.id.countTextView)
