@@ -30,7 +30,7 @@ class RegisterStep1Fragment : Fragment() {
         confirmEditText.addTextChangedListener(textWatcher)
 
         val nextButton = view.findViewById<Button>(R.id.register_next_btn)
-        nextButton.isEnabled = false  // Initially disable the next button
+        nextButton.isEnabled = false  // Initially disable the next button until passwords match
 
         nextButton.setOnClickListener {
             // Check if the conditions are met before navigating to the next step
