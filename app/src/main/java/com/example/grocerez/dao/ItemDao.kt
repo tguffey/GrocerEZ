@@ -28,9 +28,11 @@ interface ItemDao {
     suspend fun insertItem(item: Item)
 
     @Delete
-    suspend fun deleteCategory(item: Item)
+    suspend fun deleteItem(item: Item)
     // Add other CRUD operations as needed
 
+    @Update
+    suspend fun updateItem(item: Item)
 
 
 }

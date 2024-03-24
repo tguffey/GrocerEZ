@@ -14,15 +14,15 @@ import com.example.grocerez.data.model.Unit
 @Dao
 interface UnitDao {
     @Query("SELECT * FROM unit")
-    suspend fun getAllCategories(): List<Unit>
+    suspend fun getAllUnits(): List<Unit>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertCategory(unit: Unit)
+    suspend fun insertUnit(unit: Unit)
 
     @Update
-    suspend fun updateCategory(unit: com.example.grocerez.data.model.Unit)
+    suspend fun updateUnit(unit: com.example.grocerez.data.model.Unit)
 
     @Delete
-    suspend fun deleteCategory(unit: Unit)
+    suspend fun deleteUnit(unit: Unit)
     // Add other CRUD operations as needed
 }

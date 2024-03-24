@@ -18,12 +18,12 @@ interface CategoryDao {
     suspend fun getAllCategories(): List<Category>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertUnit(category: Category)
+    suspend fun insertCategory(category: Category)
 
     @Update
-    suspend fun updateUnit(category: Category)
+    suspend fun updateCategory(category: Category)
 
     @Delete
-    suspend fun deleteUnit(category: Category)
+    suspend fun deleteCategory(category: Category)
     // Add other CRUD operations as needed
 }
