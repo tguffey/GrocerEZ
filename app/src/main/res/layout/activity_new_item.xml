@@ -7,15 +7,36 @@
     android:layout_height="match_parent"
     tools:context=".databaseActivities.NewItemActivity">
 
-    <TextView
-        android:id="@+id/feedbackTextbox"
-        android:layout_width="259dp"
-        android:layout_height="141dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="492dp"
-        android:text="TextView"
+    <!--    <TextView-->
+    <!--        android:id="@+id/feedbackTextBox"-->
+    <!--        android:layout_width="259dp"-->
+    <!--        android:layout_height="141dp"-->
+    <!--        android:layout_marginStart="24dp"-->
+    <!--        android:layout_marginTop="492dp"-->
+    <!--        android:text="TextView"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toTopOf="parent" />-->
+
+    <ScrollView
+        android:id="@+id/scrollViewItemList"
+        android:layout_width="339dp"
+        android:layout_height="253dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="416dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/feedbackTextBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:text="TextView"
+            android:textColor="@android:color/black" />
+
+    </ScrollView>
 
     <EditText
         android:id="@+id/inputItemName"
@@ -35,7 +56,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="196dp"
-        android:text="TextView"
+        android:text="Unit"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -50,7 +71,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/editTextNumberDecimal"
+        android:id="@+id/editTextUseRate"
         android:layout_width="363dp"
         android:layout_height="40dp"
         android:layout_marginStart="24dp"
@@ -59,6 +80,7 @@
         android:inputType="numberDecimal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
 
     <TextView
         android:id="@+id/itemNameLabel"
