@@ -22,9 +22,24 @@ class DatabaseActivity : AppCompatActivity() {
         }
 
 
-        val addNewUnit_btn = findViewById<Button>(R.id.addNewUnit)
-        addNewUnit_btn.setOnClickListener {
+        val addNewUnitBtn = findViewById<Button>(R.id.addNewUnit)
+        addNewUnitBtn.setOnClickListener {
             val intent = Intent(this, NewUnitActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
+
+        val addNewCategoryButton = findViewById<Button>(R.id.addNewCategory)
+        addNewCategoryButton.setOnClickListener {
+            val intent = Intent(this, NewCategoryActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
+        val addNewItemButton  = findViewById<Button>(R.id.addNewItem)
+        addNewItemButton.setOnClickListener {
+            val intent = Intent(this, NewItemActivity::class.java)
             startActivity(intent)
             finish()
         }
