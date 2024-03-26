@@ -104,12 +104,30 @@ class NewItemActivity : AppCompatActivity() {
 
             if (itemName.isNotBlank() && useRate >= 0) {
                 val newItem = Item(name = itemName, useRate = useRate, category = selectedCategoryName, unitName = selectedUnitName)
-                CoroutineScope(Dispatchers.IO).launch {
-                    itemDao.insertItem(newItem)
+//                CoroutineScope(Dispatchers.IO).launch {
+//                    itemDao.insertItem(newItem)
+//                }
+//                editTextItemName.setText("")
+//                editTextUseRate.setText("")
+//                textViewBox.text = "sucessfull added item: $itemName \n category: $selectedCategoryName \n use rate: $useRate $selectedUnitName per week"
+
+                try {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        itemDao.insertItem(newItem)
+                    }
+                    editTextItemName.setText("")
+                    editTextUseRate.setText("")
+                    textViewBox.text = "sucessfull added item: $itemName \n category: $selectedCategoryName \n use rate: $useRate $selectedUnitName per week"
+
+                } catch (e: Exception){
+                    runOnUiThread {
+                        // TODO: this line was supposed to check for duplicates, but after all, we should still
+                        // TODO: write a custom function for the unique names
+                        textViewBox.error = "Error occurred while adding category"
+                    }
                 }
-                editTextItemName.setText("")
-                editTextUseRate.setText("")
-                textViewBox.text = "sucessfull added item: $itemName \n category: $selectedCategoryName \n use rate: $useRate $selectedUnitName per week"
+
+
             } else if(itemName.isBlank()) {
                 // Handle invalid input
                 textViewBox.text = "please enter a name"
