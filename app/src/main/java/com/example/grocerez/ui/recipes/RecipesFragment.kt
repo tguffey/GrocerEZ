@@ -22,7 +22,7 @@ class RecipesFragment : Fragment(), RecipeItemClickListener {
     private lateinit var recipesViewModel: RecipesViewModel
 
     // Original unfiltered list of recipe items
-    private lateinit var originalRecipeList: List<RecipeItem>
+    private var originalRecipeList: List<RecipeItem> = emptyList()
 
     // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
