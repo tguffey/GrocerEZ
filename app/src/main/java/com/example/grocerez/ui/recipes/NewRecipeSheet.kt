@@ -1,16 +1,16 @@
+
 import android.os.Bundle
 import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.grocerez.databinding.FragmentNewRecipeSheetBinding
 import com.example.grocerez.ui.recipes.IngredentItemClickListener
 import com.example.grocerez.ui.recipes.IngredientItem
-import com.example.grocerez.ui.recipes.RecipeItem
 import com.example.grocerez.ui.recipes.RecipeIngredientAdapter
+import com.example.grocerez.ui.recipes.RecipeItem
 import com.example.grocerez.ui.recipes.RecipesViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
@@ -114,5 +114,8 @@ class NewRecipeSheet(var recipeItem: RecipeItem?) : BottomSheetDialogFragment(),
         val dialog = IngredientInputDialog(ingredientItem)
         dialog.ingredientItemAdapter = ingredientItemAdapter
         dialog.show(childFragmentManager, "editIngredientTag")
+    }
+
+    fun setOnCancelListener(function: () -> Unit) {
     }
 }

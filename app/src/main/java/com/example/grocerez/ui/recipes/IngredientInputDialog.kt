@@ -1,12 +1,19 @@
 import android.app.Dialog
+import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
+import com.example.grocerez.R
 import com.example.grocerez.databinding.DialogAddIngredientsBinding
+import com.example.grocerez.ui.ItemAmount
 import com.example.grocerez.ui.recipes.IngredientItem
 import com.example.grocerez.ui.recipes.IngredientItemViewHolder
 import com.example.grocerez.ui.recipes.RecipeIngredientAdapter
@@ -17,6 +24,7 @@ class IngredientInputDialog(var ingredientItem: IngredientItem?) : DialogFragmen
     private val binding get() = _binding!!
     private lateinit var ingredientItemViewHolder: IngredientItemViewHolder
     lateinit var ingredientItemAdapter: RecipeIngredientAdapter
+    private lateinit var selectedUnit: String
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,6 +37,8 @@ class IngredientInputDialog(var ingredientItem: IngredientItem?) : DialogFragmen
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        setSpinner()
 
         if (ingredientItem != null){
             binding.ingredientTitle.text = "Edit Item"
@@ -44,7 +54,7 @@ class IngredientInputDialog(var ingredientItem: IngredientItem?) : DialogFragmen
             else{
                 val name = binding.name.text.toString()
                 val quantity = binding.quantity.text.toString()
-                val ingredient = IngredientItem(name, quantity.toDouble())
+                val ingredient = IngredientItem(name, quantity.toDouble(), selectedUnit)
                 ingredientItemAdapter.addIngredients(ingredient)
                 clearFields()
             }
@@ -59,6 +69,55 @@ class IngredientInputDialog(var ingredientItem: IngredientItem?) : DialogFragmen
         binding.name.setText("")
         binding.quantity.setText("")
         dismiss()
+    }
+
+    private fun setSpinner() {
+        // Create a list of the units, Units label is the first element
+        var options: Array<String> = arrayOf("Units")
+        options += ItemAmount.getAllUnits()
+
+        val context = requireContext()
+        val arrayAdapter = object : ArrayAdapter<String>(context,
+            R.layout.shopping_quantity_spinner, options) {
+
+            override fun isEnabled(position: Int): Boolean {
+                return position != 0
+            }
+
+            // Show the Units label as grayed out and choices as black text
+            override fun getDropDownView(
+                position: Int,
+                convertView: View?,
+                parent: ViewGroup
+            ): View {
+                val view: TextView = super.getDropDownView(position, convertView, parent) as TextView
+                if (position == 0) {
+                    view.setTextColor(Color.GRAY)
+                } else {
+                    view.setTextColor(Color.BLACK)
+                }
+                return view
+            }
+        }
+        // adapter for the actual list, creates an Item Amount object for the quantity
+        arrayAdapter.setDropDownViewResource(R.layout.shopping_quantity_spinner)
+        binding.quantitySpinner.adapter = arrayAdapter
+
+        binding.quantitySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                selectedUnit = parent?.getItemAtPosition(position) as String
+
+                // Only the units choices can be selected and not the Units label
+                if (position > 0) {
+                    Toast.makeText(
+                        context, "Selected : $selectedUnit",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

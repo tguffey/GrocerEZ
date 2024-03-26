@@ -7,19 +7,10 @@
     android:layout_height="match_parent"
     tools:context=".ui.recipes.RecipesFragment">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/recipeListRecyclerView"
-        android:backgroundTint="@color/design_default_color_background"
-        />
-
-    <!--Dim background-->
-    <!-- Only shows when the edit option buttons are expanded -->
     <View
         android:id="@+id/transparentBg"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:background="#66000000"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -29,57 +20,67 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.5"/>
 
-    <!--Edit Item Button-->
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/edit_item_fab"
-        android:layout_width="wrap_content"
+    <TextView
+        android:id="@+id/Title"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
+        android:text="Recipes"
+        android:textSize="30sp"
         android:layout_marginTop="20dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="20dp"
-        android:contentDescription="@string/button_edit_item"
-        android:padding="5dp"
-        app:backgroundTint="?attr/colorPrimary"
-        app:icon="@drawable/ic_add_24"
-        app:iconTint="@color/white"
-        tools:elevation="2dp" />
-
-    <!-- EDIT ITEM OPTION BUTTONS: Only shows when the edit options are expanded -->
-    <!--Edit Item option 1: Clear List button-->
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/clear_list_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:layout_above="@+id/edit_item_fab"
-        android:layout_alignParentEnd="true"
-        android:contentDescription="@string/button_clear_list"
-        android:text="@string/button_clear_list"
-        android:textColor="?colorOnPrimary"
-        android:visibility="invisible"
-        app:backgroundTint="?attr/colorPrimary"
-        app:icon="@drawable/ic_check_24"
-        app:iconTint="@color/white" />
-
-    <!--Edit Item option 2: Add Item button-->
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/add_item_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="5sp"
-        android:layout_marginBottom="16dp"
-        android:layout_alignParentEnd="true"
-        android:layout_above="@id/clear_list_fab"
-        android:contentDescription="@string/button_add_item"
-        android:text="@string/button_add_item"
-        android:textColor="?colorOnPrimary"
-        android:visibility="invisible"
-        app:backgroundTint="?attr/colorPrimary"
-        app:icon="@drawable/ic_add_24"
-        app:iconTint="@color/white"
+        android:layout_marginStart="20dp"
+        style="@style/TextAppearance.AppCompat.Title"
         />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:orientation="horizontal"
+        android:layout_below="@+id/Title"
+        android:gravity="center"
+        >
+
+        <!--Edit Item option 1: Clear List button-->
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/clear_list_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="15dp"
+            android:contentDescription="Parse Recipe"
+            android:text="Parse Recipe"
+            android:textColor="?colorOnPrimary"
+            app:backgroundTint="?attr/colorPrimary"
+            app:icon="@drawable/baseline_search_24"
+            app:iconTint="@color/white"
+            />
+
+        <Space
+            android:layout_width="20dp"
+            android:layout_height="match_parent"/>
+
+        <!--Edit Item option 2: Add Item button-->
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/add_item_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="15sp"
+            android:contentDescription="@string/button_add_item"
+            android:text="Add Recipe"
+            android:textColor="?colorOnPrimary"
+            app:backgroundTint="?attr/colorPrimary"
+            app:icon="@drawable/ic_add_24"
+            app:iconTint="@color/white"
+            android:layout_marginEnd="20dp"
+
+            />
+
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="140dp"
+        android:id="@+id/recipeListRecyclerView"
+        android:backgroundTint="@color/design_default_color_background"
+        />
 
 </RelativeLayout>

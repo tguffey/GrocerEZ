@@ -10,5 +10,7 @@ class IngredientItemViewHolder (
 {
     fun bindRecipeIngredient(recipeIngredient: IngredientItem){
         binding.ingredientName.text = recipeIngredient.name
+        binding.ingredientQuantity.text = "x${recipeIngredient.quantity}"
+        binding.ingredientUnit.text = recipeIngredient.ingredientUnit
     }
 }

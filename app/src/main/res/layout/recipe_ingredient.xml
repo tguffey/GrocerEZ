@@ -11,7 +11,8 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
 
         <CheckBox
             android:id="@+id/recipe_ingredient"
@@ -25,8 +26,27 @@
             android:text="ingredient"
             android:layout_marginStart="5dp"
             android:textSize="16sp"
+            android:layout_weight="1"
             android:id="@+id/ingredientName"
             />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="x00"
+            android:layout_marginStart="5dp"
+            android:textSize="16sp"
+            android:id="@+id/ingredientQuantity"
+            />
+
+        <TextView
+            android:id="@+id/ingredientUnit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="20dp"
+            android:text="Count"
+            android:textSize="16sp" />
 
     </LinearLayout>
 

@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:id="@+id/newRecipeSheet">
 
     <LinearLayout
         android:orientation="vertical"
@@ -24,7 +25,6 @@
             style="@style/TextAppearance.AppCompat.Title"
             />
 
-        <!-- ALL TEXT INPUT FIELDS FOR ADDING A NEW ITEM-->
         <!--Field for the name of the item-->
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.Material3.AutoCompleteTextView.OutlinedBox.Dense"
@@ -59,51 +59,33 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- RecyclerView for displaying ingredients -->
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/ingredientRecyclerView"
             />
 
-<!--        <LinearLayout-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="80dp"-->
-<!--            android:orientation="horizontal">-->
-
-<!--            &lt;!&ndash;Field for the ingredients of the item&ndash;&gt;-->
-<!--            <com.google.android.material.textfield.TextInputLayout-->
-<!--                android:id="@+id/itemCategory"-->
-<!--                style="@style/Widget.Material3.AutoCompleteTextView.OutlinedBox.Dense"-->
-<!--                android:layout_width="262dp"-->
-<!--                android:layout_height="match_parent">-->
-
-<!--                &lt;!&ndash;Label the text input as the ingredients&ndash;&gt;-->
-<!--                <com.google.android.material.textfield.TextInputEditText-->
-<!--                    android:id="@+id/ingredientName"-->
-<!--                    android:layout_width="227dp"-->
-<!--                    android:layout_height="match_parent"-->
-<!--                    android:hint="Ingredient" />-->
-
-<!--            </com.google.android.material.textfield.TextInputLayout>-->
-
-            <!-- Cancel button on the left -->
+        <!-- Add ingredient button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/addIngredientButton"
-            android:layout_width="200dp"
-            android:layout_height="0dp"
-            android:layout_gravity="center"
-            android:layout_marginHorizontal="20dp"
-            android:layout_weight="1"
-            android:text="add ingredient"
-            app:icon="@drawable/ic_add_24" />
-<!--        </LinearLayout>-->
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add Ingredient"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="20dp"
+            app:icon="@drawable/ic_add_24"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp"
+            />
 
         <!--Field for any notes of the item-->
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.Material3.AutoCompleteTextView.OutlinedBox.Dense"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/itemNote">
+            android:id="@+id/itemNote"
+            android:layout_marginTop="16dp">
 
             <!--Labels the text input as notes-->
             <com.google.android.material.textfield.TextInputEditText
@@ -144,7 +126,6 @@
                 />
 
         </LinearLayout>
-
 
     </LinearLayout>
 

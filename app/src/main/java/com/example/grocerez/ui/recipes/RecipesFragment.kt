@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -61,22 +60,10 @@ class RecipesFragment : Fragment(), RecipeItemClickListener {
         // Set up RecyclerView
         setRecyclerView()
 
-        // Set OnClickListener for editItemFab
-        binding.editItemFab.setOnClickListener {
-            if (isExpanded) {
-                // Close the edit options if the options are expanded
-                shrinkFab()
-            } else {
-                // Open the edit options if the options are not expanded
-                expandFab()
-            }
-        }
-
         // Set OnClickListener for addItemFab
         binding.addItemFab.setOnClickListener {
             // Show New Recipe bottom dialog
             NewRecipeSheet(null).show(parentFragmentManager, "newRecipeTag")
-            shrinkFab()
         }
 
         return root
@@ -86,26 +73,6 @@ class RecipesFragment : Fragment(), RecipeItemClickListener {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    // Close the edit option buttons
-    private fun shrinkFab() {
-        binding.transparentBg.startAnimation(toBottomBg)
-        binding.clearListFab.startAnimation(fabClose)
-        binding.addItemFab.startAnimation(fabClose)
-
-        // Toggle isExpanded
-        isExpanded = !isExpanded
-    }
-
-    // Open the edit option buttons
-    private fun expandFab() {
-        binding.transparentBg.startAnimation(fromBottomBg)
-        binding.clearListFab.startAnimation(fabOpen)
-        binding.addItemFab.startAnimation(fabOpen)
-
-        // Toggle isExpanded
-        isExpanded = !isExpanded
     }
 
     // Set up the RecyclerView with adapter and observer
