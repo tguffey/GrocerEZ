@@ -73,6 +73,7 @@
                 android:background="@drawable/round_back_white10_20"
                 android:orientation="vertical"
                 android:padding="15dp">
+
                 <!--                DARK MODE-->
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -84,23 +85,24 @@
                         android:layout_height="40dp"
                         android:background="@drawable/round_back_night_mode"
                         android:padding="12dp"
-                        android:src="@drawable/account"/>
+                        android:src="@drawable/account" />
+
                     <TextView
-                        android:layout_marginStart="20dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
+                        android:layout_marginStart="20dp"
+                        android:layout_toEndOf="@id/accountIcon"
                         android:text="Account"
                         android:textColor="@color/black"
-                        android:textStyle="bold"
-                        android:layout_toEndOf="@id/accountIcon"/>
+                        android:textStyle="bold" />
 
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/right_arrow_icon"
                         android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"/>
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/right_arrow_icon" />
                 </RelativeLayout>
                 <!--                Notifications-->
                 <RelativeLayout
@@ -113,23 +115,24 @@
                         android:layout_height="40dp"
                         android:background="@drawable/round_back_night_mode"
                         android:padding="12dp"
-                        android:src="@drawable/lock"/>
+                        android:src="@drawable/lock" />
+
                     <TextView
-                        android:layout_marginStart="20dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
+                        android:layout_marginStart="20dp"
+                        android:layout_toEndOf="@id/securityIcon"
                         android:text="Security &amp; Privacy"
                         android:textColor="@color/black"
-                        android:textStyle="bold"
-                        android:layout_toEndOf="@id/securityIcon"/>
+                        android:textStyle="bold" />
 
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/right_arrow_icon"
                         android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"/>
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/right_arrow_icon" />
                 </RelativeLayout>
             </LinearLayout>
 
@@ -237,6 +240,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="40dp"
                 android:layout_marginEnd="20dp"
+                android:layout_marginBottom="40dp"
                 android:background="@drawable/round_back_white10_20"
                 android:orientation="vertical"
                 android:padding="15dp">

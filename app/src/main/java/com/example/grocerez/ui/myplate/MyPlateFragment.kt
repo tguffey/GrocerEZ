@@ -1,5 +1,6 @@
 package com.example.grocerez.ui.myplate
 
+import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Build
@@ -7,15 +8,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.example.grocerez.databinding.FragmentMyplateBinding
 import com.anychart.AnyChart
 import com.anychart.AnyChartView
 import com.anychart.chart.common.dataentry.DataEntry
 import com.anychart.chart.common.dataentry.ValueDataEntry
 import com.example.grocerez.R
+import com.example.grocerez.ui.settings.SettingsActivity
 
 class MyPlateFragment : Fragment() {
 
@@ -31,13 +35,6 @@ class MyPlateFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Make the status bar transparent-jocelyn
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            val window = activity?.window
-            window?.decorView?.systemUiVisibility =
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-            window?.statusBarColor = Color.TRANSPARENT
-        }
 
         val notificationsViewModel =
             ViewModelProvider(this).get(MyPlateViewModel::class.java)
@@ -52,6 +49,15 @@ class MyPlateFragment : Fragment() {
 
         anyChartView = root.findViewById(R.id.anyChartView)
         setupChartView()
+
+        // Find the settings button in the layout
+        val settingsButton: Button = root.findViewById(R.id.btn_settings)
+
+        // Set a click listener for the settings button
+        settingsButton.setOnClickListener {
+            // Handle button click here
+            findNavController().navigate(R.id.action_myPlateFragment_to_myPlateSettingsFragment)
+        }
 
         return root
     }
