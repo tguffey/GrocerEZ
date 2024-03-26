@@ -12,6 +12,8 @@ import com.example.grocerez.ui.recipes.IngredientItem
 import com.example.grocerez.ui.recipes.RecipeIngredientAdapter
 import com.example.grocerez.ui.recipes.RecipeItem
 import com.example.grocerez.ui.recipes.RecipesViewModel
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class NewRecipeSheet(var recipeItem: RecipeItem?) : BottomSheetDialogFragment(),  IngredentItemClickListener{
@@ -33,6 +35,19 @@ class NewRecipeSheet(var recipeItem: RecipeItem?) : BottomSheetDialogFragment(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Adjust the bottom sheet dialog to pull all the way to the top of the screen
+        dialog?.setOnShowListener {
+            val bottomSheetDialog = it as BottomSheetDialog
+            val bottomSheetInternal =
+                bottomSheetDialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+            bottomSheetInternal?.let { sheet ->
+                val behavior = BottomSheetBehavior.from(sheet)
+                behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                behavior.skipCollapsed = true
+                behavior.isHideable = false
+            }
+        }
 
         recipeViewModel = ViewModelProvider(requireActivity()).get(RecipesViewModel::class.java)
 

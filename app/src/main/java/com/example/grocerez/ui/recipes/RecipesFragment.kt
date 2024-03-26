@@ -5,12 +5,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.grocerez.R
 import com.example.grocerez.databinding.FragmentRecipesBinding
 
 
@@ -23,14 +21,8 @@ class RecipesFragment : Fragment(), RecipeItemClickListener {
     // ViewModel for managing recipes
     private lateinit var recipesViewModel: RecipesViewModel
 
-    // Flag to track whether the edit options are expanded or not
-    private var isExpanded = false
-
-    // Animation variables
-    private lateinit var fabOpen: Animation
-    private lateinit var fabClose: Animation
-    private lateinit var fromBottomBg: Animation
-    private lateinit var toBottomBg: Animation
+    // Original unfiltered list of recipe items
+    private lateinit var originalRecipeList: List<RecipeItem>
 
     // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
@@ -50,15 +42,31 @@ class RecipesFragment : Fragment(), RecipeItemClickListener {
         _binding = FragmentRecipesBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        // Load animations
-        val context = requireContext()
-        fabOpen = AnimationUtils.loadAnimation(context, R.anim.from_bottom_fab)
-        fabClose = AnimationUtils.loadAnimation(context, R.anim.to_bottom_fab)
-        fromBottomBg = AnimationUtils.loadAnimation(context, R.anim.from_bottom_anim)
-        toBottomBg = AnimationUtils.loadAnimation(context, R.anim.to_bottom_anim)
-
         // Set up RecyclerView
         setRecyclerView()
+
+        // Keep a reference to the original unfiltered list
+        recipesViewModel.recipeItems.observe(viewLifecycleOwner) { recipeItems ->
+            if (recipeItems != null) {
+                originalRecipeList = recipeItems
+            }
+        }
+
+        val searchView = binding.recipeSearchBar
+        searchView.clearFocus()
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener,
+            android.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                // Handle query text submit
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                // Handle query text change
+                newText?.let { filterList(it, recipesViewModel.recipeItems.value.orEmpty()) }
+                return true
+            }
+        })
 
         // Set OnClickListener for addItemFab
         binding.addItemFab.setOnClickListener {
@@ -69,10 +77,18 @@ class RecipesFragment : Fragment(), RecipeItemClickListener {
         return root
     }
 
-    // Destroy the view once the user navigates to a different page
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    private fun filterList(query: String, recipeItems: List<RecipeItem>) {
+        val filteredList = if (query.isNotEmpty()) {
+            recipeItems.filter { recipe ->
+                recipe.name.contains(query, ignoreCase = true) ||
+                        recipe.description.contains(query, ignoreCase = true) ||
+                        recipe.ingredients.any { it.name.contains(query, ignoreCase = true) }
+            }
+        } else {
+            originalRecipeList
+        }
+        // Update RecyclerView adapter with filtered list
+        (binding.recipeListRecyclerView.adapter as RecipeItemAdapter).updateRecipeItems(filteredList)
     }
 
     // Set up the RecyclerView with adapter and observer
@@ -89,6 +105,9 @@ class RecipesFragment : Fragment(), RecipeItemClickListener {
             val recipeItemList: List<RecipeItem> = newRecipeItems.orEmpty()
             recipeItemAdapter.updateRecipeItems(recipeItemList)
             recipeItemAdapter.notifyDataSetChanged()
+
+            // Initialize the original unfiltered list when it's first received
+            originalRecipeList = newRecipeItems.orEmpty()
         }
     }
 
@@ -97,4 +116,10 @@ class RecipesFragment : Fragment(), RecipeItemClickListener {
         NewRecipeSheet(recipeItem).show(parentFragmentManager, "newRecipeTag")
     }
 
+    // Destroy the view once the user navigates to a different page
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }
+
