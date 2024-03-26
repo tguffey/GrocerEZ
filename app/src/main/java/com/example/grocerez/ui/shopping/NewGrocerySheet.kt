@@ -17,7 +17,10 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.example.grocerez.ui.ItemAmount
 import com.example.grocerez.ui.Unit
 
-class NewGrocerySheet(var groceryItem: GroceryItem?) : BottomSheetDialogFragment() {
+class NewGrocerySheet(
+    var groceryItem: GroceryItem?,
+    var categoryItem: CategoryItem?
+) : BottomSheetDialogFragment() {
 
     private lateinit var binding: FragmentNewShoppingItemBinding
     private lateinit var itemViewModel: ShoppingViewModel
@@ -70,16 +73,12 @@ class NewGrocerySheet(var groceryItem: GroceryItem?) : BottomSheetDialogFragment
     // set the drop down menu
     private fun setSpinner() {
         // Create a list of the units, Units label is the first element
-        var options: Array<String> = arrayOf("Units")
-        options += ItemAmount.getAllUnits()
+        var options: Array<String> = ItemAmount.getAllUnits()
+        options[0] = "Units:"
 
         val context = requireContext()
         val arrayAdapter = object : ArrayAdapter<String>(context,
             R.layout.shopping_quantity_spinner, options) {
-
-            override fun isEnabled(position: Int): Boolean {
-                return position != 0
-            }
 
             // Show the Units label as grayed out and choices as black text
             override fun getDropDownView(
@@ -104,6 +103,10 @@ class NewGrocerySheet(var groceryItem: GroceryItem?) : BottomSheetDialogFragment
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 selectedUnit = parent?.getItemAtPosition(position) as String
 
+                if (position == 0) {
+                    selectedUnit = ""
+                }
+
                 // Only the units choices can be selected and not the Units label
                 if (position > 0) {
                     Toast.makeText(
@@ -111,9 +114,17 @@ class NewGrocerySheet(var groceryItem: GroceryItem?) : BottomSheetDialogFragment
                         Toast.LENGTH_SHORT
                     ).show()
                 }
+                else {
+                    Toast.makeText(
+                        context, "Quantity Units automatically selected as None",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
             }
 
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                selectedUnit = ""
+            }
         }
     }
 
@@ -121,13 +132,31 @@ class NewGrocerySheet(var groceryItem: GroceryItem?) : BottomSheetDialogFragment
     private fun saveAction() {
         val name = binding.name.text.toString()
         val category = binding.category.text.toString()
-        val quantity = ItemAmount(binding.quantity.text.toString().toFloat(),
-            Unit.valueOf(selectedUnit.uppercase()))
+        val quantity =
+            Unit.getBySymbol(selectedUnit)?.let {
+                ItemAmount(binding.quantity.text.toString().toFloat(),
+                    it
+                )
+            }
         val note = binding.Note.text.toString()
-        if (groceryItem == null)
+        if (name.isNotEmpty())
         {
-            val newGrocery = GroceryItem(name, category, quantity, note)
-            itemViewModel.addGroceryItem(newGrocery)
+            val newGrocery = quantity?.let { GroceryItem(name, it, note, false) }
+
+            if (newGrocery != null) {
+                itemViewModel.addGroceryItem(newGrocery)
+            }
+        }
+        // Check if category name is provided
+        if ((category.isNotEmpty()) && (name.isNotEmpty())) {
+            val newGrocery = quantity?.let { GroceryItem(name, it, note, false) }
+            var groceries = mutableListOf<GroceryItem>()
+            if (newGrocery != null) {
+                groceries = mutableListOf(newGrocery)
+            }
+            val newCategory = CategoryItem(category, groceries)
+            // Save category item
+            itemViewModel.addCategoryItem(newCategory)
         }
 
         // Clear input fields and dismiss the sheet

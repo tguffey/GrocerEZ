@@ -1,7 +1,9 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
+    <!-- I removed the Action Bar - Jocelyn -->
     <style name="Theme.GrocerEZ" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
+        <!-- I changed the primary colors- Jocelyn -->
         <item name="colorPrimary">@color/green002</item>
         <item name="colorPrimaryVariant">@color/white</item>
         <item name="colorOnPrimary">@color/white</item>

@@ -29,8 +29,14 @@ class ItemAmount (private val value: Float, private val unit: Unit) {
 }
 
 enum class Unit (val symbol: String) {
+    NONE(""),
     GRAM("g"),
     KILOGRAM("kg"),
     POUND("lb"),
-    COUNT("count")
+    COUNT("count");
+
+    // Look up enum value by symbol
+    companion object {
+        fun getBySymbol(symb: String) = entries.firstOrNull { it.symbol == symb }
+    }
 }

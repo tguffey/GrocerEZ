@@ -36,10 +36,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!--A list of categories-->
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/groceryListRecyclerView"
+        android:id="@+id/categoryListRecyclerView"
         android:backgroundTint="@color/design_default_color_background"
         />
 
