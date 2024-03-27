@@ -32,6 +32,7 @@ class NewItemActivity : AppCompatActivity() {
     private lateinit var editTextUseRate: EditText
 
     private lateinit var textViewBox: TextView
+    private lateinit var buttonSearchByName: Button
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -91,7 +92,7 @@ class NewItemActivity : AppCompatActivity() {
         buttonDisplay = findViewById(R.id.display_Button) // button to display
         editTextItemName = findViewById(R.id.inputItemName) // textbox to input name
         editTextUseRate = findViewById(R.id.editTextUseRate) // textbox to input rate
-
+        buttonSearchByName = findViewById(R.id.searchItemByName_button)
 
 
 
@@ -138,8 +139,6 @@ class NewItemActivity : AppCompatActivity() {
             }
         }
 
-
-
         buttonDisplay.setOnClickListener {
 
             //perform database function on the IO thread to be safe
@@ -162,5 +161,35 @@ class NewItemActivity : AppCompatActivity() {
 
             }
         }
+
+        buttonSearchByName.setOnClickListener {
+            searchItemByName(itemName = editTextItemName.text.toString())
+        }
+    }
+    private fun searchItemByName(itemName: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+
+            try{
+                val item = itemDao.findItemByName(itemName)
+                // Update UI with the unit object
+                withContext(Dispatchers.Main) {
+                    if (item != null) {
+                        textViewBox.text = "item found: ${item.name} \n" +
+                                "ID: ${item.item_id}\n" +
+                                "category: ${item.category}\n" +
+                                "unit: ${item.unitName}\n" +
+                                "use rate: ${item.useRate} "
+                    } else {
+                        textViewBox.text = "item not found"
+                    }
+                }
+
+            } catch (e: Exception){
+                textViewBox.text = "Error: ${e.message}"
+            }
+
+
+        }
+
     }
 }

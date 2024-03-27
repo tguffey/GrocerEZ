@@ -14,8 +14,6 @@ import com.example.grocerez.data.model.Unit
     string category (foreign key)
     float use_rate (per week)
     string unit (foreign key)
-
-
 */
 
 @Dao
@@ -34,5 +32,7 @@ interface ItemDao {
     @Update
     suspend fun updateItem(item: Item)
 
+    @Query("SELECT * FROM items WHERE name = :itemName")
+    suspend fun findItemByName(itemName: String): Item?
 
 }

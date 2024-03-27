@@ -24,6 +24,7 @@ class NewCategoryActivity : AppCompatActivity() {
     private lateinit var editTextCategoryName: EditText
     private lateinit var buttonInsert: Button
     private lateinit var buttonDisplay: Button
+    private lateinit var buttonSearch: Button
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -38,6 +39,7 @@ class NewCategoryActivity : AppCompatActivity() {
         buttonDisplay = findViewById(R.id.displayCategory_btn)
         textViewBox = findViewById(R.id.textBox)
 
+        buttonSearch = findViewById(R.id.searchByCategory_button)
 
         val appDatabase = AppDatabase.getInstance(applicationContext)
         categoryDao = appDatabase.categoryDao()
@@ -55,24 +57,61 @@ class NewCategoryActivity : AppCompatActivity() {
         buttonDisplay.setOnClickListener {
             displayCategories()
         }
+
+        buttonSearch.setOnClickListener {
+            searchCategoryByName(editTextCategoryName.text.toString())
+        }
     }
 
+    // has error handling
     private fun insertCategory(categoryName: String){
-        val newCategory = Category(categoryName)
 
-        CoroutineScope(Dispatchers.IO).launch {
-            categoryDao.insertCategory(newCategory)
-            textViewBox.text = ("new unit is inserted: $categoryName\n")
+        try {
+            val newCategory = Category(categoryName)
+            CoroutineScope(Dispatchers.IO).launch {
+                categoryDao.insertCategory(newCategory)
+                textViewBox.text = ("new unit is inserted: $categoryName\n")
 
-            //TODO: handle error and duplicates
+                //TODO: handle error and duplicates
+            }
+        } catch (e: Exception){
+            textViewBox.text = "Error: ${e.message}"
         }
+
     }
 
     private fun displayCategories(){
-        CoroutineScope(Dispatchers.IO).launch {
-            val categories = categoryDao.getAllCategories()
-            val categoryList = categories.joinToString(separator = "\n") { it.name }
-            textViewBox.text = categoryList
+        try {
+            CoroutineScope(Dispatchers.IO).launch {
+                val categories = categoryDao.getAllCategories()
+                val categoryList = categories.joinToString(separator = "\n") { it.name }
+                textViewBox.text = categoryList
+            }
+        } catch (e: Exception){
+            textViewBox.text = "Error: ${e.message}"
         }
+
+    }
+
+    // search a function by its category and display the result,
+    // has error handling
+    private fun searchCategoryByName(categoryName: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+
+            try{
+                val unit = categoryDao.findCategoryByName(categoryName)
+                // Update UI with the unit object
+                if (unit != null) {
+                    textViewBox.text = "Category found: ${unit.name}"
+                } else {
+                    textViewBox.text = "Category not found"
+                }
+            } catch (e: Exception){
+                textViewBox.text = "Error: ${e.message}"
+            }
+
+
+        }
+
     }
 }
