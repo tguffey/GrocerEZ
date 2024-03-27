@@ -3,7 +3,7 @@ package com.example.grocerez.data.model
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "unit",
+@Entity(tableName = "units",
     primaryKeys = ["name"]
 )
 data class Unit(

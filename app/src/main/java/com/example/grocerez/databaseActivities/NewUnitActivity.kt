@@ -25,6 +25,7 @@ class NewUnitActivity : AppCompatActivity() {
     private lateinit var editTextUnitName: EditText
     private lateinit var buttonInsert: Button
     private lateinit var buttonDisplay: Button
+    private lateinit var buttonFind: Button
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -40,6 +41,9 @@ class NewUnitActivity : AppCompatActivity() {
         buttonDisplay = findViewById(R.id.displayAllUnits_btn)
         textViewUnitList = findViewById(R.id.feedbackTextView)
 
+        buttonFind = findViewById(R.id.searchByName_button)
+
+
         val appDatabase = AppDatabase.getInstance(applicationContext)
         unitDao = appDatabase.unitDao()
 
@@ -49,7 +53,7 @@ class NewUnitActivity : AppCompatActivity() {
                 insertUnit(unitName)
                 editTextUnitName.setText("")
             } else{
-                textViewUnitList.text = "please enter non null string"
+                textViewUnitList.text = "Please enter non null string"
             }
 
         }
@@ -57,6 +61,10 @@ class NewUnitActivity : AppCompatActivity() {
 
         buttonDisplay.setOnClickListener {
             displayUnits()
+        }
+
+        buttonFind.setOnClickListener {
+            searchUnitByName(editTextUnitName.text.toString())
         }
 
     }
@@ -82,6 +90,27 @@ class NewUnitActivity : AppCompatActivity() {
             val unitList = units.joinToString(separator = "\n") { it.name }
             textViewUnitList.text = unitList
         }
+    }
+
+    // DONE: add error catching.
+    private fun searchUnitByName(unitName: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+
+            try{
+                val unit = unitDao.findUnitByName(unitName)
+                // Update UI with the unit object
+                if (unit != null) {
+                    textViewUnitList.text = "Unit found: ${unit.name}"
+                } else {
+                    textViewUnitList.text = "Unit not found"
+                }
+            } catch (e: Exception){
+                textViewUnitList.text = "Error: ${e.message}"
+            }
+
+
+        }
+
     }
 
 
