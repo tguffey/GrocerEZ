@@ -173,13 +173,20 @@ class NewShoppingListItemActivity : AppCompatActivity() {
                 val existingUnit = unitDao.findUnitByName(unit)
 
                 if (existingCategory == null || existingUnit == null){
-                    textViewFeedback_box.text = "category or unit does not exist yet. now adding"
+                    withContext(Dispatchers.Main){
+                        textViewFeedback_box.text = "category or unit does not exist yet. now adding \n"
+                        val newCategory = Category(category)
+                        val newUnit = Unit(unit)
+                        categoryDao.insertCategory(newCategory)
+                        unitDao.insertUnit(newUnit)
 
-                    val newCategory = Category(category)
-                    val newUnit = Unit(unit)
-                    categoryDao.insertCategory(newCategory)
-                    unitDao.insertUnit(newUnit)
+                    }
 
+
+
+                    withContext(Dispatchers.Main){
+                        textViewFeedback_box.append("\n new category is inserted \n")
+                    }
                     val newItem = Item(name = itemName, category = category, unitName = unit, useRate = 0.0f)
                     itemDao.insertItem(newItem)
                 } else {
@@ -202,13 +209,42 @@ class NewShoppingListItemActivity : AppCompatActivity() {
 
                 // see if item exists in the database already or not.
                 if (existingItem == null) {
-                    textViewFeedback_box.text = ""
+                    textViewFeedback_box.text = "no existinge item exist."
                     // Item doesn't exist, create a new one and insert it into the Item table
 //                    val newItem = Item(name = itemName, category = category, unitName = unit, useRate = 0.0f)
 //
 //                    itemDao.insertItem(newItem)
-                    addToItemTable(itemName,category,unit)
+//                    addToItemTable(itemName,category,unit)
+                    try {
+                        val existingCategory = categoryDao.findCategoryByName(category)
+                        val existingUnit = unitDao.findUnitByName(unit)
 
+                        if (existingCategory == null || existingUnit == null){
+                            withContext(Dispatchers.Main){
+                                textViewFeedback_box.text = "category or unit does not exist yet. now adding \n"
+                                val newCategory = Category(category)
+                                val newUnit = Unit(unit)
+                                categoryDao.insertCategory(newCategory)
+                                unitDao.insertUnit(newUnit)
+
+                            }
+
+
+
+                            withContext(Dispatchers.Main){
+                                textViewFeedback_box.append("\n new category is inserted \n")
+                            }
+                            val newItem = Item(name = itemName, category = category, unitName = unit, useRate = 0.0f)
+                            itemDao.insertItem(newItem)
+                        } else {
+                            val newItem = Item(name = itemName, category = category, unitName = unit, useRate = 0.0f)
+                            itemDao.insertItem(newItem)
+                        }
+                        // we can do this because the respective DAO objects does replace on conflict
+
+                    }catch (e: Exception){
+                        textViewFeedback_box.text = "adding item to item table Error: ${e.message}"
+                    }
                     //_______________________________
                     val displayItem = itemDao.findItemByName(itemName)
                     var displayString = ""
@@ -268,7 +304,7 @@ class NewShoppingListItemActivity : AppCompatActivity() {
 
             } catch (e: Exception){
                 withContext(Dispatchers.Main) {
-                    textViewFeedback_box.text = "ShopListError: ${e.message}"
+                    textViewFeedback_box.append( "ShopListError: ${e.message}")
                 }
 
             }
