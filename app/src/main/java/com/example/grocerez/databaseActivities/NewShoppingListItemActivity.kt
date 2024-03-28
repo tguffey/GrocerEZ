@@ -216,6 +216,7 @@ class NewShoppingListItemActivity : AppCompatActivity() {
         }
     }
     // the ultimate goal.
+    // TODO: update function, add items on duplicate entry, now that we have the find function.
     private fun addShoppingListItem(itemName: String, category: String, unit: String, checkbox: Boolean, notes: String, quantity: Float){
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -337,12 +338,15 @@ class NewShoppingListItemActivity : AppCompatActivity() {
                     } else {
                         val itemListText = StringBuilder()
                         for (shopListItem in allShoppingListItems) {
+                            // retrieving data to display
                             val item = itemDao.findItemByName(shopListItem.itemName)
 
                             var unitForThis = "unit"
                             if (item != null){
                                 unitForThis = item.unitName.toString()
                             }
+
+                            //string to display
                             var displayString = "ID: ${shopListItem.shoppingListItemId},\n" +
                                     "Name: ${shopListItem.itemName},\n"+
                                     "Check: ${shopListItem.checkbox},\n"+
@@ -355,7 +359,7 @@ class NewShoppingListItemActivity : AppCompatActivity() {
                     }
                 }
             }catch (e: Exception){
-
+                textViewFeedback_box.text = "error when display: $e"
             }
         }
     }
@@ -366,12 +370,20 @@ class NewShoppingListItemActivity : AppCompatActivity() {
                 val specificItem = shoppingListItemDao.findShoppingListItemByName(itemName)
                 withContext(Dispatchers.Main) {
                     if (specificItem != null) {
+                        // _____________________ retrievin field from items table
+                        val item = itemDao.findItemByName(specificItem.itemName)
+                        var unitForThis = "unit"
+                        if (item != null){
+                            unitForThis = item.unitName.toString()
+                        }
+                        // ____________________
+
                         textViewFeedback_box.text = "shopping list item found: \n" +
                                 "ID: ${specificItem.shoppingListItemId},\n" +
                                 "Name: ${specificItem.itemName},\n"+
                                 "Check: ${specificItem.checkbox},\n"+
                                 "notes: ${specificItem.notes},\n"+
-                                "quantity: ${specificItem.quantity}\n\n"
+                                "quantity: ${specificItem.quantity} $unitForThis\n\n"
                     } else {
                         textViewFeedback_box.text = "item not found"
                     }
