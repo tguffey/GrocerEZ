@@ -7,8 +7,10 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.Spinner
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.grocerez.R // Replace with the correct package name
 import com.google.android.material.textfield.TextInputEditText
@@ -18,7 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.grocerez.ui.myplate.MyPlateViewModel
 
 
-class MyPlateSettingsFragment : Fragment() {
+class MyPlateSettingsFragment : Fragment(), GoalAdapter.GoalClickListener {
     private lateinit var sexSpinner: Spinner
     private lateinit var weightSpinner: Spinner
     private lateinit var heightSpinner: Spinner
@@ -32,6 +34,9 @@ class MyPlateSettingsFragment : Fragment() {
     private val viewModel: MyPlateViewModel by viewModels()
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: GoalAdapter
+
+    // Initialize shared view model
+    private val sharedModel: MyPlateViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -85,7 +90,7 @@ class MyPlateSettingsFragment : Fragment() {
 
                     // Initialize RecyclerView and Adapter
                     recyclerView = view.findViewById(R.id.recyclerView)
-                    adapter = GoalAdapter(viewModel.goals)
+                    adapter = GoalAdapter(viewModel.goals, this)
                     recyclerView.adapter = adapter
                     recyclerView.layoutManager = LinearLayoutManager(requireContext())
                 }
@@ -128,11 +133,35 @@ class MyPlateSettingsFragment : Fragment() {
         // Change the text of the Edit button to Save or vice versa
         editButton.text = if (isInEditMode) getString(R.string.save_button_text) else getString(R.string.edit)
     }
-
+    fun determineMyPlateInfo(totalCaloricExpenditure: Int): MyPlateViewModel.MyPlateInfo {
+        return when (totalCaloricExpenditure.toInt()) {
+            in 1600..1699 -> MyPlateViewModel.MyPlateInfo(1.5, 2.0, 5.0, 5.0, 3.0)
+            in 1700..1899 -> MyPlateViewModel.MyPlateInfo(1.5, 2.5, 6.0, 5.0, 3.0)
+            in 1900..2099 -> MyPlateViewModel.MyPlateInfo(2.0, 2.5, 6.0, 5.5, 3.0)
+            in 2100..2299 -> MyPlateViewModel.MyPlateInfo(2.0, 3.0, 7.0, 6.0, 3.0)
+            in 2300..2499 -> MyPlateViewModel.MyPlateInfo(2.0, 3.0, 8.0, 6.5, 3.0)
+            in 2500..2699 -> MyPlateViewModel.MyPlateInfo(2.0, 3.5, 9.0, 6.5, 3.0)
+            in 2700..2899 -> MyPlateViewModel.MyPlateInfo(2.5, 3.5, 10.0, 7.0, 3.0)
+            in 2900..3099 -> MyPlateViewModel.MyPlateInfo(2.5, 4.0, 10.0, 7.0, 3.0)
+            else -> MyPlateViewModel.MyPlateInfo(2.5, 4.0, 10.0, 7.0, 3.0)
+        }
+    }
     private fun isAnyFieldEmpty(): Boolean {
         return ageText.text.isNullOrEmpty() ||
                 weightText.text.isNullOrEmpty() ||
                 heightText.text.isNullOrEmpty()
+    }
+
+    override fun onGoalClicked(goal: MyPlateViewModel.Goal) {
+        val info = determineMyPlateInfo(goal.calories)
+        // Update shared view model
+        sharedModel.updateFoodAmounts(info)
+        println("Recommended servings:")
+        println("Fruit: ${info.fruitAmount}")
+        println("Vegetable: ${info.vegetableAmount}")
+        println("Grain: ${info.grainAmount}")
+        println("Protein: ${info.proteinAmount}")
+        println("Dairy: ${info.dairyAmount}")
     }
 }
 

@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.grocerez.databinding.FragmentMyplateBinding
@@ -21,7 +22,7 @@ import com.anychart.chart.common.dataentry.ValueDataEntry
 import com.example.grocerez.R
 import com.example.grocerez.ui.settings.SettingsActivity
 
-class MyPlateFragment : Fragment() {
+class MyPlateFragment : Fragment(){
 
     private var _binding: FragmentMyplateBinding? = null
     private lateinit var anyChartView: AnyChartView
@@ -30,22 +31,38 @@ class MyPlateFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
+    // Initialize shared view model
+    private val sharedModel: MyPlateViewModel by activityViewModels()
+
+    private lateinit var fruitTextView: TextView
+    private lateinit var vegTextView: TextView
+    private lateinit var grainsTextView: TextView
+    private lateinit var proteinTextView: TextView
+    private lateinit var dairyTextView: TextView
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
-        val notificationsViewModel =
-            ViewModelProvider(this).get(MyPlateViewModel::class.java)
-
         _binding = FragmentMyplateBinding.inflate(inflater, container, false)
         val root: View = binding.root
+        // Initialize fruitTextView and vegTextView
+        fruitTextView = root.findViewById(R.id.fruitTextView)
+        vegTextView = root.findViewById(R.id.vegTextView)
+        grainsTextView = root.findViewById(R.id.grainsTextView)
+        proteinTextView = root.findViewById(R.id.proteinTextView)
+        dairyTextView = root.findViewById(R.id.dairyTextView)
 
-        //val textView: TextView = binding.textNotifications
-//        notificationsViewModel.text.observe(viewLifecycleOwner) {
-//            textView.text = it
-//        }
+        // Observe shared view model data
+        sharedModel.foodAmounts.observe(viewLifecycleOwner) { foodAmounts ->
+            // Update UI with food amounts info
+            fruitTextView.text = "${foodAmounts.fruitAmount} Cups"
+            vegTextView.text = "${foodAmounts.vegetableAmount} Cups"
+            grainsTextView.text = "${foodAmounts.grainAmount} Cups"
+            proteinTextView.text = "${foodAmounts.proteinAmount} Cups"
+            dairyTextView.text = "${foodAmounts.dairyAmount} Cups"
+        }
 
         anyChartView = root.findViewById(R.id.anyChartView)
         setupChartView()

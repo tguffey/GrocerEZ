@@ -144,9 +144,10 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/fruitTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="2 Cups"
+                        android:text="create profile to see results"
                         style="@style/TextAppearance.AppCompat.Title"
                         android:textSize="18sp"
                         android:textStyle="bold"/>
@@ -189,9 +190,10 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/vegTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="3 Cups"
+                        android:text="create profile to see results"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         style="@style/TextAppearance.AppCompat.Title"/>
@@ -235,9 +237,10 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/grainsTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="7-ounce equivalents"
+                        android:text="Create profile to see results"
                         style="@style/TextAppearance.AppCompat.Title"
                         android:textSize="18sp"
                         android:textStyle="bold"/>
@@ -280,9 +283,10 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/proteinTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="6-ounce equivalents"
+                        android:text="create profile to see results"
                         style="@style/TextAppearance.AppCompat.Title"
                         android:textSize="18sp"
                         android:textStyle="bold"/>
@@ -325,9 +329,10 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/dairyTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="3 cups"
+                        android:text="create profile to see results"
                         style="@style/TextAppearance.AppCompat.Title"
                         android:textSize="18sp"
                         android:textStyle="bold"/>
