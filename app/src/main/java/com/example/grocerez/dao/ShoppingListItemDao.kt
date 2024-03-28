@@ -9,6 +9,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.example.grocerez.data.model.Item
 import com.example.grocerez.data.model.ShoppingListItem
 
 // Dao for ShoppingListItem
@@ -26,4 +27,7 @@ interface ShoppingListItemDao {
     @Delete
     suspend fun deleteShoppingListItem(shoppingListItem: ShoppingListItem)
     // Add other CRUD operations as needed
+
+    @Query("SELECT * FROM shopping_list_item WHERE itemName = :itemName")
+    suspend fun findShoppingListItemByName(itemName: String): ShoppingListItem?
 }

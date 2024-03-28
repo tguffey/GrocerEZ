@@ -90,20 +90,35 @@ class NewShoppingListItemActivity : AppCompatActivity() {
         }
 
         buttonInsert.setOnClickListener {
-            val itemName = editTextName.text.toString()
-            val category = editTextCategory.text.toString()
-            val unit = editTextUnit.text.toString()
-            val notes = editTextNotes.text.toString()
-            val quantity = editTextNumberDecimal.text.toString().toFloatOrNull() ?: 0.0f
-            val checkBox = false
-            textViewFeedback_box.text = ""
-            addShoppingListItem(itemName = itemName, category = category, unit = unit, checkbox = checkBox, notes = notes, quantity = quantity)
+            if (areAllRequiredFieldsNotNull() == false){
+                textViewFeedback_box.text = "please fill out all the required fields (all fields are required except for notes)"
+            } else {
+                val itemName = editTextName.text.toString()
+                val category = editTextCategory.text.toString()
+                val unit = editTextUnit.text.toString()
+                val notes = editTextNotes.text.toString()
+                val quantity = editTextNumberDecimal.text.toString().toFloatOrNull() ?: 0.0f
+                val checkBox = false
+                textViewFeedback_box.text = ""
+                addShoppingListItem(itemName = itemName, category = category, unit = unit, checkbox = checkBox, notes = notes, quantity = quantity)
+            }
         }
 
         buttonDisplay.setOnClickListener {
             displayAllShoppingListItem()
         }
 
+        buttonSearch.setOnClickListener {
+            val itemName = editTextName.text.toString()
+
+            if (itemName.isEmpty()){
+                textViewFeedback_box.text = "you cant leave the name empty"
+            } else {
+                searchShoppingListItemByName(itemName = itemName)
+            }
+
+
+        }
     }
 
     fun areAllRequiredFieldsNotNull(): Boolean {
@@ -312,6 +327,7 @@ class NewShoppingListItemActivity : AppCompatActivity() {
     }
 
     private fun displayAllShoppingListItem(){
+
         CoroutineScope(Dispatchers.IO).launch {
             try{
                 val allShoppingListItems = shoppingListItemDao.getAllShoppingListItem()
@@ -321,11 +337,17 @@ class NewShoppingListItemActivity : AppCompatActivity() {
                     } else {
                         val itemListText = StringBuilder()
                         for (shopListItem in allShoppingListItems) {
+                            val item = itemDao.findItemByName(shopListItem.itemName)
+
+                            var unitForThis = "unit"
+                            if (item != null){
+                                unitForThis = item.unitName.toString()
+                            }
                             var displayString = "ID: ${shopListItem.shoppingListItemId},\n" +
                                     "Name: ${shopListItem.itemName},\n"+
                                     "Check: ${shopListItem.checkbox},\n"+
                                     "notes: ${shopListItem.notes},\n"+
-                                    "quantity: ${shopListItem.quantity}\n\n"
+                                    "quantity: ${shopListItem.quantity} $unitForThis\n\n"
 
                             itemListText.append(displayString)
                         }
@@ -336,5 +358,30 @@ class NewShoppingListItemActivity : AppCompatActivity() {
 
             }
         }
+    }
+
+    private fun searchShoppingListItemByName(itemName: String){
+        CoroutineScope(Dispatchers.IO).launch{
+            try{
+                val specificItem = shoppingListItemDao.findShoppingListItemByName(itemName)
+                withContext(Dispatchers.Main) {
+                    if (specificItem != null) {
+                        textViewFeedback_box.text = "shopping list item found: \n" +
+                                "ID: ${specificItem.shoppingListItemId},\n" +
+                                "Name: ${specificItem.itemName},\n"+
+                                "Check: ${specificItem.checkbox},\n"+
+                                "notes: ${specificItem.notes},\n"+
+                                "quantity: ${specificItem.quantity}\n\n"
+                    } else {
+                        textViewFeedback_box.text = "item not found"
+                    }
+                }
+
+            }catch (e: Exception){
+
+            }
+            shoppingListItemDao.findShoppingListItemByName(itemName)
+        }
+
     }
 }
