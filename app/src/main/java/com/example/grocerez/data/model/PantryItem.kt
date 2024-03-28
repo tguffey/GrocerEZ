@@ -32,7 +32,8 @@ data class PantryItem(
     val amountFromInputDate: Float,
 
     @ColumnInfo(name = "input_date")
-    val inputDate: Date,
+    val inputDate: Long,
+    // TODO: convert this into Date later using type converter
 
     @ColumnInfo(name = "shelf_life_from_input_date")
     val shelfLifeFromInputDate: Int, // Calculated in days

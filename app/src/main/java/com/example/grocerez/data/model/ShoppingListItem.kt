@@ -6,16 +6,17 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
+
     tableName = "shopping_list_item",
     foreignKeys = [
         ForeignKey(
             entity = Item::class,
             parentColumns = ["name"],
-            childColumns = ["item_name"],
+            childColumns = ["itemName"],
             onDelete = ForeignKey.CASCADE // ensure if the field in parent table is delted, all child objects will be delted as well
         )
     ],
-    indices = [Index(value = ["item_name"], unique = true)]
+    indices = [Index(value = ["itemName"], unique = true)]
 )
 data class ShoppingListItem(
     @PrimaryKey(autoGenerate = true) val shoppingListItemId: Long = 0,

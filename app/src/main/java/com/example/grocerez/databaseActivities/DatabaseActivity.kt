@@ -43,5 +43,20 @@ class DatabaseActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
+
+        val addNewPantryItemButton = findViewById<Button>(R.id.addNewPantryItem_button)
+        addNewPantryItemButton.setOnClickListener {
+            val intent = Intent(this, NewPantryItemActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
+        val addNewShoppingListItemButton = findViewById<Button>(R.id.addNewShoppingListItem_button)
+        addNewShoppingListItemButton.setOnClickListener {
+            val intent = Intent(this, NewShoppingListItemActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
     }
 }

@@ -1,5 +1,6 @@
 package com.example.grocerez.databaseActivities
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -25,6 +26,7 @@ class NewCategoryActivity : AppCompatActivity() {
     private lateinit var buttonInsert: Button
     private lateinit var buttonDisplay: Button
     private lateinit var buttonSearch: Button
+    private lateinit var backButton: Button
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -60,6 +62,13 @@ class NewCategoryActivity : AppCompatActivity() {
 
         buttonSearch.setOnClickListener {
             searchCategoryByName(editTextCategoryName.text.toString())
+        }
+
+        backButton = findViewById(R.id.back_category_button)
+        backButton.setOnClickListener {
+//            val intent = Intent(this, DatabaseActivity::class.java)
+//            startActivity(intent)
+            finish()
         }
     }
 

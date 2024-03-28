@@ -1,5 +1,6 @@
 package com.example.grocerez.databaseActivities
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.Button
@@ -33,6 +34,7 @@ class NewItemActivity : AppCompatActivity() {
 
     private lateinit var textViewBox: TextView
     private lateinit var buttonSearchByName: Button
+    private lateinit var backButton: Button
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -93,11 +95,17 @@ class NewItemActivity : AppCompatActivity() {
         editTextItemName = findViewById(R.id.inputItemName) // textbox to input name
         editTextUseRate = findViewById(R.id.editTextUseRate) // textbox to input rate
         buttonSearchByName = findViewById(R.id.searchItemByName_button)
+        backButton = findViewById(R.id.back_item_button)
 
 
+        backButton.setOnClickListener {
+//            val intent = Intent(this, DatabaseActivity::class.java)
+//            startActivity(intent)
+            finish()
+        }
 
         buttonInsert.setOnClickListener {
-            val itemName = editTextItemName.text.toString()
+            val itemName = editTextItemName.text.toString().trim()
             val useRate = editTextUseRate.text.toString().toFloatOrNull() ?: 0.0f // default to 0
 
             val selectedCategoryName = spinnerCategories.selectedItem.toString() // select from drop downs
@@ -192,4 +200,7 @@ class NewItemActivity : AppCompatActivity() {
         }
 
     }
+
+
+
 }
