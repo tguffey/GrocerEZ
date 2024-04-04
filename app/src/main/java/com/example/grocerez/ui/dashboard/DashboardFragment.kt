@@ -1,18 +1,67 @@
 package com.example.grocerez.ui.dashboard
 
+import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.grocerez.R
 import com.example.grocerez.databinding.FragmentDashboardBinding
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanIntentResult
+import com.journeyapps.barcodescanner.ScanOptions
 
 class DashboardFragment : Fragment(), FoodItemClickListener {
+
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()){
+            isGranted: Boolean ->
+            if (isGranted){
+                showCamera()
+            }
+            else{
+                // explain why you need permission
+            }
+        }
+
+    private val scanLauncher =
+        registerForActivityResult(ScanContract())
+        {
+            result: ScanIntentResult ->
+            run {
+                if (result.contents == null) {
+                    Toast.makeText(requireContext(), "Cancelled", Toast.LENGTH_SHORT).show()
+                } else {
+                    setResult(result.contents)
+                }
+            }
+        }
+
+    private fun setResult(string: String) {
+        binding.textResult.text = string
+    }
+
+    private fun showCamera() {
+        val options = ScanOptions()
+        options.setDesiredBarcodeFormats(ScanOptions.UPC_A)
+        options.setPrompt("Scan Barcode")
+        options.setCameraId(0)
+        options.setBeepEnabled(false)
+        options.setBarcodeImageEnabled(true)
+        options.setOrientationLocked(false)
+
+        scanLauncher.launch(options)
+
+    }
 
     private var _binding: FragmentDashboardBinding? = null
 
@@ -66,10 +115,26 @@ class DashboardFragment : Fragment(), FoodItemClickListener {
             NewTaskSheet(null).show(parentFragmentManager, "newItemTag")
             shrinkFab()
         }
+
+        binding.scanBarcode.setOnClickListener {
+            checkPermissionCamera(requireContext())
+        }
         setRecyclerView()
 
         // Return the root view
         return root
+    }
+
+    private fun checkPermissionCamera(context: Context) {
+        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED){
+            showCamera()
+        }
+        else if (shouldShowRequestPermissionRationale(android.Manifest.permission.CAMERA)){
+            Toast.makeText(context, "CAMERA permission required", Toast.LENGTH_SHORT).show()
+        }
+        else{
+            requestPermissionLauncher.launch(android.Manifest.permission.CAMERA)
+        }
     }
 
     override fun onDestroyView() {
