@@ -73,6 +73,8 @@ class MyPlateSettingsFragment : Fragment(), GoalAdapter.GoalClickListener {
                 // Read data from the text boxes and spinners
                 val age = ageText.text.toString().toInt()
                 val weight = weightText.text.toString().toDouble()
+                val weightUnit = weightSpinner.selectedItem.toString()
+                val weightInKilograms = convertWeightToKilograms(weight, weightUnit)
                 val height = heightText.text.toString().toDouble()
                 val sex = sexSpinner.selectedItemPosition
                 val physicalActivityLevel = paSpinner.selectedItemPosition
@@ -83,8 +85,9 @@ class MyPlateSettingsFragment : Fragment(), GoalAdapter.GoalClickListener {
                     editButton.isEnabled = false
 
                 } else{
+                    //HERE U GONNA SEND THE FRIKEN WEIGHT AND WEIGHT UNIT SUCKER
                     //Update the ViewModel with the new user data
-                    viewModel.updateUserData(age, weight, height, sex, physicalActivityLevel)
+                    viewModel.updateUserData(age, weightInKilograms, height, sex, physicalActivityLevel)
                     updateInputState()
                     editButton.isEnabled = true
 
@@ -99,6 +102,16 @@ class MyPlateSettingsFragment : Fragment(), GoalAdapter.GoalClickListener {
         }
 
         return view
+    }
+
+    fun convertWeightToKilograms(weight: Double, unit: String): Double {
+        return if (unit == "lbs") {
+            // Convert pounds to kilograms (1 pound = 0.453592 kilograms)
+            weight * 0.453592
+        } else {
+            // Weight is already in kilograms, so return it as is
+            weight
+        }
     }
 
     // Call this function whenever you need to update the spinner state, for example, when the Edit button is clicked.

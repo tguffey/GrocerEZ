@@ -2,7 +2,6 @@ package com.example.grocerez.ui.myplate
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.grocerez.ui.myplate.MyPlateModel
 import kotlin.math.round
 
 
@@ -46,9 +45,10 @@ class MyPlateViewModel : ViewModel() {
         // Convert height to meters
         val heightMeters = height * 0.0254
         // Convert weight to kilograms
-        val weightKg = weight * 0.453592
+        //val weightKg = weight * 0.453592
         // Calculate BMI
-        return round(weightKg / (heightMeters * heightMeters))
+        println("BMI WEIGHT:  $weight")
+        return round(weight / (heightMeters * heightMeters))
     }
 
     fun calculateCaloricExpenditure(bmr: Double, activityLevel: Int): Double {
@@ -59,11 +59,11 @@ class MyPlateViewModel : ViewModel() {
     fun calculateBMR(age: Int, weight: Double, height: Double, sex: Int): Double {
         val heightCm = height * 2.54
         // Convert weight to kilograms
-        val weightKg = weight * 0.453592
+        //val weightKg = weight * 0.453592
         // BMR calculation based on Mifflin-St Jeor equation
         return when (sex) {
-            0 -> round((9.99 * weightKg) + (6.25 * heightCm) - (4.92 * age) + 5) // Male
-            1 -> round((9.99 * weightKg) + (6.25 * heightCm) - (4.92 * age) - 161) // Female
+            0 -> round((9.99 * weight) + (6.25 * heightCm) - (4.92 * age) + 5) // Male
+            1 -> round((9.99 * weight) + (6.25 * heightCm) - (4.92 * age) - 161) // Female
             else -> throw IllegalArgumentException("Invalid gender. Please select male or female.")
         }
     }
