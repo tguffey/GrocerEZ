@@ -4,6 +4,7 @@ import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.grocerez.databinding.FragmentNewRecipeSheetBinding
@@ -95,7 +96,29 @@ class NewRecipeSheet(var recipeItem: RecipeItem?) : BottomSheetDialogFragment(),
         val description = binding.description.text.toString()
         val notes = binding.notes.text.toString()
 
+        // Check if name or description is empty
+        if (name.isEmpty()) {
+            Toast.makeText(requireContext(), "Name cannot be empty", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (description.isEmpty()) {
+            Toast.makeText(requireContext(), "Description cannot be empty", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val ingredients = ingredientItemAdapter.getIngredients().toMutableList()
+
+        // Check if ingredients list is empty
+        if (ingredients.isEmpty()) {
+            Toast.makeText(requireContext(), "Please add at least one ingredient", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (notes.isEmpty()) {
+            Toast.makeText(requireContext(), "Add a note the recipe item", Toast.LENGTH_SHORT).show()
+            return
+        }
 
         if (recipeItem == null) {
             val newRecipe = RecipeItem(name, description, ingredients, notes)

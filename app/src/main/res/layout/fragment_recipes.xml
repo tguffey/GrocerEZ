@@ -42,7 +42,7 @@
 
         <!--Edit Item option 1: Clear List button-->
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/clear_list_fab"
+            android:id="@+id/parseRecipeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="15dp"

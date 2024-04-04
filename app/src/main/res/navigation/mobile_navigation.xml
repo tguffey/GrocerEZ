@@ -28,7 +28,11 @@
         android:id="@+id/navigation_recipes"
         android:name="com.example.grocerez.ui.recipes.RecipesFragment"
         android:label="@string/title_recipes"
-        tools:layout="@layout/fragment_recipes"/>
+        tools:layout="@layout/fragment_recipes">
+        <action
+            android:id="@+id/action_to_new_fragment"
+            app:destination="@+id/recipe_parsing" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_shopping"

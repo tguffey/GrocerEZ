@@ -48,16 +48,7 @@ class IngredientInputDialog(var ingredientItem: IngredientItem?) : DialogFragmen
         }
 
         binding.saveButton.setOnClickListener {
-            if (binding.name.text.toString() == "" || binding.quantity.text.toString() == "") {
-                clearFields()
-            }
-            else{
-                val name = binding.name.text.toString()
-                val quantity = binding.quantity.text.toString()
-                val ingredient = IngredientItem(name, quantity.toDouble(), selectedUnit)
-                ingredientItemAdapter.addIngredients(ingredient)
-                clearFields()
-            }
+            saveButton()
         }
 
         binding.cancelButton.setOnClickListener {
@@ -132,6 +123,25 @@ class IngredientInputDialog(var ingredientItem: IngredientItem?) : DialogFragmen
         return dialog
     }
 
+    fun saveButton(){
+        val name = binding.name.text.toString().trim()
+        val quantity = binding.quantity.text.toString().trim()
+
+        // Check if name or quantity is empty
+        if (name.isEmpty() || quantity.isEmpty()) {
+            Toast.makeText(requireContext(), "Name and quantity cannot be empty", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (selectedUnit == "Units") {
+            Toast.makeText(requireContext(), "Select a given unit", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val ingredient = IngredientItem(name, quantity.toDouble(), selectedUnit)
+        ingredientItemAdapter.addIngredients(ingredient)
+        clearFields()
+    }
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

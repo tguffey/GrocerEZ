@@ -46,27 +46,8 @@ class DashboardFragment : Fragment(), FoodItemClickListener {
             }
         }
 
-    private fun setResult(string: String) {
-        binding.textResult.text = string
-    }
-
-    private fun showCamera() {
-        val options = ScanOptions()
-        options.setDesiredBarcodeFormats(ScanOptions.UPC_A)
-        options.setPrompt("Scan Barcode")
-        options.setCameraId(0)
-        options.setBeepEnabled(false)
-        options.setBarcodeImageEnabled(true)
-        options.setOrientationLocked(false)
-
-        scanLauncher.launch(options)
-
-    }
-
     private var _binding: FragmentDashboardBinding? = null
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
     private lateinit var itemViewModel: DashboardViewModel
     private var isExpanded = false
@@ -137,6 +118,22 @@ class DashboardFragment : Fragment(), FoodItemClickListener {
         }
     }
 
+    private fun setResult(string: String) {
+        binding.textResult.text = string
+    }
+
+    private fun showCamera() {
+        val options = ScanOptions()
+        options.setDesiredBarcodeFormats(ScanOptions.UPC_A)
+        options.setPrompt("Scan Barcode")
+        options.setCameraId(0)
+        options.setBeepEnabled(false)
+        options.setBarcodeImageEnabled(true)
+        options.setOrientationLocked(false)
+
+        scanLauncher.launch(options)
+
+    }
     override fun onDestroyView() {
         super.onDestroyView()
         // Set the binding variable to null to avoid memory leaks

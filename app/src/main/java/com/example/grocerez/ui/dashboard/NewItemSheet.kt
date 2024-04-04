@@ -2,7 +2,6 @@ package com.example.grocerez.ui.dashboard
 
 import android.app.DatePickerDialog
 import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.view.LayoutInflater
@@ -10,18 +9,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import androidx.core.content.ContextCompat
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.example.grocerez.databinding.FragmentNewItemSheetBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.text.SimpleDateFormat
 import java.time.Instant
-import java.time.LocalDate
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
-import java.util.concurrent.TimeUnit
-import java.time.format.DateTimeFormatter
 
 // BottomSheetDialogFragment for adding a new task
 class NewTaskSheet(var foodItem: FoodItem?) : BottomSheetDialogFragment() {
@@ -141,6 +138,19 @@ class NewTaskSheet(var foodItem: FoodItem?) : BottomSheetDialogFragment() {
         val name = binding.name.text.toString()
         val expirationDateText = binding.expirationDate.text.toString().replace("Date: ", "")
         val startingDateText = binding.startingDate.text.toString().replace("Date: ", "")
+
+        // Check if the name is empty
+        if (name.isEmpty()) {
+            // Show a message to the user indicating that the name cannot be empty
+            Toast.makeText(requireContext(), "Name cannot be empty", Toast.LENGTH_SHORT).show()
+            return // Exit the function without adding the item to the list
+        }
+
+        // Check if either expiration date or starting date is empty
+        if (expirationDateText.isEmpty() || startingDateText.isEmpty()) {
+            Toast.makeText(requireContext(), "Please select both starting and expiration dates", Toast.LENGTH_SHORT).show()
+            return
+        }
 
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         val expirationDate = dateFormat.parse(expirationDateText)

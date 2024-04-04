@@ -8,7 +8,9 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.grocerez.R
 import com.example.grocerez.databinding.FragmentRecipesBinding
 
 
@@ -73,6 +75,14 @@ class RecipesFragment : Fragment(), RecipeItemClickListener {
             // Show New Recipe bottom dialog
             NewRecipeSheet(null).show(parentFragmentManager, "newRecipeTag")
         }
+
+        // Set OnClickListener for clearListFab
+        binding.parseRecipeButton.setOnClickListener {
+            if (findNavController().currentDestination?.id == R.id.navigation_recipes) {
+                findNavController().navigate(R.id.action_to_new_fragment)
+            }
+        }
+
 
         return root
     }
