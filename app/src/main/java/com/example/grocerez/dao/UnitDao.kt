@@ -25,4 +25,8 @@ interface UnitDao {
     @Delete
     suspend fun deleteUnit(unit: Unit)
     // Add other CRUD operations as needed
+
+    // Define a query method to search for a unit by its name
+    @Query("SELECT * FROM units WHERE name = :unitName")
+    suspend fun findUnitByName(unitName: String): Unit?
 }

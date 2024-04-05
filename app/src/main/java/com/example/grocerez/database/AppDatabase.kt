@@ -10,14 +10,22 @@ import com.example.grocerez.data.model.Category
 import com.example.grocerez.data.model.Unit
 import com.example.grocerez.dao.ItemDao
 import com.example.grocerez.dao.CategoryDao
+import com.example.grocerez.dao.PantryItemDao
+import com.example.grocerez.dao.ShoppingListItemDao
 import com.example.grocerez.dao.UnitDao
+import com.example.grocerez.data.model.PantryItem
+import com.example.grocerez.data.model.ShoppingListItem
 
 
-@Database(entities = [Item::class, Category::class, Unit::class], version = 1)
+@Database(entities = [Item::class, Category::class, Unit::class, ShoppingListItem::class, PantryItem::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun itemDao(): ItemDao
     abstract fun categoryDao(): CategoryDao
     abstract fun unitDao(): UnitDao
+
+    abstract fun shoppingListItemDao(): ShoppingListItemDao
+
+    abstract fun pantryItemDao(): PantryItemDao
 
     //making this a singleton object
     companion object {

@@ -10,6 +10,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.grocerez.data.model.Category
+import com.example.grocerez.data.model.Unit
 
 
 @Dao
@@ -26,4 +27,8 @@ interface CategoryDao {
     @Delete
     suspend fun deleteCategory(category: Category)
     // Add other CRUD operations as needed
+
+    // Define a query method to search for a unit by its name
+    @Query("SELECT * FROM category WHERE name = :categoryName")
+    suspend fun findCategoryByName(categoryName: String): Category?
 }

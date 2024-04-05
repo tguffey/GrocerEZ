@@ -89,6 +89,11 @@ class ShoppingFragment : Fragment() {
         }
         setRecyclerView()
 
+        // TODO: this is to test viewing the db. fix this later
+        binding.addCategoryFab.setOnClickListener {
+            // fill this in
+        }
+
         return root
     }
 
