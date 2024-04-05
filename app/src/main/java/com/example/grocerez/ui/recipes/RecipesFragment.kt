@@ -79,7 +79,7 @@ class RecipesFragment : Fragment(), RecipeItemClickListener {
         // Set OnClickListener for clearListFab
         binding.parseRecipeButton.setOnClickListener {
             if (findNavController().currentDestination?.id == R.id.navigation_recipes) {
-                findNavController().navigate(R.id.action_to_new_fragment)
+                findNavController().navigate(R.id.action_recipeFragment_to_recipeParsing)
             }
         }
 
