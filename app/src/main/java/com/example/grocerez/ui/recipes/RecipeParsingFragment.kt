@@ -57,10 +57,8 @@ class RecipeParsingFragment : Fragment() {
 
             // Perform parsing with the link
             if (url.isNotEmpty()) {
-                // Assuming "get-ingredients" is the event. Modify as needed.
                 mSocket.emit("get-ingredients", url)
             } else {
-                // In input is empty (FOR TESTING PURPOSES)
                 mSocket.emit("get-ingredients", "https://www.budgetbytes.com/homemade-meatballs/")
             }
         }
@@ -70,27 +68,44 @@ class RecipeParsingFragment : Fragment() {
 
     private fun setupSocketListeners() {
         mSocket.on("ingredients-result") { args ->
-            // Since we're only logging, no need to run on the UI thread
-            val ingredientsJson = args[0]?.toString()
+            val recipeDataJson = args[0]?.toString()
             try {
-                val jsonArray = JSONArray(ingredientsJson)
-                val ingredientsList = StringBuilder()
-                for (i in 0 until jsonArray.length()) {
-                    val ingredient = jsonArray.getJSONObject(i)
-                    // Extract "Amount", "Unit", and "Name" and append them to the StringBuilder
-                    val amount = ingredient.getString("Amount")
-                    val unit = ingredient.getString("Unit")
-                    val name = ingredient.getString("Name")
+                // Initialize a JSONObject with the string
+                val jsonObject = JSONObject(recipeDataJson)
+
+                // Get the ingredients put in an ingredient list string
+                val ingredientsJsonArray = jsonObject.getJSONArray("ingredients")
+                val ingredientsList = StringBuilder("Ingredients:\n")
+                for (i in 0 until ingredientsJsonArray.length()) {
+                    val ingredient = ingredientsJsonArray.getJSONObject(i)
+                    val amount = ingredient.optString("Amount")
+                    val unit = ingredient.optString("Unit")
+                    val name = ingredient.optString("Name")
                     ingredientsList.append("Amount: $amount, Unit: $unit, Name: $name\n")
                 }
-                // Log the ingredients list to Logcat
-                Log.d("IngredientsResult", ingredientsList.toString())
+
+                // Get the instructions put in an instructions list string
+                val instructionsJsonArray = jsonObject.getJSONArray("instructions")
+                val instructionsList = StringBuilder("\nInstructions:\n")
+                for (i in 0 until instructionsJsonArray.length()) {
+                    // Ensure that each instruction is treated as a string
+                    val step = instructionsJsonArray.optString(i)
+                    instructionsList.append("Step ${i + 1}: $step\n")
+                }
+
+                // This combines both ingredients and instructions into one string list
+                val combinedResult = ingredientsList.append(instructionsList.toString())
+
+                // Log the combined result to Logcat
+                Log.d("RecipeDataResult", combinedResult.toString())
             } catch (e: JSONException) {
                 e.printStackTrace()
-                Log.d("IngredientsError", "Error parsing ingredients")
+                Log.d("RecipeDataError", "Error parsing recipe data")
             }
         }
     }
+
+
 
 
     override fun onDestroyView() {
