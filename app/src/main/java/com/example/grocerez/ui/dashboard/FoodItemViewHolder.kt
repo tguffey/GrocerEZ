@@ -13,7 +13,7 @@ class FoodItemViewHolder(
 {
     fun bindFoodItem(foodItem: FoodItem){
         binding.name.text = foodItem.name
-        val intValue: Int =  foodItem.prog // Default value if newValue is null or not an Int
+        val intValue: Int =  foodItem.calculateProgress(foodItem.startingDate, foodItem.expirationDate) // Default value if newValue is null or not an Int
 
         // sets food cell as a clickable button to edit the food item data
         binding.foodCellContainer.setOnClickListener{
@@ -21,20 +21,19 @@ class FoodItemViewHolder(
         }
 
         // Animate progress bar if necessary
-        animateProgressBar(foodItem.prog)
+        animateProgressBar(intValue)
     }
 
+
+    // Method to animate progress bar
     // Method to animate progress bar
     private fun animateProgressBar(newValue: Int) {
-        // Default value if newValue is null or not an Int
-        val intValue: Int = newValue
-
         // Animate the progress using ObjectAnimator
         val objectAnimator = ObjectAnimator.ofInt(
             binding.itemProgressBar,
             "progress",
             binding.itemProgressBar.progress,
-            intValue
+            newValue
         )
 
         // Set the animation duration

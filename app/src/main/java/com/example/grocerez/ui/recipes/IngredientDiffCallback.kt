@@ -2,10 +2,9 @@ package com.example.grocerez.ui.recipes
 
 import androidx.recyclerview.widget.DiffUtil
 
-// Callback class for calculating the difference between old and new recipe item lists
-class RecipeDiffCallback (
-    private val oldRecipeItems: List<RecipeItem>, // Old list of recipe items
-    private val newRecipeItems: List<RecipeItem> // New list of recipe items
+class IngredientDiffCallback
+    (private val oldRecipeItems: List<IngredientItem>, // Old list of recipe items
+     private val newRecipeItems: List<IngredientItem> // New list of recipe items
 ) : DiffUtil.Callback()
 {
     // Return the size of the old recipe item list

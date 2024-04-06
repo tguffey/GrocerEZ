@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.grocerez.databinding.GroceryItemCellBinding
 
 class GroceryItemAdapter(
-    private var groceryItems: MutableList<GroceryItem> // List of grocery items to display
+    private var groceryItems: List<GroceryItem> // List of grocery items to display
 ) : RecyclerView.Adapter<GroceryItemAdapter.GroceryItemViewHolder>() {
 
     inner class GroceryItemViewHolder(
@@ -19,16 +19,27 @@ class GroceryItemAdapter(
 
         fun bindGroceryItem(groceryItem: GroceryItem){
             binding.name.text = groceryItem.name
-            binding.category.text = groceryItem.category
+            binding.quantity.text = "Qty: " + groceryItem.quantity.toString()
+            binding.notes.text = groceryItem.note
 
             binding.checkbox.setOnClickListener {
                 if (binding.name.getCurrentTextColor() == Color.BLACK) {
                     binding.name.setTextColor(Color.GRAY)
                     binding.name.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
+                    binding.quantity.setTextColor(Color.GRAY)
+                    binding.quantity.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
+                    binding.notes.setTextColor(Color.GRAY)
+                    binding.notes.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
+                    groceryItem.isChecked = true
                 }
                 else {
                     binding.name.setTextColor(Color.BLACK)
                     binding.name.paintFlags = 0
+                    binding.quantity.setTextColor(Color.BLACK)
+                    binding.quantity.paintFlags = 0
+                    binding.notes.setTextColor(Color.BLACK)
+                    binding.notes.paintFlags = 0
+                    groceryItem.isChecked = false
                 }
             }
         }
@@ -43,10 +54,6 @@ class GroceryItemAdapter(
         return GroceryItemViewHolder(parent.context, binding)
     }
 
-    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
-        super.onDetachedFromRecyclerView(recyclerView)
-    }
-
     // Called by RecyclerView to display the data at the specified position
     override fun onBindViewHolder(holder: GroceryItemViewHolder, position: Int) {
         holder.bindGroceryItem(groceryItems[position])
@@ -54,9 +61,4 @@ class GroceryItemAdapter(
 
     // Returns the total number of items in shopping list
     override fun getItemCount(): Int = groceryItems.size
-
-    fun removeItem(grocery: GroceryItem) {
-        groceryItems.remove(grocery)
-        notifyDataSetChanged()
-    }
 }

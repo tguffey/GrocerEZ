@@ -4,15 +4,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!--RecyclerView-->
+    <TextView
+        android:id="@+id/textResult"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="barcode"
+        android:textSize="25sp"
+        />
 
-    <!--Transparent Background-->
+    <!--RecyclerView-->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/foodListRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="600dp"
+        android:layout_marginTop="60dp"
         android:backgroundTint="@color/design_default_color_background" />
 
+    <!--Transparent Background-->
     <View
         android:id="@+id/transparentBg"
         android:layout_width="0dp"
@@ -81,15 +89,16 @@
         android:id="@+id/scan_barcode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="230dp"
         android:layout_alignParentEnd="true"
-        android:padding="15dp"
-        android:layout_above="@id/add_item_fab"
+        android:layout_alignParentBottom="true"
+        android:padding="10dp"
+        android:visibility="invisible"
         android:contentDescription="@string/button_scan_barcode"
         android:text="@string/button_scan_barcode"
         android:textColor="?colorOnPrimary"
         android:textSize="16sp"
-        android:visibility="invisible"
+
         app:icon="@drawable/icons8_barcode_scanner_50"
         app:backgroundTint="?attr/colorPrimary"
         app:iconTint="@color/white" />

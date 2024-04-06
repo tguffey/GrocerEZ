@@ -28,7 +28,20 @@
         android:id="@+id/navigation_recipes"
         android:name="com.example.grocerez.ui.recipes.RecipesFragment"
         android:label="@string/title_recipes"
-        tools:layout="@layout/fragment_recipes"/>
+        tools:layout="@layout/fragment_recipes">
+        <action
+            android:id="@+id/action_recipeFragment_to_recipeParsing"
+            app:destination="@+id/recipe_parsing" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/recipe_parsing"
+        android:name="com.example.grocerez.ui.recipes.RecipeParsingFragment"
+        android:label="@string/recipe_parsing"
+        tools:layout="@layout/recipe_parsing"/>
+    <action
+        android:id="@+id/action_recipeFragment_to_recipeParsing"
+        app:destination="@id/recipe_parsing" />
 
     <fragment
         android:id="@+id/navigation_shopping"
