@@ -112,8 +112,10 @@ class MainActivity : AppCompatActivity() {
                         val ingredient = jsonArray.getJSONObject(i)
                         // The web ingredients are passed as "Amount", "Unit", and "Name"
                         // Grab each object with the "Name" value
-                        val name = ingredient.getString("Name")
-                        ingredientsList.append(name).append("\n")
+                        val unit = ingredient.getString("Unit")
+                        ingredientsList.append(unit).append("\n")
+                        //val name = ingredient.getString("Name")
+                        //ingredientsList.append(name).append("\n")
                     }
                     countTextView.text = ingredientsList.toString()
                 } catch (e: JSONException) {
