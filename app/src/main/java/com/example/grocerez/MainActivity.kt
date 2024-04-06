@@ -11,6 +11,7 @@ import io.socket.client.Socket
 import org.json.JSONObject
 import android.widget.Button
 import android.widget.TextView
+import android.widget.EditText
 import org.json.JSONArray
 import org.json.JSONException
 
@@ -58,16 +59,30 @@ class MainActivity : AppCompatActivity() {
         val sqlSelectAllButton = findViewById<Button>(R.id.sqlSelectAllBtn)
         val scrapeIngredientsBtn = findViewById<Button>(R.id.scrapeIngredientsBtn)
         val nutrientTestBtn = findViewById<Button>(R.id.nutrientTestBtn)
+        val inputEditText = findViewById<EditText>(R.id.inputEditText) // Get the EditText
 
         // Setup button listeners
         counterBtn.setOnClickListener { mSocket.emit("counter") }
         getTestBtn.setOnClickListener { mSocket.emit("hello") }
         postTestBtn.setOnClickListener { mSocket.emit("hello_post") }
         sqlSelectAllButton.setOnClickListener { mSocket.emit("sql_query") }
+
+
+        // Function to accept user url
+        /*scrapeIngredientsBtn.setOnClickListener {
+            // Get the text from the EditText
+            val url = inputEditText.text.toString()
+            mSocket.emit("get-ingredients", url)
+
+        }*/
+
+        // Default Ingredient Scrape Test
         scrapeIngredientsBtn.setOnClickListener {
             val url = "https://www.budgetbytes.com/homemade-meatballs/"
             mSocket.emit("get-ingredients", url)
         }
+
+
         nutrientTestBtn.setOnClickListener {
             val foodName = "Chicken"
             val quantity = 1
@@ -111,11 +126,16 @@ class MainActivity : AppCompatActivity() {
                     for (i in 0 until jsonArray.length()) {
                         val ingredient = jsonArray.getJSONObject(i)
                         // The web ingredients are passed as "Amount", "Unit", and "Name"
-                        // Grab each object with the "Name" value
+
+                        // Grab each object with the "Amount" value
+                        val amount = ingredient.getString("Amount")
+                        ingredientsList.append(amount).append("\n")
+                        // Grab each object with the "Unit" value
                         val unit = ingredient.getString("Unit")
                         ingredientsList.append(unit).append("\n")
-                        //val name = ingredient.getString("Name")
-                        //ingredientsList.append(name).append("\n")
+                        // Grab each object with the "Name" value
+                        val name = ingredient.getString("Name")
+                        ingredientsList.append(name).append("\n")
                     }
                     countTextView.text = ingredientsList.toString()
                 } catch (e: JSONException) {
