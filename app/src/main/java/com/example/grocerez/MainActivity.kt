@@ -58,6 +58,7 @@ class MainActivity : AppCompatActivity() {
         val sqlSelectAllButton = findViewById<Button>(R.id.sqlSelectAllBtn)
         val scrapeIngredientsBtn = findViewById<Button>(R.id.scrapeIngredientsBtn)
         val nutrientTestBtn = findViewById<Button>(R.id.nutrientTestBtn)
+        val recipeTestBtn = findViewById<Button>(R.id.recipeTestBtn)
 
         // Setup button listeners
         counterBtn.setOnClickListener { mSocket.emit("counter") }
@@ -73,6 +74,11 @@ class MainActivity : AppCompatActivity() {
             val quantity = 1
             val unit = "pound"
             mSocket.emit("get-nutritional-data", foodName, quantity, unit)
+        }
+
+        recipeTestBtn.setOnClickListener {
+            val url = "https://www.budgetbytes.com/homemade-meatballs/"
+            mSocket.emit("get-recipe", url)
         }
 
         // Setup socket event listeners
