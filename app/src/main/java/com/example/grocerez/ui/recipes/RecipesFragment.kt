@@ -1,6 +1,5 @@
 package com.example.grocerez.ui.recipes
 
-import NewRecipeSheet
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -73,7 +72,9 @@ class RecipesFragment : Fragment(), RecipeItemClickListener {
         // Set OnClickListener for addItemFab
         binding.addItemFab.setOnClickListener {
             // Show New Recipe bottom dialog
-            NewRecipeSheet(null).show(parentFragmentManager, "newRecipeTag")
+            if (findNavController().currentDestination?.id == R.id.navigation_recipes) {
+                findNavController().navigate(R.id.action_recipeFragment_to_newRecipeSheet)
+            }
         }
 
         // Set OnClickListener for clearListFab
@@ -121,10 +122,13 @@ class RecipesFragment : Fragment(), RecipeItemClickListener {
         }
     }
 
-    // Handle the edit action for a recipe item
     override fun editRecipeItem(recipeItem: RecipeItem) {
-        NewRecipeSheet(recipeItem).show(parentFragmentManager, "newRecipeTag")
+        val bundle = Bundle()
+        bundle.putParcelable("recipeItem", recipeItem)
+        findNavController().navigate(R.id.action_recipeFragment_to_newRecipeSheet, bundle)
     }
+
+
 
     // Destroy the view once the user navigates to a different page
     override fun onDestroyView() {
@@ -132,4 +136,3 @@ class RecipesFragment : Fragment(), RecipeItemClickListener {
         _binding = null
     }
 }
-

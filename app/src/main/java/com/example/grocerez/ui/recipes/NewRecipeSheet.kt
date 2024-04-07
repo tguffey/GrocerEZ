@@ -1,23 +1,19 @@
+package com.example.grocerez.ui.recipes
 
+import IngredientInputDialog
 import android.os.Bundle
 import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.grocerez.databinding.FragmentNewRecipeSheetBinding
-import com.example.grocerez.ui.recipes.IngredentItemClickListener
-import com.example.grocerez.ui.recipes.IngredientItem
-import com.example.grocerez.ui.recipes.RecipeIngredientAdapter
-import com.example.grocerez.ui.recipes.RecipeItem
-import com.example.grocerez.ui.recipes.RecipesViewModel
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class NewRecipeSheet(var recipeItem: RecipeItem?) : BottomSheetDialogFragment(),  IngredentItemClickListener{
+class NewRecipeSheet(private val recipeItem: RecipeItem? = null) : Fragment(), IngredentItemClickListener {
 
     private var _binding: FragmentNewRecipeSheetBinding? = null
     private val binding get() = _binding!!
@@ -30,25 +26,20 @@ class NewRecipeSheet(var recipeItem: RecipeItem?) : BottomSheetDialogFragment(),
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        // Inflate the layout for this fragment
         _binding = FragmentNewRecipeSheetBinding.inflate(inflater, container, false)
-        return binding.root
+        val view = binding.root
+
+        // Use the recipeItem data as needed
+
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Adjust the bottom sheet dialog to pull all the way to the top of the screen
-        dialog?.setOnShowListener {
-            val bottomSheetDialog = it as BottomSheetDialog
-            val bottomSheetInternal =
-                bottomSheetDialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
-            bottomSheetInternal?.let { sheet ->
-                val behavior = BottomSheetBehavior.from(sheet)
-                behavior.state = BottomSheetBehavior.STATE_EXPANDED
-                behavior.skipCollapsed = true
-                behavior.isHideable = false
-            }
-        }
+        // Use the recipeItem data to populate the fields
+        recipeItem?.let { populateFields(it) }
 
         recipeViewModel = ViewModelProvider(requireActivity()).get(RecipesViewModel::class.java)
 
@@ -57,12 +48,12 @@ class NewRecipeSheet(var recipeItem: RecipeItem?) : BottomSheetDialogFragment(),
         if (recipeItem != null) {
             binding.recipeTitle.text = "Edit Recipe"
             val editable = Editable.Factory.getInstance()
-            binding.name.text = editable.newEditable(recipeItem!!.name)
-            binding.description.text = editable.newEditable(recipeItem!!.description)
-            recipeItem!!.ingredients.forEach { ingredient ->
+            binding.name.text = editable.newEditable(recipeItem.name)
+            binding.description.text = editable.newEditable(recipeItem.description)
+            recipeItem.ingredients.forEach { ingredient ->
                 ingredientItemAdapter.addIngredients(ingredient)
             }
-            binding.notes.text = editable.newEditable(recipeItem!!.note)
+            binding.notes.text = editable.newEditable(recipeItem.note)
         } else {
             binding.recipeTitle.text = "New Recipe"
         }
@@ -73,6 +64,7 @@ class NewRecipeSheet(var recipeItem: RecipeItem?) : BottomSheetDialogFragment(),
 
         binding.cancelButton.setOnClickListener {
             clearFields()
+            findNavController().popBackStack()
         }
 
         binding.addIngredientButton.setOnClickListener {
@@ -83,6 +75,17 @@ class NewRecipeSheet(var recipeItem: RecipeItem?) : BottomSheetDialogFragment(),
             layoutManager = LinearLayoutManager(requireContext())
             adapter = ingredientItemAdapter
         }
+    }
+
+    private fun populateFields(recipeItem: RecipeItem) {
+        binding.recipeTitle.text = "Edit Recipe"
+        val editable = Editable.Factory.getInstance()
+        binding.name.text = editable.newEditable(recipeItem.name)
+        binding.description.text = editable.newEditable(recipeItem.description)
+        recipeItem.ingredients.forEach { ingredient ->
+            ingredientItemAdapter.addIngredients(ingredient)
+        }
+        binding.notes.text = editable.newEditable(recipeItem.note)
     }
 
     private fun showIngredientInputDialog() {
@@ -124,22 +127,21 @@ class NewRecipeSheet(var recipeItem: RecipeItem?) : BottomSheetDialogFragment(),
             val newRecipe = RecipeItem(name, description, ingredients, notes)
             recipeViewModel.addRecipeItem(newRecipe)
         } else {
-            recipeItem!!.name = name
-            recipeItem!!.description = description
-            recipeItem!!.note = notes
-            recipeItem!!.ingredients.clear()
-            recipeItem!!.ingredients.addAll(ingredients)
-            recipeViewModel.updateRecipeItem(recipeItem!!)
+            recipeItem.name = name
+            recipeItem.description = description
+            recipeItem.note = notes
+            recipeItem.ingredients.clear()
+            recipeItem.ingredients.addAll(ingredients)
+            recipeViewModel.updateRecipeItem(recipeItem)
         }
-
         clearFields()
+        findNavController().popBackStack()
     }
 
     private fun clearFields() {
         binding.name.setText("")
         binding.description.setText("")
         binding.notes.setText("")
-        dismiss()
     }
 
     override fun onDestroyView() {
