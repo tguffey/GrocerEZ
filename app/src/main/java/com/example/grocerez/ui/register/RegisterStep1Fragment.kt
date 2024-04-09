@@ -10,6 +10,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
 import com.example.grocerez.R
+import com.example.grocerez.SocketHandler
 
 // RegisterStep1Fragment.kt
 class RegisterStep1Fragment : Fragment() {
@@ -24,6 +25,10 @@ class RegisterStep1Fragment : Fragment() {
         val passwordEditText = view.findViewById<EditText>(R.id.register_pswd_entry)
         val confirmEditText = view.findViewById<EditText>(R.id.register_confirm_pswd_entry)
 
+        val mSocket = SocketHandler.getSocket()
+        mSocket.emit("hello") // test to see if it works on the server
+
+
         // Set up TextWatchers for the EditText fields
         emailEditText.addTextChangedListener(textWatcher)
         passwordEditText.addTextChangedListener(textWatcher)
@@ -34,8 +39,13 @@ class RegisterStep1Fragment : Fragment() {
 
         nextButton.setOnClickListener {
             // Check if the conditions are met before navigating to the next step
+
+
+            val email = emailEditText.text.toString()
+            val password = passwordEditText.text.toString()
+
             if (areConditionsMet()) {
-                (activity as? RegisterActivity)?.navigateToStep2()
+                (activity as? RegisterActivity)?.navigateToStep2(email, password)
             }
         }
 
