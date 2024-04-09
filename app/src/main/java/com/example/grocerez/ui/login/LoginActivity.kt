@@ -128,9 +128,11 @@ class LoginActivity : AppCompatActivity() {
             // TODO: tyler: debug this section and send info to database.
             login.setOnClickListener {
                 loading.visibility = View.VISIBLE
-                val email = "genericemail@gmail.com"
+//                val email = "genericemail@gmail.com"
                 loginViewModel.login(username.text.toString(), password.text.toString())
-                mSocket.emit("save_signup_info",username.getText().toString(), email.toString(), password.getText().toString())
+//                mSocket.emit("save_signup_info",username.getText().toString(), email.toString(), password.getText().toString())
+                mSocket.emit("log_in", username.text.toString(), password.text.toString())
+
             }
         }
     }
