@@ -20,7 +20,7 @@ class RecipeItem(
             parcel.readTypedList(this, IngredientItem.CREATOR)
         },
         parcel.readString() ?: "",
-        parcel.readSerializable() as UUID
+        UUID.fromString(parcel.readString()) // Parse UUID from String
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -28,7 +28,7 @@ class RecipeItem(
         parcel.writeString(description)
         parcel.writeTypedList(ingredients)
         parcel.writeString(note)
-        parcel.writeSerializable(id)
+        parcel.writeString(id.toString()) // Convert UUID to String
     }
 
     override fun describeContents(): Int {

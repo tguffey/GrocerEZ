@@ -123,8 +123,9 @@ class RecipesFragment : Fragment(), RecipeItemClickListener {
     }
 
     override fun editRecipeItem(recipeItem: RecipeItem) {
-        val bundle = Bundle()
-        bundle.putParcelable("recipeItem", recipeItem)
+        val bundle = Bundle().apply {
+            putParcelable("recipeItem", recipeItem)
+        }
         findNavController().navigate(R.id.action_recipeFragment_to_newRecipeSheet, bundle)
     }
 

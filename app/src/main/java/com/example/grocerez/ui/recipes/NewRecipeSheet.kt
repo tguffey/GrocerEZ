@@ -38,12 +38,13 @@ class NewRecipeSheet(private val recipeItem: RecipeItem? = null) : Fragment(), I
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Use the recipeItem data to populate the fields
-        recipeItem?.let { populateFields(it) }
-
-        recipeViewModel = ViewModelProvider(requireActivity()).get(RecipesViewModel::class.java)
+        recipeViewModel = ViewModelProvider(this.requireActivity()).get(RecipesViewModel::class.java)
 
         ingredientItemAdapter = RecipeIngredientAdapter(mutableListOf(), this)
+
+        // Retrieve the recipeItem from the arguments bundle
+        val args = arguments
+        val recipeItem = args?.getParcelable<RecipeItem>("recipeItem")
 
         if (recipeItem != null) {
             binding.recipeTitle.text = "Edit Recipe"
@@ -122,6 +123,10 @@ class NewRecipeSheet(private val recipeItem: RecipeItem? = null) : Fragment(), I
             Toast.makeText(requireContext(), "Add a note the recipe item", Toast.LENGTH_SHORT).show()
             return
         }
+
+        val args = arguments
+        val recipeItem = args?.getParcelable<RecipeItem>("recipeItem")
+
 
         if (recipeItem == null) {
             val newRecipe = RecipeItem(name, description, ingredients, notes)

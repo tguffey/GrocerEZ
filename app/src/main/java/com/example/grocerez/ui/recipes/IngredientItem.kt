@@ -1,5 +1,4 @@
 package com.example.grocerez.ui.recipes
-
 import android.os.Parcel
 import android.os.Parcelable
 import java.util.UUID
@@ -15,14 +14,14 @@ class IngredientItem(
         parcel.readString() ?: "",
         parcel.readDouble(),
         parcel.readString() ?: "",
-        parcel.readSerializable() as UUID
+        UUID.fromString(parcel.readString()) // Parse UUID from String
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(name)
         parcel.writeDouble(quantity)
         parcel.writeString(ingredientUnit)
-        parcel.writeSerializable(id)
+        parcel.writeString(id.toString()) // Convert UUID to String
     }
 
     override fun describeContents(): Int {
