@@ -62,6 +62,19 @@ class RecipeParsingFragment : Fragment() {
                 mSocket.emit("get-ingredients", "https://www.budgetbytes.com/homemade-meatballs/")
             }
         }
+
+        // Set OnClickListener for add to shopping button
+        binding.addToShoppingButton.setOnClickListener {
+            // Retrieve the link entered by the user
+            val url = binding.linkEditText.text.toString()
+
+            // Perform parsing with the link
+            if (url.isNotEmpty()) {
+                mSocket.emit("get-ingredients-for-shopping-list", url)
+            } else {
+                mSocket.emit("get-ingredients-for-shopping-list", "https://www.budgetbytes.com/homemade-meatballs/")
+            }
+        }
         // Establish a connection for the socket answer
         setupSocketListeners()
     }
@@ -98,6 +111,31 @@ class RecipeParsingFragment : Fragment() {
 
                 // Log the combined result to Logcat
                 Log.d("RecipeDataResult", combinedResult.toString())
+            } catch (e: JSONException) {
+                e.printStackTrace()
+                Log.d("RecipeDataError", "Error parsing recipe data")
+            }
+        }
+
+        mSocket.on("ingredients-result-for-shopping-list") { args ->
+            val recipeDataJson = args[0]?.toString()
+            try {
+                // Initialize a JSONObject with the string
+                val jsonObject = JSONObject(recipeDataJson)
+
+                // Get the ingredients put in an ingredient list string
+                val ingredientsJsonArray = jsonObject.getJSONArray("ingredients")
+                val ingredientsList = StringBuilder("Ingredients:\n")
+                for (i in 0 until ingredientsJsonArray.length()) {
+                    val ingredient = ingredientsJsonArray.getJSONObject(i)
+                    val amount = ingredient.optString("Amount")
+                    val unit = ingredient.optString("Unit")
+                    val name = ingredient.optString("Name")
+                    ingredientsList.append("Amount: $amount, Unit: $unit, Name: $name\n")
+                }
+
+                // Log the combined result to Logcat as a string
+                Log.d("RecipeDataResult", ingredientsList.toString())
             } catch (e: JSONException) {
                 e.printStackTrace()
                 Log.d("RecipeDataError", "Error parsing recipe data")
