@@ -12,6 +12,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.example.grocerez.R
 import com.example.grocerez.SocketHandler
+//import io.socket.client.Socket
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.IO
@@ -23,6 +24,7 @@ import java.util.regex.Pattern
 // RegisterStep1Fragment.kt
 class RegisterStep1Fragment : Fragment() {
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -33,7 +35,7 @@ class RegisterStep1Fragment : Fragment() {
         val passwordEditText = view.findViewById<EditText>(R.id.register_pswd_entry)
         val confirmEditText = view.findViewById<EditText>(R.id.register_confirm_pswd_entry)
         val warningTextView = view.findViewById<TextView>(R.id.registerWarningTextview)
-
+        var isEmailUnique = false
         // getting socket connection
         val mSocket = SocketHandler.getSocket()
         mSocket.emit("hello") // test to see if it works on the server
@@ -47,17 +49,58 @@ class RegisterStep1Fragment : Fragment() {
         val nextButton = view.findViewById<Button>(R.id.register_next_btn)
         nextButton.isEnabled = false  // Initially disable the next button
 
+        println("trying to receive socket 1")
+        mSocket.on("email_check_error"){args ->
+            println("fail socket has been received")
+            if (args[0] != null) {
+                val message = args[0] as String
+                isEmailUnique = false
+                warningTextView.text = message
+                CoroutineScope(IO).launch {
+                    withContext(Dispatchers.Main){
+                        warningTextView.text = message
+                    }
+                }
+            }
+        }
+        println("trying to receive socket 2")
+        mSocket.on("email_check_success"){args ->
+            println("sucess ocket received")
+            if (args[0] != null) {
+                println("printing a message, email is good, socket received")
+                val message = args[0] as String
+                isEmailUnique = true
+                warningTextView.text = message
+                CoroutineScope(IO).launch {
+                    withContext(Dispatchers.Main){
+                        warningTextView.text = message
+
+                    }
+                }
+            }
+        }
+
+
         nextButton.setOnClickListener {
             // Check if the conditions are met before navigating to the next step
 
-            var isEmailUnique = false
+
             val email = emailEditText.text.toString()
             val password = passwordEditText.text.toString()
 
             mSocket.emit("register_email_check", emailEditText.text.toString())
-            // check to see if conditions: ea
-
+            // check to see if conditions:
+            println("socket has emitted")
+            if (areConditionsMet() && isEmailUnique) {
+                (activity as? RegisterActivity)?.navigateToStep2(email, password)
+            } else {
+                warningTextView.text = "Something is wrong with the socket maybe"
+            }
+        }
+        try {
+            println("trying to receive socket 1")
             mSocket.on("email_check_error"){args ->
+                println("fail socket has been received")
                 if (args[0] != null) {
                     val message = args[0] as String
                     isEmailUnique = false
@@ -69,9 +112,11 @@ class RegisterStep1Fragment : Fragment() {
                     }
                 }
             }
-
-            mSocket.on("email_check_success"){args ->
+            println("trying to receive socket 2")
+            mSocket.on("email_check_success"){
+                println("sucess ocket received")
                 if (args[0] != null) {
+                    println("printing a message, email is good, socket received")
                     val message = args[0] as String
                     isEmailUnique = true
                     warningTextView.text = message
@@ -84,11 +129,12 @@ class RegisterStep1Fragment : Fragment() {
                 }
             }
 
-            if (areConditionsMet() && isEmailUnique) {
-                (activity as? RegisterActivity)?.navigateToStep2(email, password)
-            } else {
-                warningTextView.text = "Something is wrong with the socket maybe"
+            mSocket.on("hellotest"){
+                println("receive hello event")
+//                warningTextView.text = "so we are able to get the hello event"
             }
+        } catch (e: Exception){
+            println("somethign is definitely wrong with the fucking socket wtf")
         }
 
         return view
@@ -141,6 +187,14 @@ class RegisterStep1Fragment : Fragment() {
 
 
         return true
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
     }
 }
 
