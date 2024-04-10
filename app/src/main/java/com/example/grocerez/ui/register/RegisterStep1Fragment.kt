@@ -113,7 +113,7 @@ class RegisterStep1Fragment : Fragment() {
                 }
             }
             println("trying to receive socket 2")
-            mSocket.on("email_check_success"){
+            mSocket.on("email_check_success"){args ->
                 println("sucess ocket received")
                 if (args[0] != null) {
                     println("printing a message, email is good, socket received")
@@ -129,9 +129,11 @@ class RegisterStep1Fragment : Fragment() {
                 }
             }
 
-            mSocket.on("hellotest"){
+            mSocket.on("hitest"){
                 println("receive hello event")
-//                warningTextView.text = "so we are able to get the hello event"
+
+                warningTextView.text = "so we are able to get the hello event"
+
             }
         } catch (e: Exception){
             println("somethign is definitely wrong with the fucking socket wtf")
