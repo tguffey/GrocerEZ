@@ -45,7 +45,7 @@ class RegisterStep1Fragment : Fragment() {
             val email = emailEditText.text.toString()
             val password = passwordEditText.text.toString()
 
-
+            mSocket.emit("save_signup_info", emailEditText.text.toString())
             // check to see if conditions: ea
             if (areConditionsMet()) {
                 (activity as? RegisterActivity)?.navigateToStep2(email, password)
