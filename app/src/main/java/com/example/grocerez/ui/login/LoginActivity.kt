@@ -61,7 +61,10 @@ class LoginActivity : AppCompatActivity() {
         val username = binding.loginPgUsernameEntry
         val password = binding.loginPgPasswordEntry
         val login = binding.loginpageLoginBtn
+        val warning_text = binding.loginWarningTextview
         val loading = binding.loading
+
+        warning_text?.text = "" ?: "where the warning message go"
 
         loginViewModel = ViewModelProvider(this, LoginViewModelFactory())
             .get(LoginViewModel::class.java)
