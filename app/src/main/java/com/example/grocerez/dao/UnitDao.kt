@@ -27,6 +27,6 @@ interface UnitDao {
     // Add other CRUD operations as needed
 
     // Define a query method to search for a unit by its name
-    @Query("SELECT * FROM units WHERE name = :unitName")
+    @Query("SELECT * FROM unit WHERE name = :unitName")
     suspend fun findUnitByName(unitName: String): Unit?
 }

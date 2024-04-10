@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ItemDao {
     @Query("SELECT * FROM items")
-    suspend fun getAllItems(): Flow<List<Item>>
+    fun getAllItems(): Flow<List<Item>>
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -37,4 +37,10 @@ interface ItemDao {
 
     @Query("SELECT * FROM items WHERE name = :itemName")
     suspend fun findItemByName(itemName: String): Item?
+
+    @Query("SELECT category_name FROM items WHERE name = :itemName")
+    suspend fun findCategoryByName(itemName: String): String
+
+    @Query("SELECT * FROM items WHERE category_name = :catName")
+    fun findItemsByCategory(catName: String) : Flow<List<Item>>
 }

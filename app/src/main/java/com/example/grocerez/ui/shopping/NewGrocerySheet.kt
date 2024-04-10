@@ -2,6 +2,7 @@ package com.example.grocerez.ui.shopping
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,20 +12,27 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.example.grocerez.R
-
+import com.example.grocerez.data.model.Category
+import com.example.grocerez.data.model.Item
+import com.example.grocerez.data.model.ShoppingListItem
 import com.example.grocerez.databinding.FragmentNewShoppingItemBinding
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.example.grocerez.ui.ItemAmount
 import com.example.grocerez.ui.Unit
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class NewGrocerySheet(
-    var groceryItem: GroceryItem?,
-    var categoryItem: CategoryItem?
+    var groceryItem: Item?,
+    var categoryItem: Category?
 ) : BottomSheetDialogFragment() {
 
     private lateinit var binding: FragmentNewShoppingItemBinding
     private lateinit var itemViewModel: ShoppingViewModel
     private lateinit var selectedUnit: String
+    private val TAG = "NEW ITEM SHEET"
 
     // Create the UI for the sheet
     override fun onCreateView(
@@ -132,32 +140,118 @@ class NewGrocerySheet(
     private fun saveAction() {
         val name = binding.name.text.toString()
         val category = binding.category.text.toString()
+        // not using this right now
         val quantity =
             Unit.getBySymbol(selectedUnit)?.let {
-                ItemAmount(binding.quantity.text.toString().toFloat(),
+                ItemAmount(
+                    binding.quantity.text.toString().toFloat(),
                     it
                 )
             }
+        val quantityVal = binding.quantity.text.toString().toFloat()
         val note = binding.Note.text.toString()
-        if (name.isNotEmpty())
-        {
-            val newGrocery = quantity?.let { GroceryItem(name, it, note, false) }
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val existingItem = itemViewModel.findItemByName(name)
+                Log.v(TAG, "find item")
 
-            if (newGrocery != null) {
+                // see if item exists in the database already or not.
+                if (existingItem == null) {
+                    // Item doesn't exist, create a new one and insert it into the Item table
+                    try {
+                        val existingCategory = itemViewModel.findCategoryByName(category)
+                        val existingUnit = itemViewModel.findUnitByName(selectedUnit)
+                        Log.v(TAG, "find cat + unit")
+
+                        if (existingCategory == null || existingUnit == null) {
+                            withContext(Dispatchers.Main) {
+                                val newCategory = Category(category)
+                                val newUnit = com.example.grocerez.data.model.Unit(selectedUnit)
+                                Log.v(TAG, "[cat or unit dne] make cat + unit")
+                                itemViewModel.addCategory(newCategory)
+                                Log.v(TAG, "add cat")
+                                itemViewModel.addUnit(newUnit)
+                                Log.v(TAG, "add unit")
+
+                            }
+                            val newItem = Item(
+                                name = name, category = category,
+                                unitName = selectedUnit, useRate = 0.0f
+                            )
+                            Log.v(TAG, "make item")
+                            itemViewModel.addItem(newItem)
+                            Log.v(TAG, "add item")
+                        } else {
+                            val newItem = Item(
+                                name = name, category = category,
+                                unitName = selectedUnit, useRate = 0.0f
+                            )
+                            Log.v(TAG, "make item")
+                            itemViewModel.addItem(newItem)
+                            Log.v(TAG, "add item")
+                        }
+                        // we can do this because the respective DAO objects does replace on conflict
+
+                    } catch (_: Exception) {
+                    }
+                    //_______________________________
+                    val displayItem = itemViewModel.findItemByName(name)
+                    Log.v(TAG, "find item")
+
+                    var shopListName = ""
+                    if (displayItem != null) {
+                        shopListName = displayItem.name
+                    }
+                    //now insert shoppingListItem
+                    val newShoppingListItem = ShoppingListItem(
+                        itemName = shopListName,
+                        checkbox = false, notes = note, quantity = quantityVal
+                    )
+                    Log.v(TAG, "make shop item")
+                    itemViewModel.addShoppingListItem(newShoppingListItem)
+                    Log.v(TAG, "add shop item")
+
+                } else {
+                    //now insert shoppingListItem
+                    var shopListName = ""
+                    val displayItem = itemViewModel.findItemByName(name)
+                    Log.v(TAG, "[item exists] find item")
+                    if (displayItem != null) {
+                        shopListName = displayItem.name
+                    }
+                    val newShoppingListItem = ShoppingListItem(
+                        itemName = shopListName,
+                        checkbox = false, notes = note, quantity = quantityVal
+                    )
+                    Log.v(TAG, "make shop item")
+                    itemViewModel.addShoppingListItem(newShoppingListItem)
+                    Log.v(TAG, "add shop item")
+                }
+
+            } catch (_: Exception) {
+            }
+
+        }
+
+            /*if (name.isNotEmpty()) {
+                val newGrocery = ShoppingListItem(
+                    itemName = name, checkbox = false,
+                    notes = note, quantity = quantityVal
+                )
                 itemViewModel.addGroceryItem(newGrocery)
             }
-        }
-        // Check if category name is provided
-        if ((category.isNotEmpty()) && (name.isNotEmpty())) {
-            val newGrocery = quantity?.let { GroceryItem(name, it, note, false) }
-            var groceries = mutableListOf<GroceryItem>()
-            if (newGrocery != null) {
-                groceries = mutableListOf(newGrocery)
-            }
-            val newCategory = CategoryItem(category, groceries)
-            // Save category item
-            itemViewModel.addCategoryItem(newCategory)
-        }
+            // Check if category name is provided
+            if ((category.isNotEmpty()) && (name.isNotEmpty())) {
+                val newCategory = Category(name = category)
+                val newItem = Item(
+                    name = name, category = category, unitName = selectedUnit,
+                    useRate = 0.0F
+                )
+
+                // Save category item
+                itemViewModel.addCategory(newCategory)
+                itemViewModel.addItem(newItem)
+            }*/
 
         // Clear input fields and dismiss the sheet
         clearFields()
