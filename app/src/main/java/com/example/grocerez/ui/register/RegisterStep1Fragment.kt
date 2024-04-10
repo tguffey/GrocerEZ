@@ -1,17 +1,24 @@
 package com.example.grocerez.ui.register
 
-import androidx.fragment.app.Fragment
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.text.Editable
-import android.text.TextWatcher
 import android.widget.EditText
+import android.widget.TextView
+import androidx.fragment.app.Fragment
 import com.example.grocerez.R
 import com.example.grocerez.SocketHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.regex.Pattern
+
 
 // RegisterStep1Fragment.kt
 class RegisterStep1Fragment : Fragment() {
@@ -25,7 +32,9 @@ class RegisterStep1Fragment : Fragment() {
         val emailEditText = view.findViewById<EditText>(R.id.register_email_entry)
         val passwordEditText = view.findViewById<EditText>(R.id.register_pswd_entry)
         val confirmEditText = view.findViewById<EditText>(R.id.register_confirm_pswd_entry)
+        val warningTextView = view.findViewById<TextView>(R.id.registerWarningTextview)
 
+        // getting socket connection
         val mSocket = SocketHandler.getSocket()
         mSocket.emit("hello") // test to see if it works on the server
 
@@ -41,14 +50,44 @@ class RegisterStep1Fragment : Fragment() {
         nextButton.setOnClickListener {
             // Check if the conditions are met before navigating to the next step
 
-
+            var isEmailUnique = false
             val email = emailEditText.text.toString()
             val password = passwordEditText.text.toString()
 
             mSocket.emit("register_email_check", emailEditText.text.toString())
             // check to see if conditions: ea
-            if (areConditionsMet()) {
+
+            mSocket.on("email_check_error"){args ->
+                if (args[0] != null) {
+                    val message = args[0] as String
+                    isEmailUnique = false
+                    warningTextView.text = message
+                    CoroutineScope(IO).launch {
+                        withContext(Dispatchers.Main){
+                            warningTextView.text = message
+                        }
+                    }
+                }
+            }
+
+            mSocket.on("email_check_success"){args ->
+                if (args[0] != null) {
+                    val message = args[0] as String
+                    isEmailUnique = true
+                    warningTextView.text = message
+                    CoroutineScope(IO).launch {
+                        withContext(Dispatchers.Main){
+                            warningTextView.text = message
+
+                        }
+                    }
+                }
+            }
+
+            if (areConditionsMet() && isEmailUnique) {
                 (activity as? RegisterActivity)?.navigateToStep2(email, password)
+            } else {
+                warningTextView.text = "Something is wrong with the socket maybe"
             }
         }
 
@@ -71,7 +110,7 @@ class RegisterStep1Fragment : Fragment() {
         val emailEditText = view?.findViewById<EditText>(R.id.register_email_entry)
         val passwordEditText = view?.findViewById<EditText>(R.id.register_pswd_entry)
         val confirmEditText = view?.findViewById<EditText>(R.id.register_confirm_pswd_entry)
-        val warningTextView = view?.findViewById<EditText>(R.id.registerWarningTextview)
+
 
         // REGEX to validate email with the form of < 1 characters>@<1 characters>.< 2-5 characters>
         val EMAIL_PATTERN = Pattern.compile(
@@ -99,6 +138,8 @@ class RegisterStep1Fragment : Fragment() {
     private fun areConditionsMet(): Boolean {
         // You can add more conditions if needed
         // For example, check the validity of the email, password, etc.
+
+
         return true
     }
 }
