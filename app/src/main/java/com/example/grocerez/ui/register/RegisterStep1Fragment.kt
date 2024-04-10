@@ -45,7 +45,7 @@ class RegisterStep1Fragment : Fragment() {
             val email = emailEditText.text.toString()
             val password = passwordEditText.text.toString()
 
-            mSocket.emit("save_signup_info", emailEditText.text.toString())
+            mSocket.emit("register_email_check", emailEditText.text.toString())
             // check to see if conditions: ea
             if (areConditionsMet()) {
                 (activity as? RegisterActivity)?.navigateToStep2(email, password)
@@ -71,6 +71,7 @@ class RegisterStep1Fragment : Fragment() {
         val emailEditText = view?.findViewById<EditText>(R.id.register_email_entry)
         val passwordEditText = view?.findViewById<EditText>(R.id.register_pswd_entry)
         val confirmEditText = view?.findViewById<EditText>(R.id.register_confirm_pswd_entry)
+        val warningTextView = view?.findViewById<EditText>(R.id.registerWarningTextview)
 
         // REGEX to validate email with the form of < 1 characters>@<1 characters>.< 2-5 characters>
         val EMAIL_PATTERN = Pattern.compile(
