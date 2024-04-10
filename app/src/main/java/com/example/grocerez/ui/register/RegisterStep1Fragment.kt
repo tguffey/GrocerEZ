@@ -11,6 +11,7 @@ import android.text.TextWatcher
 import android.widget.EditText
 import com.example.grocerez.R
 import com.example.grocerez.SocketHandler
+import java.util.regex.Pattern
 
 // RegisterStep1Fragment.kt
 class RegisterStep1Fragment : Fragment() {
@@ -44,6 +45,8 @@ class RegisterStep1Fragment : Fragment() {
             val email = emailEditText.text.toString()
             val password = passwordEditText.text.toString()
 
+
+            // check to see if conditions: ea
             if (areConditionsMet()) {
                 (activity as? RegisterActivity)?.navigateToStep2(email, password)
             }
@@ -69,11 +72,23 @@ class RegisterStep1Fragment : Fragment() {
         val passwordEditText = view?.findViewById<EditText>(R.id.register_pswd_entry)
         val confirmEditText = view?.findViewById<EditText>(R.id.register_confirm_pswd_entry)
 
+        // REGEX to validate email with the form of < 1 characters>@<1 characters>.< 2-5 characters>
+        val EMAIL_PATTERN = Pattern.compile(
+            "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$"
+        )
+        val isEmailValid = EMAIL_PATTERN.matcher(emailEditText?.text.toString()).matches()
+
+        // checks to see if paswword entered is greater than 8 characters
+        val isPasswordValid = passwordEditText?.text?.length ?: 0 > 8
+        // val arePasswordsMatching = passwordEditText?.text.toString() == confirmEditText?.text.toString()
+
+
         // Check conditions for enabling/disabling the next button
         val areConditionsMet = emailEditText?.text?.isNotEmpty() == true &&
                 passwordEditText?.text?.isNotEmpty() == true &&
                 confirmEditText?.text?.isNotEmpty() == true &&
-                passwordEditText?.text.toString() == confirmEditText?.text.toString()
+                passwordEditText?.text.toString() == confirmEditText?.text.toString() &&
+                isPasswordValid && isEmailValid
 
         // Enable/disable the next button based on conditions
         val nextButton = view?.findViewById<Button>(R.id.register_next_btn)
