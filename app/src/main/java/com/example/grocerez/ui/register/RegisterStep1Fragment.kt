@@ -50,35 +50,24 @@ class RegisterStep1Fragment : Fragment() {
         nextButton.isEnabled = false  // Initially disable the next button
 
         println("trying to receive socket 1")
-        mSocket.on("email_check_error"){args ->
-            println("fail socket has been received")
-            if (args[0] != null) {
-                val message = args[0] as String
-                isEmailUnique = false
-                warningTextView.text = message
-                CoroutineScope(IO).launch {
-                    withContext(Dispatchers.Main){
-                        warningTextView.text = message
-                    }
-                }
-            }
-        }
         println("trying to receive socket 2")
-        mSocket.on("email_check_success"){args ->
-            println("sucess ocket received")
-            if (args[0] != null) {
-                println("printing a message, email is good, socket received")
-                val message = args[0] as String
-                isEmailUnique = true
-                warningTextView.text = message
-                CoroutineScope(IO).launch {
-                    withContext(Dispatchers.Main){
-                        warningTextView.text = message
 
-                    }
-                }
-            }
-        }
+
+//        mSocket.on("email_check_success"){args ->
+//            println("sucess ocket received")
+//            if (args[0] != null) {
+//                println("printing a message, email is good, socket received")
+//                val message = args[0] as String
+//                isEmailUnique = true
+//                warningTextView.text = message
+//                CoroutineScope(IO).launch {
+//                    withContext(Dispatchers.Main){
+//                        warningTextView.text = message
+//
+//                    }
+//                }
+//            }
+//        }
 
 
         nextButton.setOnClickListener {
@@ -91,14 +80,6 @@ class RegisterStep1Fragment : Fragment() {
             mSocket.emit("register_email_check", emailEditText.text.toString())
             // check to see if conditions:
             println("socket has emitted")
-            if (areConditionsMet() && isEmailUnique) {
-                (activity as? RegisterActivity)?.navigateToStep2(email, password)
-            } else {
-                warningTextView.text = "Something is wrong with the socket maybe"
-            }
-        }
-        try {
-            println("trying to receive socket 1")
             mSocket.on("email_check_error"){args ->
                 println("fail socket has been received")
                 if (args[0] != null) {
@@ -112,13 +93,37 @@ class RegisterStep1Fragment : Fragment() {
                     }
                 }
             }
-            println("trying to receive socket 2")
+
             mSocket.on("email_check_success"){args ->
-                println("sucess ocket received")
+                println("success socket received")
                 if (args[0] != null) {
                     println("printing a message, email is good, socket received")
                     val message = args[0] as String
                     isEmailUnique = true
+                    println(isEmailUnique)
+                    warningTextView.text = message
+                    CoroutineScope(IO).launch {
+                        withContext(Dispatchers.Main){
+                            warningTextView.text = message
+
+                        }
+                    }
+                }
+                if (areConditionsMet() && isEmailUnique) {
+                    (activity as? RegisterActivity)?.navigateToStep2(email, password)
+                } else {
+                    warningTextView.text = "Something is wrong with the socket maybe"
+                }
+
+            }
+
+            mSocket.on("email_check_duplicate_detected"){args ->
+                println("dupe email socket received")
+                if (args[0] != null) {
+                    println("printing a message, email duplicate")
+                    val message = args[0] as String
+                    isEmailUnique = false
+                    println(isEmailUnique)
                     warningTextView.text = message
                     CoroutineScope(IO).launch {
                         withContext(Dispatchers.Main){
@@ -128,16 +133,57 @@ class RegisterStep1Fragment : Fragment() {
                     }
                 }
             }
-
-            mSocket.on("hitest"){
-                println("receive hello event")
-
-                warningTextView.text = "so we are able to get the hello event"
-
-            }
-        } catch (e: Exception){
-            println("somethign is definitely wrong with the fucking socket wtf")
+            println("checking condition")
         }
+//        try {
+//            println("trying to receive socket 1")
+//            mSocket.on("email_check_error"){args ->
+//                println("fail socket has been received")
+//                if (args[0] != null) {
+//                    val message = args[0] as String
+//                    isEmailUnique = false
+//                    warningTextView.text = message
+//                    CoroutineScope(IO).launch {
+//                        withContext(Dispatchers.Main){
+//                            warningTextView.text = message
+//                        }
+//                    }
+//                }
+//            }
+//            println("trying to receive socket 2")
+//
+//            mSocket.on("testing_emits"){ args ->
+//                println("receive hello event")
+//
+//                warningTextView.text = "so we are able to get the testing emit event"
+//
+//            }
+//
+//            mSocket.on("hitest"){args ->
+//                println("hitest reeieved")
+//                val message = args[0] as String
+//                println(message)
+//                warningTextView.text = "so we are able to get the hitest emit event"
+//            }
+//            mSocket.on("email_check_success"){args ->
+//                println("success socket received")
+//                if (args[0] != null) {
+//                    println("printing a message, email is good, socket received")
+//                    val message = args[0] as String
+//                    isEmailUnique = true
+//                    warningTextView.text = message
+//                    CoroutineScope(IO).launch {
+//                        withContext(Dispatchers.Main){
+//                            warningTextView.text = message
+//
+//                        }
+//                    }
+//                }
+//            }
+//
+//        } catch (e: Exception){
+//            println("somethign is definitely wrong with the fucking socket wtf")
+//        }
 
         return view
     }
