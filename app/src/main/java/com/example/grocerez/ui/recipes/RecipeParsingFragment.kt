@@ -75,11 +75,28 @@ class RecipeParsingFragment : Fragment() {
                 mSocket.emit("get-ingredients-for-shopping-list", "https://www.budgetbytes.com/homemade-meatballs/")
             }
         }
+
+        // Set OnClickListener for ingredients to nutritional data button
+        binding.getNutriFromUrlButton.setOnClickListener {
+            // Retrieve the link entered by the user
+            val url = binding.linkEditText.text.toString()
+
+            // Perform parsing with the link
+            if (url.isNotEmpty()) {
+                mSocket.emit("get-ingredients-for-nutritional-data", url)
+            } else {
+                mSocket.emit("get-ingredients-for-nutritional-data", "https://www.budgetbytes.com/homemade-meatballs/")
+            }
+        }
+
+
+
         // Establish a connection for the socket answer
         setupSocketListeners()
     }
 
     private fun setupSocketListeners() {
+        // Function for getting ingredients and recipe steps
         mSocket.on("ingredients-result") { args ->
             val recipeDataJson = args[0]?.toString()
             try {
@@ -116,7 +133,7 @@ class RecipeParsingFragment : Fragment() {
                 Log.d("RecipeDataError", "Error parsing recipe data")
             }
         }
-
+        // Function for getting ingredients only
         mSocket.on("ingredients-result-for-shopping-list") { args ->
             val recipeDataJson = args[0]?.toString()
             try {
@@ -141,6 +158,47 @@ class RecipeParsingFragment : Fragment() {
                 Log.d("RecipeDataError", "Error parsing recipe data")
             }
         }
+        // Function for getting nutritional value from recipes
+        /*mSocket.on("ingredients-result-for-nutritional-data") { args ->
+            val nutritionalDataJson = args[0]?.toString()
+            try {
+                // Parse the JSON array received from the socket event
+                val jsonArray = JSONArray(nutritionalDataJson)
+
+                val nutritionalDataList = StringBuilder("Nutritional Data:\n")
+                for (i in 0 until jsonArray.length()) {
+                    val foodItem = jsonArray.getJSONObject(i)
+
+                    val name = foodItem.optString("Name")
+                    val description = foodItem.optString("description")
+                    val myPlateCategory = foodItem.optString("myPlateCategory")
+                    val nutrients = foodItem.optJSONObject("nutrients")
+
+                    nutritionalDataList.append("Name: $name\n")
+                    nutritionalDataList.append("Description: $description\n")
+                    nutritionalDataList.append("MyPlate Category: $myPlateCategory\n")
+
+                    nutrients?.let {
+                        for (key in it.keys()) {
+                            // Explicitly telling Kotlin that we expect a String value here.
+                            // This approach forces a cast from Any? to String, which should be avoided without checks
+                            val nutrientValue: Any? = it.get(key)
+                            val value = nutrientValue?.toString() ?: "N/A" // Safely convert to String, providing a fallback
+                            nutritionalDataList.append("$key: $value\n")
+                        }
+                    }
+
+                    nutritionalDataList.append("\n") // Adds a newline for spacing between items
+                }
+
+                // Log the combined result to Logcat
+                Log.d("NutritionalDataResult", nutritionalDataList.toString())
+            } catch (e: JSONException) {
+                e.printStackTrace()
+                Log.d("NutritionalDataError", "Error parsing nutritional data")
+            }
+        }*/
+
     }
 
 
