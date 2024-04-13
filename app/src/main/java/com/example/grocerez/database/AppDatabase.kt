@@ -11,6 +11,8 @@ import com.example.grocerez.data.model.Unit
 import com.example.grocerez.dao.ItemDao
 import com.example.grocerez.dao.CategoryDao
 import com.example.grocerez.dao.PantryItemDao
+import com.example.grocerez.dao.RecipeDao
+import com.example.grocerez.dao.RecipeItemDao
 import com.example.grocerez.dao.ShoppingListItemDao
 import com.example.grocerez.dao.UnitDao
 import com.example.grocerez.data.model.PantryItem
@@ -26,6 +28,9 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun shoppingListItemDao(): ShoppingListItemDao
 
     abstract fun pantryItemDao(): PantryItemDao
+    abstract fun recipeDao(): RecipeDao
+    abstract fun recipeItemDao(): RecipeItemDao
+
 
     //making this a singleton object
     companion object {
