@@ -33,8 +33,11 @@
             android:id="@+id/action_recipeFragment_to_recipeParsing"
             app:destination="@+id/recipe_parsing" />
         <action
-            android:id="@+id/action_recipeFragment_to_newRecipeSheet"
-            app:destination="@+id/newRecipeSheet"/>
+            android:id="@+id/action_recipeFragment_to_myRecipes"
+            app:destination="@+id/myRecipesFragment"/>
+        <action
+            android:id="@+id/action_recipeFragment_to_onlineSearchRecipe"
+            app:destination="@+id/onlineRecipeSearch"/>
     </fragment>
 
     <fragment
@@ -49,13 +52,36 @@
         android:label="recipeSheet"
         tools:layout="@layout/fragment_new_recipe_sheet"/>
 
+    <fragment
+        android:id="@+id/onlineRecipeSearch"
+        android:name="com.example.grocerez.ui.recipes.RecipeOnlineSearch"
+        android:label="onlineSearch"
+        tools:layout="@layout/fragment_search_recipe"
+        />
+
+    <fragment
+        android:id="@+id/myRecipesFragment"
+        android:name="com.example.grocerez.ui.recipes.MyRecipesFragment"
+        android:label="myRecipes"
+        tools:layout="@layout/fragment_my_recipes">
+
+        <action
+            android:id="@+id/action_myRecipes_to_newRecipeSheet"
+            app:destination="@id/newRecipeSheet" />
+
+    </fragment>
+
+    <action
+        android:id="@+id/action_recipeFragment_to_myRecipes"
+        app:destination="@id/myRecipesFragment" />
+
     <action
         android:id="@+id/action_recipeFragment_to_recipeParsing"
         app:destination="@id/recipe_parsing" />
 
     <action
-        android:id="@+id/action_recipeFragment_to_newRecipeSheet"
-        app:destination="@+id/newRecipeSheet"/>
+        android:id="@+id/action_recipeFragment_to_onlineSearchRecipe"
+        app:destination="@+id/onlineRecipeSearch"/>
 
     <fragment
         android:id="@+id/navigation_shopping"

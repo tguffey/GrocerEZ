@@ -13,7 +13,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.grocerez.databinding.FragmentNewRecipeSheetBinding
 
-class NewRecipeSheet(private val recipeItem: RecipeItem? = null) : Fragment(), IngredentItemClickListener {
+class NewRecipeSheet : Fragment(), IngredentItemClickListener {
 
     private var _binding: FragmentNewRecipeSheetBinding? = null
     private val binding get() = _binding!!

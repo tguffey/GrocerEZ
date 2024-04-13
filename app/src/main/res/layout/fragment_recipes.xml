@@ -27,77 +27,128 @@
         android:text="Recipes"
         android:textSize="30sp"
         android:layout_marginTop="20dp"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="10dp"
         style="@style/TextAppearance.AppCompat.Title"
         />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:layout_marginTop="10dp"
         android:layout_below="@+id/Title"
         android:gravity="center"
         android:id="@+id/buttonLayout"
         >
 
+        <!--Edit Item option 2: Add Item button-->
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/add_item_fab"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="15sp"
+            android:contentDescription="@string/button_add_item"
+            android:text="My Recipes"
+            android:textColor="?colorOnPrimary"
+            app:backgroundTint="?attr/colorPrimary"
+            app:icon="@drawable/baseline_format_list_bulleted_24"
+            app:iconTint="@color/white"
+            android:textSize="13sp"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="10dp"
+        android:layout_below="@+id/buttonLayout"
+        android:gravity="center"
+        android:id="@+id/secondButtonLayout"
+        >
+
         <!--Edit Item option 1: Clear List button-->
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/parseRecipeButton"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:padding="15dp"
             android:contentDescription="Parse Recipe"
-            android:text="Parse Recipe"
+            android:text=" Parse Recipe"
+            android:textColor="?colorOnPrimary"
+            app:backgroundTint="?attr/colorPrimary"
+            app:icon="@drawable/baseline_content_cut_24"
+            app:iconTint="@color/white"
+            android:textSize="13sp"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="10dp"
+        android:layout_below="@+id/secondButtonLayout"
+        android:gravity="center"
+        android:id="@+id/thirdButtonLayout"
+        >
+
+        <!--Edit Item option 2: Add Item button-->
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/searchRecipeBtn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="15dp"
+            android:contentDescription="Search Recipe"
+            android:text="Search Recipe"
             android:textColor="?colorOnPrimary"
             app:backgroundTint="?attr/colorPrimary"
             app:icon="@drawable/baseline_search_24"
             app:iconTint="@color/white"
-            />
-
-        <Space
-            android:layout_width="20dp"
-            android:layout_height="match_parent"/>
-
-        <!--Edit Item option 2: Add Item button-->
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/add_item_fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="15sp"
-            android:contentDescription="@string/button_add_item"
-            android:text="Add Recipe"
-            android:textColor="?colorOnPrimary"
-            app:backgroundTint="?attr/colorPrimary"
-            app:icon="@drawable/ic_add_24"
-            app:iconTint="@color/white"
-            android:layout_marginEnd="20dp"
-
-            />
-    </LinearLayout>
-
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        app:cardElevation="4dp"
-        app:cardCornerRadius="8dp"
-        android:layout_below="@+id/buttonLayout"> <!-- Adjust corner radius if needed -->
-
-    <android.widget.SearchView
-        android:id="@+id/recipeSearchBar"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:queryHint="Search Recipe..."
-        android:iconifiedByDefault="false"/>
-
-</androidx.cardview.widget.CardView>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="210dp"
-        android:id="@+id/recipeListRecyclerView"
-        android:backgroundTint="@color/design_default_color_background"
+            android:textSize="13sp"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
         />
 
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/recyclerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/thirdButtonLayout"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        >
+
+        <TextView
+            android:id="@+id/historyTitle"
+            style="@style/TextAppearance.AppCompat.Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="20dp"
+            android:text="History"
+            android:textSize="30sp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recipeListRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:backgroundTint="@color/design_default_color_background" />
+
+    </LinearLayout>
 </RelativeLayout>

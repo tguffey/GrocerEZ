@@ -14,7 +14,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
-        app:layout_constraintBottom_toTopOf="@id/bottomButtonsLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -110,41 +109,69 @@
                     />
 
             </com.google.android.material.textfield.TextInputLayout>
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="40dp"/>
+
+            <LinearLayout
+                android:id="@+id/bottomButtonsLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="bottom"
+                android:background="@color/design_default_color_background"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <!-- Cancel button on the left -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/cancelButton"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginStart="125dp"
+                    android:text="Cancel"
+                    />
+
+                <!-- Save button on the right -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/saveButton"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="Save"
+
+                    />
+            </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Cancel and Save buttons -->
-    <LinearLayout
-        android:id="@+id/bottomButtonsLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="bottom"
-        android:background="@color/design_default_color_background"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+<!--    &lt;!&ndash; Cancel and Save buttons &ndash;&gt;-->
+<!--    <LinearLayout-->
+<!--        android:id="@+id/bottomButtonsLayout"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:layout_gravity="bottom"-->
+<!--        android:background="@color/design_default_color_background"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent">-->
 
-        <!-- Cancel button on the left -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/cancelButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="20dp"
-            android:layout_marginStart="190dp"
-            android:text="Cancel"
-            />
+<!--        &lt;!&ndash; Cancel button on the left &ndash;&gt;-->
+<!--        <com.google.android.material.button.MaterialButton-->
+<!--            android:id="@+id/cancelButton"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginEnd="20dp"-->
+<!--            android:layout_marginStart="190dp"-->
+<!--            android:text="Cancel"-->
+<!--            />-->
 
-        <!-- Save button on the right -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/saveButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Save"
-            />
-    </LinearLayout>
+<!--        &lt;!&ndash; Save button on the right &ndash;&gt;-->
+<!--        <com.google.android.material.button.MaterialButton-->
+<!--            android:id="@+id/saveButton"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Save"-->
+<!--            />-->
+<!--    </LinearLayout>-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
