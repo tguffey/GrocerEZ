@@ -32,7 +32,7 @@ class RecipesFragment : Fragment(){
         val root: View = binding.root
 
         // Set OnClickListener for addItemFab
-        binding.addItemFab.setOnClickListener {
+        binding.myRecipesBtn.setOnClickListener {
             // Show New Recipe bottom dialog
             if (findNavController().currentDestination?.id == R.id.navigation_recipes) {
                 findNavController().navigate(R.id.action_recipeFragment_to_myRecipes)
@@ -40,7 +40,7 @@ class RecipesFragment : Fragment(){
         }
 
         // Set OnClickListener for clearListFab
-        binding.parseRecipeButton.setOnClickListener {
+        binding.parseRecipeBtn.setOnClickListener {
             if (findNavController().currentDestination?.id == R.id.navigation_recipes) {
                 findNavController().navigate(R.id.action_recipeFragment_to_recipeParsing)
             }
