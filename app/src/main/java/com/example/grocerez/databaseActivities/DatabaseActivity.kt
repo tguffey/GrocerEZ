@@ -2,6 +2,7 @@ package com.example.grocerez.databaseActivities
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -58,5 +59,14 @@ class DatabaseActivity : AppCompatActivity() {
             finish()
         }
 
+        val addNewRecipeButton = findViewById<Button>(R.id.addNewRecipe_button)
+        addNewRecipeButton.setOnClickListener {
+//            testRecipe()
+        }
+
     }
+
+
+
+
 }

@@ -16,10 +16,12 @@ import com.example.grocerez.dao.RecipeItemDao
 import com.example.grocerez.dao.ShoppingListItemDao
 import com.example.grocerez.dao.UnitDao
 import com.example.grocerez.data.model.PantryItem
+import com.example.grocerez.data.model.Recipe
+import com.example.grocerez.data.model.RecipeItem
 import com.example.grocerez.data.model.ShoppingListItem
 
 
-@Database(entities = [Item::class, Category::class, Unit::class, ShoppingListItem::class, PantryItem::class], version = 1)
+@Database(entities = [Item::class, Category::class, Unit::class, ShoppingListItem::class, PantryItem::class, Recipe::class, RecipeItem::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun itemDao(): ItemDao
     abstract fun categoryDao(): CategoryDao

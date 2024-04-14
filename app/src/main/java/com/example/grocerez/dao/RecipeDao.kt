@@ -9,18 +9,21 @@ import com.example.grocerez.data.model.Recipe
 
 @Dao
 interface RecipeDao {
+
+//    @Query("SELECT * FROM recipes WHERE name = :recipeName")
+//    suspend fun findRecipeByName(recipeName: String): Recipe?
     @Query("SELECT * FROM recipes")
     suspend fun getAllRecipes(): List<Recipe>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertRecipe(recipe: Recipe)
+
     @Update
     suspend fun updateRecipe(recipe: Recipe)
 
     @Delete
     suspend fun deleteRecipe(recipe: Recipe)
 
-    @Query("SELECT * FROM recipes WHERE name = :recipeName")
-    suspend fun findRecipeByName(recipeName: String): Recipe?
+
 
 }

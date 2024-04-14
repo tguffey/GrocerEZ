@@ -25,13 +25,13 @@ import androidx.room.PrimaryKey
 data class RecipeItem(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "recipe_item_id")
-    val recipe_item_id: Long = 0,
+    val recipeItemId: Long = 0,
 
     @ColumnInfo(name = "recipe_id")
-    val recipe_id: Long,
+    val recipeId: Long,
 
     @ColumnInfo(name = "item_id")
-    val item_id: Long,
+    val itemId: Long,
 
     val amount: Float
 )
