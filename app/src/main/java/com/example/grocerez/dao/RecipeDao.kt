@@ -6,16 +6,18 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.grocerez.data.model.Recipe
+import com.example.grocerez.data.model.ShoppingListItem
 
 @Dao
 interface RecipeDao {
 
-//    @Query("SELECT * FROM recipes WHERE name = :recipeName")
-//    suspend fun findRecipeByName(recipeName: String): Recipe?
+    @Query("SELECT * FROM recipes WHERE name = :recipeName")
+    suspend fun findRecipeByName(recipeName: String): Recipe?
+
     @Query("SELECT * FROM recipes")
     suspend fun getAllRecipes(): List<Recipe>
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRecipe(recipe: Recipe)
 
     @Update

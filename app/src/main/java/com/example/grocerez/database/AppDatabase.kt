@@ -21,6 +21,11 @@ import com.example.grocerez.data.model.RecipeItem
 import com.example.grocerez.data.model.ShoppingListItem
 
 
+// anytime you add a new database class:
+// 1. add the original object to the @database() notation at the start of the declaration
+// 2. add the DAO object to the abstract fun stuff
+// 3. use it by initializing database, then set local dao object = appdatabase.____dao
+
 @Database(entities = [Item::class, Category::class, Unit::class, ShoppingListItem::class, PantryItem::class, Recipe::class, RecipeItem::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun itemDao(): ItemDao
