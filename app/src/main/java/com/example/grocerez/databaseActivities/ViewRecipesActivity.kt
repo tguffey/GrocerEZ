@@ -8,6 +8,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.example.grocerez.R
 
 class ViewRecipesActivity : AppCompatActivity() {
+    private lateinit var
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -17,5 +18,7 @@ class ViewRecipesActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+
     }
 }
