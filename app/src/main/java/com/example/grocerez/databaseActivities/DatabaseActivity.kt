@@ -62,6 +62,9 @@ class DatabaseActivity : AppCompatActivity() {
         val addNewRecipeButton = findViewById<Button>(R.id.addNewRecipe_button)
         addNewRecipeButton.setOnClickListener {
 //            testRecipe()
+            val intent = Intent(this, NewRecipeActivity::class.java)
+            startActivity(intent)
+            finish()
         }
 
     }
