@@ -68,5 +68,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/addNewShoppingListItem_button" />
 
+    <Button
+        android:id="@+id/seeRecipesButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="20dp"
+        android:text="view recipes"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addNewRecipe_button" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

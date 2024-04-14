@@ -21,6 +21,7 @@ import com.example.grocerez.data.Ingredient
 import com.example.grocerez.data.model.Category
 import com.example.grocerez.data.model.Item
 import com.example.grocerez.data.model.Recipe
+import com.example.grocerez.data.model.RecipeItem
 import com.example.grocerez.data.model.Unit
 import com.example.grocerez.database.AppDatabase
 import kotlinx.coroutines.CoroutineScope
@@ -107,18 +108,22 @@ class NewRecipeActivity : AppCompatActivity() {
         }
 
         addRecipeBtn.setOnClickListener {
-            var output_string = StringBuilder()
-            println("checking stuff")
-            temporaryIngredientList.forEach { ingredient ->
-                // Access and display each field of the Ingredient object
-                val ingredientText = "Name: ${ingredient.name}\n" +
-                        "Amount: ${ingredient.amount}\n" +
-                        "Category: ${ingredient.category}\n" +
-                        "Unit: ${ingredient.unit}\n\n"
-                output_string.append(ingredientText)
+//            var output_string = StringBuilder()
+//            println("checking stuff")
+//            temporaryIngredientList.forEach { ingredient ->
+//                // Access and display each field of the Ingredient object
+//                val ingredientText = "Name: ${ingredient.name}\n" +
+//                        "Amount: ${ingredient.amount}\n" +
+//                        "Category: ${ingredient.category}\n" +
+//                        "Unit: ${ingredient.unit}\n\n"
+//                output_string.append(ingredientText)
+//
+//            }
+//            recipeTextView.text = "list of ingredients: \n"+output_string
+            val recipeName = recipeNameEditText.text.toString().trim()
+            val recipeInstructions = recipeInstructionEditText.text.toString().trim()
 
-            }
-            recipeTextView.text = "list of ingredients: \n"+output_string
+            addNewRecipe(recipeName, recipeInstructions, temporaryIngredientList)
         }
 
     }
@@ -244,24 +249,45 @@ class NewRecipeActivity : AppCompatActivity() {
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                // Call the insertRecipe function from your RecipeDao
+                // Call the insertRecipe function from RecipeDao
                 recipeDao.insertRecipe(newRecipe)
-                val insertedRecipe = recipeDao.findRecipeByName(recipeName)
+
                 // Recipe inserted successfully
-                // You can perform any additional actions here if needed
+                // After inserting, retrieve it immediately so we can get ID
+                val insertedRecipe = recipeDao.findRecipeByName(recipeName)
+                var outputText = StringBuilder()
+                if (insertedRecipe != null){
+                    outputText.append("Inserted Recipe: ${insertedRecipe.name} \n ingredient list:\n")
 
-                withContext(Dispatchers.Main){
-                    if (insertedRecipe != null){
-                        recipeTextView.text = "Inserted Recipe: ${insertedRecipe.name}"
-                    } else {
-                        recipeTextView.text = "something wrong with inserted recipe"
+
+                    for (ingredient in temporaryIngredientList){
+                        val ingredient_name = ingredient.name
+                        val item = itemDao.findItemByName(ingredient_name)
+
+                        if (item != null){
+                            val recipeItem = RecipeItem(
+                                recipeId = insertedRecipe.recipeId,
+                                itemId = item.item_id,
+                                amount = ingredient.amount
+                            )
+
+                            recipeItemDao.insertRecipeItem(recipeItem)
+                            outputText.append(ingredient_name + "\n")
+                        }
+
+
                     }
-                    // Display the recipe in a TextView
-
+                    withContext(Dispatchers.Main){
+                        recipeTextView.text = outputText
+                    }
+                } else {
+                    recipeTextView.text = "something wrong with inserted recipe"
                 }
+
+
             } catch (e: Exception) {
                 withContext(Dispatchers.Main){
-                    recipeTextView.text = "inside catch block, something wrong with insert recipe"
+                    recipeTextView.text = "inside catch block, something wrong with insert recipe" + e.toString()
                 }
                 // Handle any exceptions or errors here
                 Log.e("error", "Error inserting recipe: ${e.message}")
