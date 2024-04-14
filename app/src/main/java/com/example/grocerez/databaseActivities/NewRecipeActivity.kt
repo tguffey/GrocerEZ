@@ -256,6 +256,10 @@ class NewRecipeActivity : AppCompatActivity() {
                 // After inserting, retrieve it immediately so we can get ID
                 val insertedRecipe = recipeDao.findRecipeByName(recipeName)
                 var outputText = StringBuilder()
+
+                // find the item in the item table and if thats there, which it should, link the two ids.
+                // use a for loop
+                // after adding, clear the fields and the list.
                 if (insertedRecipe != null){
                     outputText.append("Inserted Recipe: ${insertedRecipe.name} \n ingredient list:\n")
 
@@ -277,9 +281,15 @@ class NewRecipeActivity : AppCompatActivity() {
 
 
                     }
+
+                    // set texts and clear fields on main threads
                     withContext(Dispatchers.Main){
                         recipeTextView.text = outputText
+                        recipeNameEditText.text.clear()
+                        recipeInstructionEditText.text.clear()
+                        temporaryIngredientList.clear()
                     }
+
                 } else {
                     recipeTextView.text = "something wrong with inserted recipe"
                 }
@@ -293,6 +303,7 @@ class NewRecipeActivity : AppCompatActivity() {
                 Log.e("error", "Error inserting recipe: ${e.message}")
             }
         }
+
 
     }
 }

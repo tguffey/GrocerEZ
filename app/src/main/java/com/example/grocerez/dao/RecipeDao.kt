@@ -1,4 +1,5 @@
 package com.example.grocerez.dao
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -13,9 +14,10 @@ interface RecipeDao {
 
     @Query("SELECT * FROM recipes WHERE name = :recipeName")
     suspend fun findRecipeByName(recipeName: String): Recipe?
+//    suspend fun findRecipeByName(recipeName: String): LiveData<Recipe>
 
     @Query("SELECT * FROM recipes")
-    suspend fun getAllRecipes(): List<Recipe>
+    fun getAllRecipes(): LiveData<List<Recipe>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRecipe(recipe: Recipe)
