@@ -11,6 +11,10 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import com.example.grocerez.dao.CategoryDao
+import com.example.grocerez.dao.ItemDao
+import com.example.grocerez.dao.UnitDao
+import com.example.grocerez.database.AppDatabase
 import com.example.grocerez.databinding.FragmentNewItemSheetBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.text.SimpleDateFormat
@@ -29,10 +33,28 @@ class NewTaskSheet(var foodItem: FoodItem?) : BottomSheetDialogFragment() {
     // Define the date formatter
     val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
+    // declaring all the things related to the database operations
+    private lateinit var categoryDao: CategoryDao
+    private lateinit var unitDao: UnitDao
+    private lateinit var itemDao: ItemDao
+    private lateinit var appDatabase: AppDatabase
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (foodItem != null) {
+
+        // Initialize database and DAO objects
+//        appDatabase = AppDatabase.getInstance(context)
+        // Thong: I dont know how contexts work in this case
+
+//        categoryDao = appDatabase.categoryDao()
+//        unitDao = appDatabase.unitDao()
+//        itemDao = appDatabase.itemDao()
+
+
+        if(foodItem != null)
+        {
+
             binding.foodTitle.text = "Edit Item"
             val editable = Editable.Factory.getInstance()
             binding.name.text = editable.newEditable(foodItem!!.name)

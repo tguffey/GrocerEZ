@@ -10,6 +10,7 @@ import android.widget.EditText
 import androidx.fragment.app.Fragment
 import com.anychart.data.View
 import com.example.grocerez.R
+import com.example.grocerez.SocketHandler
 
 // RegisterStep2Fragment.kt
 
@@ -20,6 +21,13 @@ class RegisterStep2Fragment : Fragment() {
         savedInstanceState: Bundle?
     ): android.view.View? {
         val view = inflater.inflate(R.layout.fragment_register_step2, container, false)
+
+        // THONG: retrieve these 2 from step1 fragment. assign default value blank.
+        val email = arguments?.getString("email", "")
+        val password = arguments?.getString("password", "")
+
+        // singleton socket
+        val mSocket = SocketHandler.getSocket()
 
         // Get references to the EditText fields in Step 2
         val firstNameEditText = view.findViewById<EditText>(R.id.register_firstn_entry)
@@ -36,8 +44,15 @@ class RegisterStep2Fragment : Fragment() {
 
         finishButton.setOnClickListener {
             // Check if the conditions are met before finishing registration
+
+            // THONG: we have all 3 required fields here
+
             if (areConditionsMet()) {
+
+
                 val username = usernameEditText?.text.toString()
+                mSocket.emit("save_signup_info", username.toString(), email.toString(), password.toString())
+
                 (activity as? RegisterActivity)?.finishRegistration(username)
             }
         }

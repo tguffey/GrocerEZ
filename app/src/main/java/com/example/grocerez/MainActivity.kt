@@ -4,34 +4,42 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
-import android.widget.Toast
+import android.widget.Button
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import com.example.grocerez.database.AppDatabase
+import com.example.grocerez.databaseActivities.DatabaseActivity
 import com.example.grocerez.databinding.ActivityMainBinding
-import com.example.grocerez.ui.login.LoginActivity
 import com.example.grocerez.ui.welcome.WelcomeActivity
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var appDatabase: AppDatabase
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Thong: Initialize the AppDatabase instance. here goes nothing
+        appDatabase = AppDatabase.getInstance(applicationContext)
+        //WORKS!!!!!!! NO ERRORRR!!!!
+
 
         // ESTABLISH SOCKET CONNECTION
-        SocketHandler.setSocket()
+//        SocketHandler.setSocket()
         val mSocket = SocketHandler.getSocket()
-        mSocket.connect()
+//        mSocket.connect()
         mSocket.emit("hello")
         // ______________________________
 
         // Check if the user is already logged in (by checking SharedPreferences)
         val sharedPreferences = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
         val username = sharedPreferences.getString("username", null)
+        // TODO: sharedpreferences for email and password
 
         if (username != null) {
             // If username is logged in, do nothing
@@ -79,6 +87,17 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_recipes, R.id.navigation_shopping
             )
         )
+
+        // THONG: im gonna createa a button to test out the funcitons of the database
+        val testDB_btn = findViewById<Button>(R.id.testDB_btn)
+
+        testDB_btn.setOnClickListener {
+            val intent = Intent(this, DatabaseActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
+
         // THIS IS JOCELYN Im deleting this to remove Action Bar bug
         // setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
