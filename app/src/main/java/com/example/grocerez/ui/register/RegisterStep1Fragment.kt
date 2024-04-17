@@ -47,7 +47,7 @@ class RegisterStep1Fragment : Fragment() {
         confirmEditText.addTextChangedListener(textWatcher)
 
         val nextButton = view.findViewById<Button>(R.id.register_next_btn)
-        nextButton.isEnabled = false  // Initially disable the next button
+        nextButton.isEnabled = false  // Initially disable the next button until passwords match
 
         println("trying to receive socket 1")
         println("trying to receive socket 2")
