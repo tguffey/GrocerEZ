@@ -1,16 +1,23 @@
 package com.example.grocerez.ui.recipes
 
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
 import com.example.grocerez.databinding.RecipeIngredientBinding
 
-class RecipeIngredientAdapter (
+class RecipeIngredientAdapter(
     private var ingredientItems: MutableList<IngredientItem>, // List of recipe items to be displayed
     private val clickListener: IngredentItemClickListener
 ): RecyclerView.Adapter<IngredientItemViewHolder>()
 {
+    // Constructor for NewRecipeSheet fragment
+    constructor(ingredientItems: MutableList<IngredientItem>, clickListener: NewRecipeSheet) : this(ingredientItems, clickListener as IngredentItemClickListener)
+
+    // Constructor for RecipeView fragment
+    constructor(ingredientItems: MutableList<IngredientItem>, clickListener: RecipeView) : this(ingredientItems, clickListener as IngredentItemClickListener)
+
+
     fun updateIngredientItems(newIngredientItems: MutableList<IngredientItem>){
         val diffCallback = IngredientDiffCallback(ingredientItems, newIngredientItems)
         val diffResult = DiffUtil.calculateDiff(diffCallback)
