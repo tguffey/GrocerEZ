@@ -146,7 +146,6 @@ class MyPlateViewModel : ViewModel() {
             }
         }
 
-        //CHAT HERE
         val myPlateInfo = determineMyPlateInfo(totalCaloricExpenditure)
         val calories = totalCaloricExpenditure
         val goalDescription = "Maintain current weight:"
