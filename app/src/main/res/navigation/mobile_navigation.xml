@@ -86,10 +86,33 @@
         tools:layout="@layout/fragment_my_recipes">
 
         <action
+            android:id="@+id/action_myRecipes_to_recipeView"
+            app:destination="@id/recipesViewFragment" />
+        <action
             android:id="@+id/action_myRecipes_to_newRecipeSheet"
             app:destination="@id/newRecipeSheet" />
 
     </fragment>
+
+    <fragment
+        android:id="@+id/recipesViewFragment"
+        android:name="com.example.grocerez.ui.recipes.RecipeView"
+        android:label="recipeView"
+        tools:layout="@layout/fragment_recipe_view">
+
+        <action
+            android:id="@+id/action_recipeView_to_newRecipeSheet"
+            app:destination="@id/newRecipeSheet" />
+
+    </fragment>
+
+    <action
+        android:id="@+id/action_myRecipes_to_newRecipeSheet"
+        app:destination="@id/newRecipeSheet" />
+
+    <action
+        android:id="@+id/action_myRecipes_to_recipeView"
+        app:destination="@id/recipesViewFragment" />
 
     <action
         android:id="@+id/action_recipeFragment_to_myRecipes"

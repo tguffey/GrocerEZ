@@ -118,7 +118,7 @@ class MyRecipesFragment : Fragment(), RecipeItemClickListener{
         val bundle = Bundle().apply {
             putParcelable("recipeItem", recipeItem)
         }
-        findNavController().navigate(R.id.action_myRecipes_to_newRecipeSheet, bundle)
+        findNavController().navigate(R.id.action_myRecipes_to_recipeView, bundle)
     }
 
     // Destroy the view once the user navigates to a different page
