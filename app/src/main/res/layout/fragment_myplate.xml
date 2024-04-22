@@ -79,13 +79,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
             <com.anychart.AnyChartView
                 android:id="@+id/anyChartView"
                 android:layout_width="wrap_content"
                 android:layout_height="250dp"
+                android:layout_gravity="center_horizontal"
                 android:background="@android:color/black"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_gravity="center_horizontal"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
             <!-- Divider Bar -->
@@ -108,10 +109,10 @@
                 android:padding="16dp">
 
                 <TextView
+                    style="@style/TextAppearance.AppCompat.Body2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/cal_sub_info"
-                    style="@style/TextAppearance.AppCompat.Body2"
                     android:textSize="14sp" />
 
             </LinearLayout>
@@ -145,18 +146,18 @@
 
                     <TextView
                         android:id="@+id/fruitTextView"
+                        style="@style/TextAppearance.AppCompat.Title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="create profile to see results"
-                        style="@style/TextAppearance.AppCompat.Title"
                         android:textSize="18sp"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold" />
 
                     <TextView
+                        style="@style/TextAppearance.AppCompat.Body2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/fruits_info"
-                        style="@style/TextAppearance.AppCompat.Body2"
                         android:textSize="16sp" />
                 </LinearLayout>
 
@@ -191,18 +192,18 @@
 
                     <TextView
                         android:id="@+id/vegTextView"
+                        style="@style/TextAppearance.AppCompat.Title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="create profile to see results"
                         android:textSize="18sp"
-                        android:textStyle="bold"
-                        style="@style/TextAppearance.AppCompat.Title"/>
+                        android:textStyle="bold" />
 
                     <TextView
+                        style="@style/TextAppearance.AppCompat.Body2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/vegetables_info"
-                        style="@style/TextAppearance.AppCompat.Body2"
                         android:textSize="16sp" />
                 </LinearLayout>
 
@@ -238,18 +239,18 @@
 
                     <TextView
                         android:id="@+id/grainsTextView"
+                        style="@style/TextAppearance.AppCompat.Title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Create profile to see results"
-                        style="@style/TextAppearance.AppCompat.Title"
                         android:textSize="18sp"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold" />
 
                     <TextView
+                        style="@style/TextAppearance.AppCompat.Body2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/grains_info"
-                        style="@style/TextAppearance.AppCompat.Body2"
                         android:textSize="16sp" />
                 </LinearLayout>
 
@@ -284,18 +285,18 @@
 
                     <TextView
                         android:id="@+id/proteinTextView"
+                        style="@style/TextAppearance.AppCompat.Title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="create profile to see results"
-                        style="@style/TextAppearance.AppCompat.Title"
                         android:textSize="18sp"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold" />
 
                     <TextView
+                        style="@style/TextAppearance.AppCompat.Body2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/protein_info"
-                        style="@style/TextAppearance.AppCompat.Body2"
                         android:textSize="16sp" />
                 </LinearLayout>
 
@@ -330,18 +331,18 @@
 
                     <TextView
                         android:id="@+id/dairyTextView"
+                        style="@style/TextAppearance.AppCompat.Title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="create profile to see results"
-                        style="@style/TextAppearance.AppCompat.Title"
                         android:textSize="18sp"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold" />
 
                     <TextView
+                        style="@style/TextAppearance.AppCompat.Body2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/dairy_info"
-                        style="@style/TextAppearance.AppCompat.Body2"
                         android:textSize="16sp" />
                 </LinearLayout>
 
@@ -375,18 +376,18 @@
                     android:orientation="vertical">
 
                     <TextView
+                        style="@style/TextAppearance.AppCompat.Title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/limit"
-                        style="@style/TextAppearance.AppCompat.Title"
                         android:textSize="18sp"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold" />
 
                     <TextView
+                        style="@style/TextAppearance.AppCompat.Body2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/limit_info"
-                        style="@style/TextAppearance.AppCompat.Body2"
                         android:textSize="16sp" />
                 </LinearLayout>
 
@@ -397,6 +398,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="5dp"
                 android:background="#f1f2f3" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/food_recommendations"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

@@ -38,15 +38,22 @@
     <string name="sex">Sex</string>
     <string name="age">Age</string>
     <string name="years_old">years old</string>
-    <string name="fruits_info">1 cup of fruits counts as\n\t* 1 cup raw or cooked fruit; or\n\t* 1/2 cup dried fruit; or\n\t* 1 cup 100% fruit juice</string>
+    <string name="fruits_info">1 cup of fruits counts as\n\t* 1 cup raw or cooked fruit; or\n\t* ½ cup dried fruit; or\n\t* 1 cup 100% fruit juice</string>
     <string name="vegetables_info">1 cup of vegetables coutns as\n\t* 1 cup raw or cooked vegetables; or\n\t* 2 cups leafy salad greens; or\n\t* 1 cup 100% vegetable juice.</string>
-    <string name="grains_info">1 ounce of grains counts as\n\t* 1 slice bread; or\n\t* 1 ounce ready-to-eat cereal; or\n\t* 1/2 cup cooked rice, pasta, or cereal.</string>
-    <string name="protein_info">1 ounce of protein foods counts as\n\t* 1 ounce seafood, lean meats, or poultry; or\n\t* 1 egg; or\n\t* 1 Tbsp peanut butter; or\n\t* 1/4 cup cooked beans, peas, or lentils; or\n\t* 1/2 ounce unsalted nuts or seeds.</string>
-    <string name="dairy_info">1 cup dairy counts as\n\t* 1 cup dairy milk or yogurt; or\n\t* 1 cup lactose-free dairy milk or yogurt; or\n\t* 1 1/2 ounces hard cheese.</string>
-    <string name="limit_info">* Added sugars to less than 75 grams a day.\n* Saturated fat to less than 33 grams a day.\n* Sodium to less than 2,300 miligrams a day.</string>
-    <string name="limit">Choose foods and beverages with less added sugars, saturated fat, and sodium.\nLimit:</string>
+    <string name="grains_info">1 ounce of grains counts as\n\t* 1 slice bread; or\n\t* 1 ounce ready-to-eat cereal; or\n\t* ½ cup cooked rice, pasta, or cereal.</string>
+    <string name="protein_info">1 ounce of protein foods counts as\n\t* 1 ounce seafood, lean meats, or poultry; or\n\t* 1 egg; or\n\t* 1 Tbsp peanut butter; or\n\t* ¼ cup cooked beans, peas, or lentils; or\n\t* ½ ounce unsalted nuts or seeds.</string>
+    <string name="dairy_info">1 cup dairy counts as\n\t* 1 cup dairy milk or yogurt; or\n\t* 1 cup lactose-free dairy milk or yogurt; or\n\t* 1 ½ ounces hard cheese.</string>
+    <string name="limit_info">\nLimit:\n* Added sugars to less than 75 grams a day.\n* Saturated fat to less than 33 grams a day.\n* Sodium to less than 2,300 miligrams a day.</string>
+    <string name="limit">Choose foods and beverages with less added sugars, saturated fat, and sodium.</string>
     <string name="cal_sub_info">*This 2,400-calorie pattern is only an estimate of your needs. Monitor your body weight and adjust your calories if needed.</string>
     <string name="goal">Goal</string>
 
+    <string-array name="myplate_descriptions">
+        <item>1 cup of fruits counts as\n\t* 1 cup raw or cooked fruit; or\n\t* ½ cup dried fruit; or\n\t* 1 cup 100% fruit juice</item>
+        <item>1 cup of vegetables coutns as\n\t* 1 cup raw or cooked vegetables; or\n\t* 2 cups leafy salad greens; or\n\t* 1 cup 100% vegetable juice</item>
+        <item>1 ounce of grains counts as\n\t* 1 slice bread; or\n\t* 1 ounce ready-to-eat cereal; or\n\t* ½ cup cooked rice, pasta, or cereal</item>
+        <item>1 ounce of protein foods counts as\n\t* 1 ounce seafood, lean meats, or poultry; or\n\t* 1 egg; or\n\t* 1 Tbsp peanut butter; or\n\t* ¼ cup cooked beans, peas, or lentils; or\n\t* ½ ounce unsalted nuts or seeds</item>
+        <item>1 cup dairy counts as\n\t* 1 cup dairy milk or yogurt; or\n\t* 1 cup lactose-free dairy milk or yogurt; or\n\t* 1 ½ ounces hard cheese</item>
+    </string-array>
 
 </resources>

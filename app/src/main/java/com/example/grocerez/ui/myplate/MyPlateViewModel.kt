@@ -80,16 +80,6 @@ class MyPlateViewModel : ViewModel() {
             in 2900..3099 -> MyPlateInfo(2.5, 4.0, 10.0, 7.0, 3.0)
             else -> MyPlateInfo(2.5, 4.0, 10.0, 7.0, 3.0)
 
-            // MyPlateInfo instances
-//                val myPlateInfoFor1600Cal = MyPlateInfo(1.5, 2.0, 5.0, 5.0, 3.0)
-//                val myPlateInfoFor1800Cal = MyPlateInfo(1.5, 2.5, 6.0, 5.0, 3.0)
-//                val myPlateInfoFor2000Cal = MyPlateInfo(2.0, 2.5, 6.0, 5.5, 3.0)
-//                val myPlateInfoFor2200Cal = MyPlateInfo(2.0, 3.0, 7.0, 6.0, 3.0)
-//                val myPlateInfoFor2400Cal = MyPlateInfo(2.0, 3.0, 8.0, 6.5, 3.0)
-//                val myPlateInfoFor2600Cal = MyPlateInfo(2.0, 3.5, 9.0, 6.5, 3.0)
-//                val myPlateInfoFor2800Cal = MyPlateInfo(2.5, 3.5, 10.0, 7.0, 3.0)
-//                val myPlateInfoFor3000Cal = MyPlateInfo(2.5, 4.0, 10.0, 7.0, 3.0)
-//                val myPlateInfoFor3200Cal = MyPlateInfo(2.5, 4.0, 10.0, 7.0, 3.0)
         }
     }
     fun updateUserData(age: Int, weight: Double, height: Double, sex: Int, physicalActivityLevel: Int) {
@@ -117,13 +107,6 @@ class MyPlateViewModel : ViewModel() {
                 goals.add(underweightGoal)
                 println("To achieve a healthy weight: ${totalCaloricExpenditure.toInt() + 200}")
                 println("To achieve a healthy weight: ${calories.toInt()}")
-//                val info = determineMyPlateInfo(totalCaloricExpenditure + 200)
-//                println("Recommended servings:")
-//                println("Fruit: ${info.fruitAmount}")
-//                println("Vegetable: ${info.vegetableAmount}")
-//                println("Grain: ${info.grainAmount}")
-//                println("Protein: ${info.proteinAmount}")
-//                println("Dairy: ${info.dairyAmount}")
             }
             bmi <= 24.9 -> {
                 // Healthy weight
@@ -136,13 +119,6 @@ class MyPlateViewModel : ViewModel() {
                 goals.add(overweightGoal)
                 println("to achieve a healthy weight: ${totalCaloricExpenditure.toInt() - 200}")
                 val myPlateInfo = determineMyPlateInfo(totalCaloricExpenditure - 200)
-//                val info = determineMyPlateInfo(totalCaloricExpenditure + 200)
-//                println("Recommended servings:")
-//                println("Fruit: ${info.fruitAmount}")
-//                println("Vegetable: ${info.vegetableAmount}")
-//                println("Grain: ${info.grainAmount}")
-//                println("Protein: ${info.proteinAmount}")
-//                println("Dairy: ${info.dairyAmount}")
             }
         }
 

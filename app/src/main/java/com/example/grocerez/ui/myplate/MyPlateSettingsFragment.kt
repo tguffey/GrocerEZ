@@ -165,16 +165,18 @@ class MyPlateSettingsFragment : Fragment(), GoalAdapter.GoalClickListener {
                 heightText.text.isNullOrEmpty()
     }
 
+    /*Upon clicking on a goal, the proper recommendations will be calculated and sent to sharedModel
+    * where myplateFragment can access in order to display amounts to the user.*/
     override fun onGoalClicked(goal: MyPlateViewModel.Goal) {
         val info = determineMyPlateInfo(goal.calories)
         // Update shared view model
         sharedModel.updateFoodAmounts(info)
-        println("Recommended servings:")
-        println("Fruit: ${info.fruitAmount}")
-        println("Vegetable: ${info.vegetableAmount}")
-        println("Grain: ${info.grainAmount}")
-        println("Protein: ${info.proteinAmount}")
-        println("Dairy: ${info.dairyAmount}")
+//        println("Recommended servings:")
+//        println("Fruit: ${info.fruitAmount}")
+//        println("Vegetable: ${info.vegetableAmount}")
+//        println("Grain: ${info.grainAmount}")
+//        println("Protein: ${info.proteinAmount}")
+//        println("Dairy: ${info.dairyAmount}")
     }
 }
 

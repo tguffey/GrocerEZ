@@ -14,6 +14,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.grocerez.databinding.FragmentMyplateBinding
 import com.anychart.AnyChart
 import com.anychart.AnyChartView
@@ -39,6 +41,7 @@ class MyPlateFragment : Fragment(){
     private lateinit var grainsTextView: TextView
     private lateinit var proteinTextView: TextView
     private lateinit var dairyTextView: TextView
+    private lateinit var recyclerView: RecyclerView
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,7 +65,57 @@ class MyPlateFragment : Fragment(){
             grainsTextView.text = "${foodAmounts.grainAmount} Cups"
             proteinTextView.text = "${foodAmounts.proteinAmount} Cups"
             dairyTextView.text = "${foodAmounts.dairyAmount} Cups"
+
+            //RECYCLER VIEW
+            val foodAmountsArray = arrayOf(
+                foodAmounts.fruitAmount,
+                foodAmounts.vegetableAmount,
+                foodAmounts.grainAmount,
+                foodAmounts.proteinAmount,
+                foodAmounts.dairyAmount
+            )
+
+            /*IM WRITING THE CODE HERE FOR THE RECYCLER VIEW LOGIC
+            * To access updated food amounts, use foodAmounts.<categoryAmount>*/
+            // Create an ArrayList of FoodAmountsModel
+            recyclerView=root.findViewById(R.id.food_recommendations)
+            val foodAmountsModelList = ArrayList<FoodAmountModel>()
+
+            val categoryDescription = resources.getStringArray(R.array.myplate_descriptions)
+            val categoryImages = intArrayOf(
+                R.drawable.fruits_icon,
+                R.drawable.vegetables_icon,
+                R.drawable.grains_icon,
+                R.drawable.protein_icon,
+                R.drawable.dairy_icon
+            )
+
+//            for (i in foodAmountsArray.indices) {
+//                foodAmountsModelList.add(
+//                    FoodAmountModel(
+//                        foodAmountsArray[i],
+//                        categoryDescription[i],
+//                        categoryImages[i]
+//                    )
+//                )
+//            }
+            for (i in foodAmountsArray.indices) {
+                val foodAmountModel = FoodAmountModel(
+                    foodAmountsArray[i].toDouble(), // Assuming foodAmountsArray contains Double values
+                    categoryDescription[i],
+                    categoryImages[i]
+                )
+                foodAmountsModelList.add(foodAmountModel)
+            }
+
+            // Setting up the adapter
+            val adapter = MyPlateRecyclerAdapter(requireContext(), foodAmountsModelList)
+            recyclerView.adapter = adapter
+            recyclerView.layoutManager = LinearLayoutManager(requireContext())
+            /*THE RECYCLER VIEW LOGIC WILL END HERE*/
+
         }
+
 
         anyChartView = root.findViewById(R.id.anyChartView)
         setupChartView()
@@ -83,6 +136,7 @@ class MyPlateFragment : Fragment(){
         super.onDestroyView()
         _binding = null
     }
+
 
     //-jocelyn set up the chart with logic
     private fun setupChartView() {
