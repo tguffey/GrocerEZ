@@ -18,7 +18,7 @@ import java.util.Date
             onDelete = ForeignKey.CASCADE // ensure if the field in parent table is delted, all child objects will be delted as well
         )
     ],
-    indices = [Index(value = ["item_name"], unique = true)]
+    indices = [Index(value = ["item_name"], unique = false)]
 )
 data class PantryItem(
     @PrimaryKey(autoGenerate = true)
@@ -32,8 +32,9 @@ data class PantryItem(
     val amountFromInputDate: Float,
 
     @ColumnInfo(name = "input_date")
-    val inputDate: Long,
-    // TODO: convert this into Date later using type converter
+    val inputDate: String,
+    // room database doesnt handle date for soem reason so will be doing this for simplicity.
+
 
     @ColumnInfo(name = "shelf_life_from_input_date")
     val shelfLifeFromInputDate: Int, // Calculated in days

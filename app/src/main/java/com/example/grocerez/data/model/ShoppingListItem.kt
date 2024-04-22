@@ -16,7 +16,7 @@ import androidx.room.PrimaryKey
             onDelete = ForeignKey.CASCADE // ensure if the field in parent table is delted, all child objects will be delted as well
         )
     ],
-    indices = [Index(value = ["itemName"], unique = true)]
+    indices = [Index(value = ["itemName"], unique = false)]
 )
 data class ShoppingListItem(
     @PrimaryKey(autoGenerate = true) val shoppingListItemId: Long = 0,
