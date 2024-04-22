@@ -135,9 +135,22 @@ class NewPantryItemActivity : AppCompatActivity() {
         val calendar = Calendar.getInstance() // get instance of current date and time
 
         // extract the 3 from calendar instance
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
+        var year = calendar.get(Calendar.YEAR)
+        var month = calendar.get(Calendar.MONTH)
+        var dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
+
+        editTextInputDate.text.toString().let {
+            if (it.isNotEmpty()) {
+                // make a list of the date month year sperated by /
+                //mm/dd/yy
+                val parts =  it.split("/")
+                if (parts.size == 3) {
+                    month = parts[0].toInt() - 1 // months are 0-indexed in Calendar
+                    dayOfMonth = parts[1].toInt()
+                    year = parts[2].toInt() + 2000 // Add 2000 to get full year
+                }
+            }
+        }
 
         // Set up DatePickerDialog to show current date as default
         val datePickerDialog = DatePickerDialog(
