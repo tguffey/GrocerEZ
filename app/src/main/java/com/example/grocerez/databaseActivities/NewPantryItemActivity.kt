@@ -4,7 +4,9 @@ import android.media.metrics.EditingSession
 import android.app.DatePickerDialog
 import java.text.SimpleDateFormat
 import android.os.Bundle
+import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -13,7 +15,6 @@ import com.example.grocerez.R
 import com.example.grocerez.dao.CategoryDao
 import com.example.grocerez.dao.ItemDao
 import com.example.grocerez.dao.PantryItemDao
-import com.example.grocerez.dao.ShoppingListItemDao
 import com.example.grocerez.dao.UnitDao
 import com.example.grocerez.database.AppDatabase
 import java.util.Calendar
@@ -28,11 +29,11 @@ class NewPantryItemActivity : AppCompatActivity() {
     private lateinit var editTextUnit: EditText
     private lateinit var editTextCategory: EditText
 
-    private lateinit var buttonFindItem: EditText
-    private lateinit var buttonAdd2Pantry: EditText
-    private lateinit var buttonSeeAllPantry: EditText
+    private lateinit var buttonFindItem: Button
+    private lateinit var buttonAdd2Pantry: Button
+    private lateinit var buttonSeeAllPantry: Button
 
-    private lateinit var textViewFeedbackPantry: EditText
+    private lateinit var textViewFeedbackPantry: TextView
 
     private lateinit var categoryDao: CategoryDao
     private lateinit var unitDao: UnitDao
@@ -70,6 +71,8 @@ class NewPantryItemActivity : AppCompatActivity() {
         buttonAdd2Pantry = findViewById(R.id.buttonPantryAddItem)
         buttonSeeAllPantry = findViewById(R.id.buttonPantryShowAll)
 
+        //
+
         // binding textview
         textViewFeedbackPantry = findViewById(R.id.textviewPantryFeedback)
 
@@ -82,6 +85,10 @@ class NewPantryItemActivity : AppCompatActivity() {
         }
         buttonSeeAllPantry.setOnClickListener{
 
+        }
+
+        editTextInputDate.setOnClickListener {
+            showDatePicker()
         }
     }
 
@@ -103,28 +110,32 @@ class NewPantryItemActivity : AppCompatActivity() {
                 && isShelfLifeEmpty
                 && isAmountNotEmpty)
     }
-
+    // this will let user choose from calendar
     private fun showDatePicker() {
-        // Set up DatePickerDialog to show current date
+        val calendar = Calendar.getInstance() // get instance of current date and time
+
+        // extract the 3 from calendar instance
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
+
+        // Set up DatePickerDialog to show current date as default
         val datePickerDialog = DatePickerDialog(
-            this,
-            { _, year, month, dayOfMonth ->
-                // Set selected date to Calendar instance
-                calendar.set(year, month, dayOfMonth)
-
-                // Format selected date to desired format (e.g., "MM/dd/yy")
-                val dateFormat = SimpleDateFormat("MM/dd/yy", Locale.getDefault())
-                val selectedDate = dateFormat.format(calendar.time)
-
-                // Set formatted date to EditText
-                editTextInputDate.setText(selectedDate)
+            this, // context
+            {  _, selectedYear, selectedMonth, selectedDay ->
+                // Update the EditText with the selected date
+                // month is default 0 so +1 to format
+                // represents day
+                // the year mod 100 to have 2 final digit only
+                val selectedDate = "${selectedMonth + 1}/$selectedDay/${selectedYear % 100}"
+                editTextInputDate.setText(selectedDate) //update the edittext with the slected date
             },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
+            year,
+            month,
+            dayOfMonth
         )
 
-        // Show DatePickerDialog
+        // Show DatePickerDialog to user
         datePickerDialog.show()
     }
 }
