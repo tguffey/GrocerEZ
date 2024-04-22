@@ -90,7 +90,7 @@ class NewShoppingListItemActivity : AppCompatActivity() {
         }
 
         buttonInsert.setOnClickListener {
-            if (areAllRequiredFieldsNotNull() == false){
+            if (!areAllRequiredFieldsNotNull()){
                 textViewFeedback_box.text = "please fill out all the required fields (all fields are required except for notes)"
             } else {
                 val itemName = editTextName.text.toString()
@@ -121,7 +121,7 @@ class NewShoppingListItemActivity : AppCompatActivity() {
         }
     }
 
-    fun areAllRequiredFieldsNotNull(): Boolean {
+    private fun areAllRequiredFieldsNotNull(): Boolean {
         val isNameNotEmpty = editTextName.text.isNotEmpty()
         val isCategoryNotEmpty = editTextCategory.text.isNotEmpty()
         val isUnitNotEmpty = editTextUnit.text.isNotEmpty()
