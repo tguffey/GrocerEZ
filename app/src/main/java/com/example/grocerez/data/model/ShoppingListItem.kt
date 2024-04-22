@@ -31,3 +31,6 @@ data class ShoppingListItem(
     // we will also know its category and unit, so we can just retrieve it that way for display.
 
 )
+{
+    fun isChecked() = checkbox
+}

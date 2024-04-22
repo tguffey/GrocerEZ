@@ -1,5 +1,6 @@
 package com.example.grocerez.data
 
+import android.util.Log
 import androidx.annotation.WorkerThread
 import com.example.grocerez.dao.CategoryDao
 import com.example.grocerez.dao.ItemDao
@@ -58,7 +59,9 @@ class ShoppingRepository(
     @WorkerThread
     suspend fun insertShoppingListItem(shoppingListItem: ShoppingListItem) {
         return withContext(Dispatchers.IO) {
+            Log.v("REPO", "adding item...")
             shoppingListItemDao.insertShoppingListItem(shoppingListItem)
+            Log.v("REPO", "done adding")
         }
     }
 

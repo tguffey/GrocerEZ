@@ -18,6 +18,9 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+// Represents all of the data that gets passed to and from the Shop page
+// (data that the user sees)
+// To Travis: call the addShoppingListItem function to add from recipes
 class ShoppingViewModel(val repository: ShoppingRepository) : ViewModel() {
 
     private val _text = MutableLiveData<String>().apply {
@@ -25,14 +28,10 @@ class ShoppingViewModel(val repository: ShoppingRepository) : ViewModel() {
     }
     val text: LiveData<String> = _text
 
-
-//    lateinit var groceryItems: LiveData<List<ShoppingListItem>>
     lateinit var categoryItems: MutableLiveData<List<CategoryItem>>
 
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            categoryItems = flowOf(repository.allCategoriesAndShopItems()).asLiveData() as MutableLiveData<List<CategoryItem>>
-        }
+    fun loadShoppingList() = viewModelScope.launch(Dispatchers.IO) {
+        categoryItems = flowOf(repository.allCategoriesAndShopItems()).asLiveData() as MutableLiveData<List<CategoryItem>>
     }
 
     suspend fun findItemByName(name: String) : Item? {
@@ -53,6 +52,12 @@ class ShoppingViewModel(val repository: ShoppingRepository) : ViewModel() {
         }
     }
 
+    suspend fun getItemName(item: Item) : String {
+        return withContext(Dispatchers.IO) {
+            return@withContext item.getItemName()
+        }
+    }
+
     private fun updateData() = viewModelScope.launch(Dispatchers.IO) {
         categoryItems.postValue(repository.allCategoriesAndShopItems())
     }
@@ -61,7 +66,7 @@ class ShoppingViewModel(val repository: ShoppingRepository) : ViewModel() {
         Log.v("VIEW MODEL", "in add shop item")
         repository.insertShoppingListItem(newGrocery)
         updateData()
-        Log.v("VIEW MODEL", "updated data")
+        Log.v("VIEW MODEL", "added new item")
     }
 
     fun addCategory(newCategory: Category) = viewModelScope.launch(Dispatchers.IO) {
@@ -84,7 +89,9 @@ class ShoppingViewModel(val repository: ShoppingRepository) : ViewModel() {
     fun removeCheckedItems() = viewModelScope.launch(Dispatchers.IO) {
         categoryItems.value?.forEach {
             it.shoppingListItems.forEach {
-                repository.removeShoppingListItem(it)
+                if (it.isChecked()) {
+                    repository.removeShoppingListItem(it)
+                }
             }
         }
         updateData()

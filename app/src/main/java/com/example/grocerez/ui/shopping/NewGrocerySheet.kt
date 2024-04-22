@@ -25,6 +25,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class NewGrocerySheet(
+    // will need these to implement editing items
     var groceryItem: Item?,
     var categoryItem: Category?
 ) : BottomSheetDialogFragment() {
@@ -32,7 +33,7 @@ class NewGrocerySheet(
     private lateinit var binding: FragmentNewShoppingItemBinding
     private lateinit var itemViewModel: ShoppingViewModel
     private lateinit var selectedUnit: String
-    private val TAG = "NEW ITEM SHEET"
+//    private val TAG = "NEW ITEM SHEET" // for the debug log
 
     // Create the UI for the sheet
     override fun onCreateView(
@@ -55,6 +56,7 @@ class NewGrocerySheet(
 
         setSpinner()
 
+        // add the entered item to the list
         binding.saveButton.setOnClickListener{
             saveAction()
         }
@@ -112,7 +114,7 @@ class NewGrocerySheet(
                 selectedUnit = parent?.getItemAtPosition(position) as String
 
                 if (position == 0) {
-                    selectedUnit = ""
+                    selectedUnit = "unit"
                 }
 
                 // Only the units choices can be selected and not the Units label
@@ -131,7 +133,7 @@ class NewGrocerySheet(
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                selectedUnit = ""
+                selectedUnit = "unit"
             }
         }
     }
@@ -140,7 +142,7 @@ class NewGrocerySheet(
     private fun saveAction() {
         val name = binding.name.text.toString()
         val category = binding.category.text.toString()
-        // not using this right now
+        // not using this variable right now
         val quantity =
             Unit.getBySymbol(selectedUnit)?.let {
                 ItemAmount(
@@ -153,7 +155,6 @@ class NewGrocerySheet(
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val existingItem = itemViewModel.findItemByName(name)
-                Log.v(TAG, "find item")
 
                 // see if item exists in the database already or not.
                 if (existingItem == null) {
@@ -161,34 +162,46 @@ class NewGrocerySheet(
                     try {
                         val existingCategory = itemViewModel.findCategoryByName(category)
                         val existingUnit = itemViewModel.findUnitByName(selectedUnit)
-                        Log.v(TAG, "find cat + unit")
 
-                        if (existingCategory == null || existingUnit == null) {
-                            withContext(Dispatchers.Main) {
-                                val newCategory = Category(category)
-                                val newUnit = com.example.grocerez.data.model.Unit(selectedUnit)
-                                Log.v(TAG, "[cat or unit dne] make cat + unit")
-                                itemViewModel.addCategory(newCategory)
-                                Log.v(TAG, "add cat")
-                                itemViewModel.addUnit(newUnit)
-                                Log.v(TAG, "add unit")
-
-                            }
+                        if (existingCategory == null && existingUnit == null) {
+                            // create new category and unit if category and unit don't exist
+                            val newCategory = Category(category)
+                            val newUnit = com.example.grocerez.data.model.Unit(selectedUnit)
+                            itemViewModel.addCategory(newCategory)
+                            itemViewModel.addUnit(newUnit)
                             val newItem = Item(
                                 name = name, category = category,
                                 unitName = selectedUnit, useRate = 0.0f
                             )
-                            Log.v(TAG, "make item")
                             itemViewModel.addItem(newItem)
-                            Log.v(TAG, "add item")
+                        } else if (existingCategory == null) {
+                            // create new category if category and doesn't exist
+                            val newCategory = Category(category)
+                            itemViewModel.addCategory(newCategory)
+
+                            val newItem = Item(
+                                name = name, category = category,
+                                unitName = selectedUnit, useRate = 0.0f
+                            )
+                            itemViewModel.addItem(newItem)
+                        }else if (existingUnit == null) {
+                            // create new unit if unit doesn't exist
+                            val newUnit = com.example.grocerez.data.model.Unit(selectedUnit)
+                            itemViewModel.addUnit(newUnit)
+
+                            val newItem = Item(
+                                name = name, category = category,
+                                unitName = selectedUnit, useRate = 0.0f
+                            )
+                            itemViewModel.addItem(newItem)
                         } else {
+                            // create new item with existing category and unit
                             val newItem = Item(
                                 name = name, category = category,
                                 unitName = selectedUnit, useRate = 0.0f
                             )
-                            Log.v(TAG, "make item")
                             itemViewModel.addItem(newItem)
-                            Log.v(TAG, "add item")
+                            Log.v("NEW SHEET", "new item created + added")
                         }
                         // we can do this because the respective DAO objects does replace on conflict
 
@@ -196,62 +209,40 @@ class NewGrocerySheet(
                     }
                     //_______________________________
                     val displayItem = itemViewModel.findItemByName(name)
-                    Log.v(TAG, "find item")
 
                     var shopListName = ""
                     if (displayItem != null) {
-                        shopListName = displayItem.name
+                        shopListName = itemViewModel.getItemName(displayItem)
+                        Log.v("NEW SHEET", "item dne, ${displayItem.getItemName()}, $name")
                     }
+                    Log.v("NEW SHEET", "item dne, $displayItem, $name")
                     //now insert shoppingListItem
                     val newShoppingListItem = ShoppingListItem(
                         itemName = shopListName,
                         checkbox = false, notes = note, quantity = quantityVal
                     )
-                    Log.v(TAG, "make shop item")
                     itemViewModel.addShoppingListItem(newShoppingListItem)
-                    Log.v(TAG, "add shop item")
 
                 } else {
-                    //now insert shoppingListItem
+                    // now insert shoppingListItem if item exists
                     var shopListName = ""
                     val displayItem = itemViewModel.findItemByName(name)
-                    Log.v(TAG, "[item exists] find item")
                     if (displayItem != null) {
-                        shopListName = displayItem.name
+                        shopListName = itemViewModel.getItemName(displayItem)
+                        Log.v("NEW SHEET", "item exists, ${displayItem.getItemName()}, $name")
                     }
+                    Log.v("NEW SHEET", "item exists, $displayItem, $name")
                     val newShoppingListItem = ShoppingListItem(
                         itemName = shopListName,
                         checkbox = false, notes = note, quantity = quantityVal
                     )
-                    Log.v(TAG, "make shop item")
                     itemViewModel.addShoppingListItem(newShoppingListItem)
-                    Log.v(TAG, "add shop item")
                 }
 
             } catch (_: Exception) {
             }
 
         }
-
-            /*if (name.isNotEmpty()) {
-                val newGrocery = ShoppingListItem(
-                    itemName = name, checkbox = false,
-                    notes = note, quantity = quantityVal
-                )
-                itemViewModel.addGroceryItem(newGrocery)
-            }
-            // Check if category name is provided
-            if ((category.isNotEmpty()) && (name.isNotEmpty())) {
-                val newCategory = Category(name = category)
-                val newItem = Item(
-                    name = name, category = category, unitName = selectedUnit,
-                    useRate = 0.0F
-                )
-
-                // Save category item
-                itemViewModel.addCategory(newCategory)
-                itemViewModel.addItem(newItem)
-            }*/
 
         // Clear input fields and dismiss the sheet
         clearFields()

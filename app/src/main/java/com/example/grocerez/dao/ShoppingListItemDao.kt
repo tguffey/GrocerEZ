@@ -36,6 +36,6 @@ interface ShoppingListItemDao {
     @Query("SELECT shoppingListItemId, itemName, checkbox, notes, quantity FROM shopping_list_item INNER JOIN items ON itemName = name WHERE category_name = :catName")
     fun findShoppingListItemByCategory(catName: String): List<ShoppingListItem>
 
-    @Query("SELECT DISTINCT name FROM shopping_list_item INNER JOIN items ON itemName = name")
-    fun getAllShoppingListCategories(): List<Category>
+/*    @Query("SELECT DISTINCT name FROM shopping_list_item INNER JOIN items ON itemName = name")
+    fun getAllShoppingListCategories(): List<Category>*/
 }

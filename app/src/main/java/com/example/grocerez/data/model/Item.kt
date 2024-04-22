@@ -38,4 +38,7 @@ data class Item(
     @ColumnInfo(name = "category_name") val category: String,
     @ColumnInfo(name = "unit_name") val unitName: String
 )
+{
+    fun getItemName() = name
+}
 
