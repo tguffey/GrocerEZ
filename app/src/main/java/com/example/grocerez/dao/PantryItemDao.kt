@@ -17,7 +17,7 @@ import com.example.grocerez.data.model.ShoppingListItem
 @Dao
 interface PantryItemDao {
     @Query("SELECT * FROM pantry_item")
-    suspend fun getAllPantryItemDao(): List<PantryItem>
+    suspend fun getAllPantryItem(): List<PantryItem>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPantryItemDao(pantryItem: PantryItem)

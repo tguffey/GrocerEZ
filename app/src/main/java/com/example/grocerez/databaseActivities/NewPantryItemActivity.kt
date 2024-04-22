@@ -93,30 +93,35 @@ class NewPantryItemActivity : AppCompatActivity() {
             searchItemAndPopulateFields()
         }
 
-        // TODO
+        // DONE
         buttonAdd2Pantry.setOnClickListener{
-
-            val itemName = editTextName.text.toString()
-            val inputDate = editTextInputDate.text.toString()
-            val shelfLife = editTextShelfLife.text.toString().toInt()
-            val amountLeft = editTextAmountLeft.text.toString().toFloat()
-            val unit = editTextUnit.text.toString()
-            val category = editTextCategory.text.toString()
-
-            if (!areAllRequiredFieldsNotNull()){
-                textViewFeedbackPantry.text = "please fill out all the required fields (all fields are required)"
+            if (areAllRequiredFieldsNotNull() == false){
+                val check = areAllRequiredFieldsNotNull()
+                textViewFeedbackPantry.text = "$check , please fill out all the required fields (all fields are required)"
             } else {
-                addPantryItem(itemName = itemName, category = category, unit = unit, amount = amountLeft, inputDate = inputDate, shelfLifeFromInputDate = shelfLife)
+                val itemName = editTextName.text.toString()
+                val inputDate = editTextInputDate.text.toString()
+                val shelfLife = editTextShelfLife.text.toString().toInt()
+                val amountLeft = editTextAmountLeft.text.toString().toFloat()
+                val unit = editTextUnit.text.toString()
+                val category = editTextCategory.text.toString()
+                val check = areAllRequiredFieldsNotNull()
+                try{
+                    addPantryItem(itemName = itemName, category = category, unit = unit, amount = amountLeft, inputDate = inputDate, shelfLifeFromInputDate = shelfLife)
+//                    textViewFeedbackPantry.text = "in the else, $check"
+                }catch (e: Exception){
+                    textViewFeedbackPantry.text = "something went wrong when adding, $e"
+                }
             }
 
         }
 
         // TODO
         buttonSeeAllPantry.setOnClickListener{
-            val selectedDateStr = editTextInputDate.text.toString()
-            val daysSince = calculateDaysSinceInputDate(selectedDateStr)
-            textViewFeedbackPantry.text = "Selected Date: $selectedDateStr, \nDays Since: $daysSince"
-
+//            val selectedDateStr = editTextInputDate.text.toString()
+//            val daysSince = calculateDaysSinceInputDate(selectedDateStr)
+//            textViewFeedbackPantry.text = "Selected Date: $selectedDateStr, \nDays Since: $daysSince"
+            seeAllPantryItems()
         }
 
         // DONE, this is to show the calender for date input
@@ -136,12 +141,12 @@ class NewPantryItemActivity : AppCompatActivity() {
 
 
         // Check if all required fields (excluding notes) are not empty
-        return (isNameNotEmpty
+        return isNameNotEmpty
                 && isCategoryNotEmpty
                 && isUnitNotEmpty
                 && isDateNotEmpty
                 && isShelfLifeNotEmpty
-                && isAmountNotEmpty)
+                && isAmountNotEmpty
     }
     // this will let user choose from calendar for the input date field
     private fun showDatePicker() {
@@ -191,13 +196,16 @@ class NewPantryItemActivity : AppCompatActivity() {
 
         var displayString = ""
         CoroutineScope(Dispatchers.IO).launch {
+
             try {
                 val existingItem = itemDao.findItemByName(itemName)
 
                 // see if item exists in the database already or not.
                 // if isnull, check for category and unit, add those if not exist. then add item
                 if (existingItem == null) {
-                    textViewFeedbackPantry.text = "no existing item exist with that name in the items table."
+                    withContext(Dispatchers.Main){
+                        textViewFeedbackPantry.text = "no existing item exist with that name in the items table."
+                    }
                     // Item doesn't exist, create a new one and insert it into the Item table
                     // this block added the items
                     try {
@@ -234,17 +242,17 @@ class NewPantryItemActivity : AppCompatActivity() {
 
                     // now will handle adding pantry item_______________________________
                     val displayItem = itemDao.findItemByName(itemName)
-                    var displayString2 = ""
+//                    var displayString2 = ""
 
                     // ideally the if line below trigger
                     if (displayItem != null){
-                        displayString2 = "\nitem is found in item table: \n" +
+                        displayString += "\nitem is found in item table: \n" +
                                 "id: ${displayItem.item_id} \n" +
                                 "name: ${displayItem.name} \n" +
                                 "category: ${displayItem.category} \n" +
                                 "userate: ${displayItem.useRate} ${displayItem.unitName} per week \n"
                     } else {
-                        displayString2 = "error inserting item"
+                        displayString += "\nerror inserting item"
                     }
 
                     var pantryItemName = ""
@@ -255,7 +263,7 @@ class NewPantryItemActivity : AppCompatActivity() {
                     val newPantryItem = PantryItem(itemName = pantryItemName, amountFromInputDate = amount, inputDate = inputDate, shelfLifeFromInputDate = shelfLifeFromInputDate)
                     pantryItemDao.insertPantryItemDao(newPantryItem)
 
-                    displayString2 = displayString +
+                    displayString = displayString +
                             "\nsucessfully insert new item into myPantry: \n" +
                             "name: ${itemName} \n" +
                             "inputDate: ${inputDate} \n" +
@@ -263,13 +271,13 @@ class NewPantryItemActivity : AppCompatActivity() {
                             "amount left: ${amount} ${unit}"
 
                     withContext(Dispatchers.Main){
-                        textViewFeedbackPantry.append(displayString2)
+                        textViewFeedbackPantry.append(displayString)
                     }
 
                 } else if (existingItem != null){
                     //now insert shoppingListItem
                     val displayItem = itemDao.findItemByName(itemName)
-                    var displayString2 = ""
+//                    var displayString2 = ""
                     var pantryItemName = ""
                     if (displayItem != null){
                         pantryItemName = displayItem.name
@@ -278,15 +286,15 @@ class NewPantryItemActivity : AppCompatActivity() {
                     val newPantryItem = PantryItem(itemName = pantryItemName, amountFromInputDate = amount, inputDate = inputDate, shelfLifeFromInputDate = shelfLifeFromInputDate)
                     pantryItemDao.insertPantryItemDao(newPantryItem)
 
-                    displayString2 = displayString +
-                            "\nsucessfully insert new item into shopping list: \n" +
+                    displayString = displayString +
+                            "\nsucessfully insert new item into My Pantry: \n" +
                             "name: ${itemName} \n" +
                             "inputDate: ${inputDate} \n" +
                             "shelflife from input date: ${shelfLifeFromInputDate} \n" +
                             "amount left: ${amount} ${unit}"
 
                     withContext(Dispatchers.Main){
-                        textViewFeedbackPantry.append(displayString2)
+                        textViewFeedbackPantry.append(displayString)
                     }
                 } else {
                     withContext(Dispatchers.Main) {
@@ -303,6 +311,55 @@ class NewPantryItemActivity : AppCompatActivity() {
         }
     }
 
+    private fun seeAllPantryItems(){
+        CoroutineScope(Dispatchers.IO).launch {
+            try{
+                val allShoppingListItems = pantryItemDao.getAllPantryItem()
+                withContext(Dispatchers.Main) {
+                    if (allShoppingListItems.isEmpty()){
+                        textViewFeedbackPantry.text = "no items added to shopping list yet"
+                    } else {
+                        val itemListText = StringBuilder()
+                        for (pantryItem in allShoppingListItems) {
+                            // retrieving data to display
+                            val item = itemDao.findItemByName(pantryItem.itemName)
+
+                            var unitForThis = "unit"
+                            if (item != null){
+                                unitForThis = item.unitName.toString()
+                            }
+
+                            var daysSinceInput = calculateDaysSinceInputDate(pantryItem.inputDate)
+                            var remainingShelfLife = pantryItem.shelfLifeFromInputDate - daysSinceInput
+
+
+                            //string to display
+                            var displayString = "ID: ${pantryItem.pantryItemId},\n" +
+                                    "Name: ${pantryItem.itemName},\n"+
+                                    "date input: ${pantryItem.inputDate},\n"+
+                                    "amount from input date: ${pantryItem.amountFromInputDate} $unitForThis \n"+
+                                    "shelf life from input date: ${pantryItem.shelfLifeFromInputDate} \n" +
+                                    "it has been ${daysSinceInput} days since input date\n" +
+                                    "remaining shelf life: about ${remainingShelfLife} days. \n\n"
+
+
+                            itemListText.append(displayString)
+                        }
+                        textViewFeedbackPantry.text = "my Pantry:\n" + itemListText.toString()
+                        editTextName.text.clear()
+                        editTextInputDate.text.clear()
+                        editTextShelfLife.text.clear()
+                        editTextAmountLeft.text.clear()
+                        editTextUnit.text.clear()
+                        editTextCategory.text.clear()
+                    }
+                }
+            }catch (e: Exception){
+                textViewFeedbackPantry.text = "error when display: $e"
+            }
+        }
+
+    }
     private fun searchItemAndPopulateFields() {
         val itemName = editTextName.text.toString().trim()
         // if variable is empty, stop here
@@ -342,26 +399,7 @@ class NewPantryItemActivity : AppCompatActivity() {
 
     // this function takes date string and returns the days since
     private fun calculateDaysSinceInputDate(selectedDate: String): Int {
-//
-//        textViewFeedbackPantry.text = "hello"
-//        // get the date as string from edit text
-//        val selectedDateStr = editTextInputDate.text.toString()
-////            textViewFeedbackPantry.text = "Selected Date: $selectedDateStr"
-//        // Parse the selected date string into a Date object
-//        val dateFormat = SimpleDateFormat("MM/dd/yy", Locale.getDefault())
-//        val selectedDate = dateFormat.parse(selectedDateStr)
-//
-//        // Get the current date
-//        val currentDate = Date()
-//
-//        // Calculate the difference in milliseconds between the two dates
-//        val differenceInMs = currentDate.time - selectedDate.time
-//
-//        // Convert the difference from milliseconds to days
-//        val daysSince = TimeUnit.MILLISECONDS.toDays(differenceInMs)
-//        // Display the result in the textViewFeedback TextView
-//        textViewFeedbackPantry.text = "Selected Date: $selectedDateStr, \nDays Since: $daysSince"
-//
+
 //
 
         val dateFormat = SimpleDateFormat("MM/dd/yy", Locale.getDefault())
