@@ -18,7 +18,9 @@ import com.example.grocerez.dao.PantryItemDao
 import com.example.grocerez.dao.UnitDao
 import com.example.grocerez.database.AppDatabase
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 
 class NewPantryItemActivity : AppCompatActivity() {
@@ -81,6 +83,24 @@ class NewPantryItemActivity : AppCompatActivity() {
 
         }
         buttonAdd2Pantry.setOnClickListener{
+//            textViewFeedbackPantry.text = "hello"
+            // get the date as string from edit text
+            val selectedDateStr = editTextInputDate.text.toString()
+//            textViewFeedbackPantry.text = "Selected Date: $selectedDateStr"
+            // Parse the selected date string into a Date object
+            val dateFormat = SimpleDateFormat("MM/dd/yy", Locale.getDefault())
+            val selectedDate = dateFormat.parse(selectedDateStr)
+
+            // Get the current date
+            val currentDate = Date()
+
+            // Calculate the difference in milliseconds between the two dates
+            val differenceInMs = currentDate.time - selectedDate.time
+
+            // Convert the difference from milliseconds to days
+            val daysSince = TimeUnit.MILLISECONDS.toDays(differenceInMs)
+            // Display the result in the textViewFeedback TextView
+            textViewFeedbackPantry.text = "Selected Date: $selectedDateStr, \nDays Since: $daysSince"
 
         }
         buttonSeeAllPantry.setOnClickListener{

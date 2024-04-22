@@ -174,8 +174,6 @@
             android:id="@+id/textviewPantryFeedback"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="12dp"
-            android:layout_marginTop="392dp"
             android:text="feedback box"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -183,8 +181,8 @@
 
     <Button
         android:id="@+id/buttonPantryAddItem"
-        android:layout_width="201dp"
-        android:layout_height="36dp"
+        android:layout_width="204dp"
+        android:layout_height="48dp"
         android:layout_marginTop="276dp"
         android:layout_marginEnd="12dp"
         android:text="add item to pantry"
