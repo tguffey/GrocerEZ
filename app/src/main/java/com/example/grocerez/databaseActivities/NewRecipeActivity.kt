@@ -244,6 +244,7 @@ class NewRecipeActivity : AppCompatActivity() {
 
         if (!areAllRequiredFieldsFilled){
             recipeTextView.text = "one of the required field is missing"
+            Log.e("NewRecipeActivity", "ERROR: ONE OF THE REQUIRED FIELDS IS MISSING")
             return
         }
 
@@ -289,6 +290,9 @@ class NewRecipeActivity : AppCompatActivity() {
                         recipeInstructionEditText.text.clear()
                         temporaryIngredientList.clear()
                     }
+
+                    // Log the final recipe details in LogCat
+                    Log.i("NewRecipeActivity", "Final Recipe:\n$outputText")
 
                 } else {
                     recipeTextView.text = "something wrong with inserted recipe"
