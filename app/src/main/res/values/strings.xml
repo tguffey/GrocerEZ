@@ -45,7 +45,7 @@
     <string name="dairy_info">1 cup dairy counts as\n\t* 1 cup dairy milk or yogurt; or\n\t* 1 cup lactose-free dairy milk or yogurt; or\n\t* 1 ½ ounces hard cheese.</string>
     <string name="limit_info">\nLimit:\n* Added sugars to less than 75 grams a day.\n* Saturated fat to less than 33 grams a day.\n* Sodium to less than 2,300 miligrams a day.</string>
     <string name="limit">Choose foods and beverages with less added sugars, saturated fat, and sodium.</string>
-    <string name="cal_sub_info">*This 2,400-calorie pattern is only an estimate of your needs. Monitor your body weight and adjust your calories if needed.</string>
+    <string name="cal_sub_info">*This calorie pattern is only an estimate of your needs. Monitor your body weight and adjust your calories if needed.</string>
     <string name="goal">Goal</string>
 
     <string-array name="myplate_descriptions">

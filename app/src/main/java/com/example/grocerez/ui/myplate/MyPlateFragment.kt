@@ -36,11 +36,11 @@ class MyPlateFragment : Fragment(){
     // Initialize shared view model
     private val sharedModel: MyPlateViewModel by activityViewModels()
 
-    private lateinit var fruitTextView: TextView
-    private lateinit var vegTextView: TextView
-    private lateinit var grainsTextView: TextView
-    private lateinit var proteinTextView: TextView
-    private lateinit var dairyTextView: TextView
+//    private lateinit var fruitTextView: TextView
+//    private lateinit var vegTextView: TextView
+//    private lateinit var grainsTextView: TextView
+//    private lateinit var proteinTextView: TextView
+//    private lateinit var dairyTextView: TextView
     private lateinit var recyclerView: RecyclerView
 
     override fun onCreateView(
@@ -50,21 +50,30 @@ class MyPlateFragment : Fragment(){
     ): View {
         _binding = FragmentMyplateBinding.inflate(inflater, container, false)
         val root: View = binding.root
-        // Initialize fruitTextView and vegTextView
-        fruitTextView = root.findViewById(R.id.fruitTextView)
-        vegTextView = root.findViewById(R.id.vegTextView)
-        grainsTextView = root.findViewById(R.id.grainsTextView)
-        proteinTextView = root.findViewById(R.id.proteinTextView)
-        dairyTextView = root.findViewById(R.id.dairyTextView)
+//        // Initialize fruitTextView and vegTextView
+//        fruitTextView = root.findViewById(R.id.fruitTextView)
+//        vegTextView = root.findViewById(R.id.vegTextView)
+//        grainsTextView = root.findViewById(R.id.grainsTextView)
+//        proteinTextView = root.findViewById(R.id.proteinTextView)
+//        dairyTextView = root.findViewById(R.id.dairyTextView)
+
+        // Find the settings button in the layout
+        val createMyPlate: Button = root.findViewById(R.id.btn_createmyplate)
+
+// Set a click listener for the settings button
+        createMyPlate.setOnClickListener {
+            // Handle button click here
+            findNavController().navigate(R.id.action_myPlateFragment_to_myPlateSettingsFragment)
+        }
 
         // Observe shared view model data
         sharedModel.foodAmounts.observe(viewLifecycleOwner) { foodAmounts ->
             // Update UI with food amounts info
-            fruitTextView.text = "${foodAmounts.fruitAmount} Cups"
-            vegTextView.text = "${foodAmounts.vegetableAmount} Cups"
-            grainsTextView.text = "${foodAmounts.grainAmount} Cups"
-            proteinTextView.text = "${foodAmounts.proteinAmount} Cups"
-            dairyTextView.text = "${foodAmounts.dairyAmount} Cups"
+//            fruitTextView.text = "${foodAmounts.fruitAmount} Cups"
+//            vegTextView.text = "${foodAmounts.vegetableAmount} Cups"
+//            grainsTextView.text = "${foodAmounts.grainAmount} Cups"
+//            proteinTextView.text = "${foodAmounts.proteinAmount} Cups"
+//            dairyTextView.text = "${foodAmounts.dairyAmount} Cups"
 
             //RECYCLER VIEW
             val foodAmountsArray = arrayOf(
@@ -112,6 +121,8 @@ class MyPlateFragment : Fragment(){
             val adapter = MyPlateRecyclerAdapter(requireContext(), foodAmountsModelList)
             recyclerView.adapter = adapter
             recyclerView.layoutManager = LinearLayoutManager(requireContext())
+            // After populating the RecyclerView, hide the settings button
+            createMyPlate.visibility = View.GONE
             /*THE RECYCLER VIEW LOGIC WILL END HERE*/
 
         }
