@@ -153,6 +153,8 @@ class NewGrocerySheet(
 //            }
         val quantityVal = binding.quantity.text.toString().toFloat()
         val note = binding.Note.text.toString()
+
+        // THONG: i realized i was very stupid with my previous code, here is a cleaner and more effiicent code probably.
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 // Check if the category exists, and add it if it doesn't
