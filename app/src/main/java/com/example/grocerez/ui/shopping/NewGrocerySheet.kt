@@ -200,12 +200,13 @@ class NewGrocerySheet(
 
                 } else {
                     // now insert shoppingListItem if item exists
-                    var shopListName = ""
+//                    var shopListName = ""
                     val displayItem = itemViewModel.findItemByName(name)
-                    if (displayItem != null) {
-                        shopListName = itemViewModel.getItemName(displayItem)
-//                        Log.v("NEW SHEET", "item exists, ${displayItem.getItemName()}, $name")
-                    }
+                    var shopListName = displayItem?.name ?: name
+//                    if (displayItem != null) {
+//                        shopListName = itemViewModel.getItemName(displayItem)
+////                        Log.v("NEW SHEET", "item exists, ${displayItem.getItemName()}, $name")
+//                    }
 //                    Log.v("NEW SHEET", "item exists, $displayItem, $name")
                     val newShoppingListItem = ShoppingListItem(
                         itemName = shopListName,
