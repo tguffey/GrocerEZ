@@ -59,6 +59,7 @@ class ShoppingFragment : Fragment(), ShoppingItemClickListener {
                     unitDao = appDatabase.unitDao()
                 )
             )).get(ShoppingViewModel::class.java)
+
         shoppingViewModel.loadShoppingList()
 
         _binding = FragmentShoppingBinding.inflate(inflater, container, false)

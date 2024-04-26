@@ -31,6 +31,7 @@ class ShoppingViewModel(val repository: ShoppingRepository) : ViewModel() {
     lateinit var categoryItems: MutableLiveData<List<CategoryItem>>
 
     fun loadShoppingList() = viewModelScope.launch(Dispatchers.IO) {
+        categoryItems = MutableLiveData(emptyList())
         categoryItems = flowOf(repository.allCategoriesAndShopItems()).asLiveData() as MutableLiveData<List<CategoryItem>>
     }
 
