@@ -49,7 +49,6 @@ class RecipeView : Fragment(), IngredentItemClickListener{
         if (recipeItem != null) {
             val editable = Editable.Factory.getInstance()
             binding.recipeTitle.text = editable.newEditable(recipeItem.name)
-            binding.recipeDescription.text = editable.newEditable(recipeItem.description)
             recipeItem.ingredients.forEach { ingredient ->
                 ingredientItemAdapter.addIngredients(ingredient)
             }

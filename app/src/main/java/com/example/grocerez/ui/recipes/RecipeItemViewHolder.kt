@@ -15,7 +15,6 @@ class RecipeItemViewHolder (
     fun bindRecipeItem(recipeItem: RecipeItem){
         // Set the recipe name and description in the corresponding views
         binding.recipeName.text = recipeItem.name
-        binding.recipeDescription.text =  recipeItem.description
 
         // Set a click listener to handle editing the recipe item
         binding.recipeCellContainer.setOnClickListener{

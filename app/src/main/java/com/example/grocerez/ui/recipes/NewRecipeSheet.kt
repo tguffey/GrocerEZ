@@ -50,7 +50,6 @@ class NewRecipeSheet : Fragment(), IngredentItemClickListener {
             binding.recipeTitle.text = "Edit Recipe"
             val editable = Editable.Factory.getInstance()
             binding.name.text = editable.newEditable(recipeItem.name)
-            binding.description.text = editable.newEditable(recipeItem.description)
             recipeItem.ingredients.forEach { ingredient ->
                 ingredientItemAdapter.addIngredients(ingredient)
             }
@@ -82,7 +81,6 @@ class NewRecipeSheet : Fragment(), IngredentItemClickListener {
         binding.recipeTitle.text = "Edit Recipe"
         val editable = Editable.Factory.getInstance()
         binding.name.text = editable.newEditable(recipeItem.name)
-        binding.description.text = editable.newEditable(recipeItem.description)
         recipeItem.ingredients.forEach { ingredient ->
             ingredientItemAdapter.addIngredients(ingredient)
         }
@@ -97,17 +95,11 @@ class NewRecipeSheet : Fragment(), IngredentItemClickListener {
 
     private fun saveAction() {
         val name = binding.name.text.toString()
-        val description = binding.description.text.toString()
         val notes = binding.notes.text.toString()
 
         // Check if name or description is empty
         if (name.isEmpty()) {
             Toast.makeText(requireContext(), "Name cannot be empty", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        if (description.isEmpty()) {
-            Toast.makeText(requireContext(), "Description cannot be empty", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -129,11 +121,10 @@ class NewRecipeSheet : Fragment(), IngredentItemClickListener {
 
 
         if (recipeItem == null) {
-            val newRecipe = RecipeItem(name, description, ingredients, notes)
+            val newRecipe = RecipeItem(name, ingredients, notes)
             recipeViewModel.addRecipeItem(newRecipe)
         } else {
             recipeItem.name = name
-            recipeItem.description = description
             recipeItem.note = notes
             recipeItem.ingredients.clear()
             recipeItem.ingredients.addAll(ingredients)
@@ -145,7 +136,6 @@ class NewRecipeSheet : Fragment(), IngredentItemClickListener {
 
     private fun clearFields() {
         binding.name.setText("")
-        binding.description.setText("")
         binding.notes.setText("")
     }
 

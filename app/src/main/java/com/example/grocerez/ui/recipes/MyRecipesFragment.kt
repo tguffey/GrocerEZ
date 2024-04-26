@@ -85,7 +85,6 @@ class MyRecipesFragment : Fragment(), RecipeItemClickListener{
         val filteredList = if (query.isNotEmpty()) {
             recipeItems.filter { recipe ->
                 recipe.name.contains(query, ignoreCase = true) ||
-                        recipe.description.contains(query, ignoreCase = true) ||
                         recipe.ingredients.any { it.name.contains(query, ignoreCase = true) }
             }
         } else {
