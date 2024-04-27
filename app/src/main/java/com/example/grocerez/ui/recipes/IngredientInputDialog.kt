@@ -17,6 +17,9 @@ import com.example.grocerez.ui.ItemAmount
 import com.example.grocerez.ui.recipes.IngredientItem
 import com.example.grocerez.ui.recipes.IngredientItemViewHolder
 import com.example.grocerez.ui.recipes.RecipeIngredientAdapter
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class IngredientInputDialog(var ingredientItem: IngredientItem?) : DialogFragment() {
 
@@ -124,9 +127,14 @@ class IngredientInputDialog(var ingredientItem: IngredientItem?) : DialogFragmen
     }
 
     fun saveButton(){
+
+        //ingredientName
         val name = binding.name.text.toString().trim()
+
+        // ingredientAmount
         val quantity = binding.quantity.text.toString().trim()
 
+        // NULL CHECKS
         // Check if name or quantity is empty
         if (name.isEmpty() || quantity.isEmpty()) {
             Toast.makeText(requireContext(), "Name and quantity cannot be empty", Toast.LENGTH_SHORT).show()
@@ -137,7 +145,16 @@ class IngredientInputDialog(var ingredientItem: IngredientItem?) : DialogFragmen
             Toast.makeText(requireContext(), "Select a given unit", Toast.LENGTH_SHORT).show()
             return
         }
+        // if code made it past this point, that means name quantiy and units are filled.
+        // now, we're gonna see if this item already exists in the table. if not add
+        // if not exist yet, in order to add, fill the category with "uncategorized" for now.
 
+        // TODO: find out how alexis used view model to adapt to adding to room database
+        // this part performs database functions
+        CoroutineScope(Dispatchers.IO).launch {
+
+        }
+        // TODO: figure out what this does.
         val ingredient = IngredientItem(name, quantity.toDouble(), selectedUnit)
         ingredientItemAdapter.addIngredients(ingredient)
         clearFields()
