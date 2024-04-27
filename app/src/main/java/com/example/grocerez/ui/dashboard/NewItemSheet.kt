@@ -10,13 +10,14 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.example.grocerez.dao.CategoryDao
 import com.example.grocerez.dao.ItemDao
 import com.example.grocerez.dao.UnitDao
 import com.example.grocerez.database.AppDatabase
 import com.example.grocerez.databinding.FragmentNewItemSheetBinding
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.ZoneId
@@ -25,9 +26,10 @@ import java.util.Calendar
 import java.util.Locale
 
 // BottomSheetDialogFragment for adding a new task
-class NewTaskSheet(var foodItem: FoodItem?) : BottomSheetDialogFragment() {
+class NewTaskSheet() : Fragment() {
 
-    private lateinit var binding: FragmentNewItemSheetBinding
+    private var _binding: FragmentNewItemSheetBinding? = null
+    private val binding get() = _binding!!
     private lateinit var itemViewModel: DashboardViewModel
     private val calendar = Calendar.getInstance()
     // Define the date formatter
@@ -39,8 +41,22 @@ class NewTaskSheet(var foodItem: FoodItem?) : BottomSheetDialogFragment() {
     private lateinit var itemDao: ItemDao
     private lateinit var appDatabase: AppDatabase
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentNewItemSheetBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
+    }
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val args = arguments
+        val foodItem = args?.getParcelable<FoodItem>("pantry item")
 
 
         // Initialize database and DAO objects
@@ -71,6 +87,7 @@ class NewTaskSheet(var foodItem: FoodItem?) : BottomSheetDialogFragment() {
         // Set OnClickListener for cancleButton
         binding.cancelButton.setOnClickListener {
             clearFields()
+            findNavController().popBackStack()
         }
 
         // Set OnClickListener for saveButton
@@ -142,18 +159,8 @@ class NewTaskSheet(var foodItem: FoodItem?) : BottomSheetDialogFragment() {
 
     private fun clearFields() {
         binding.name.setText("")
-        dismiss()
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        // Inflate the layout for this fragment
-        binding = FragmentNewItemSheetBinding.inflate(inflater, container, false)
-        return binding.root
-    }
 
     // Function to handle save action
     private fun saveAction() {
@@ -194,6 +201,10 @@ class NewTaskSheet(var foodItem: FoodItem?) : BottomSheetDialogFragment() {
             null
         }
 
+        val args = arguments
+        val foodItem = args?.getParcelable<FoodItem>("foodItem")
+
+
         val value = foodItem?.calculateProgress(startingLocalDate, expirationLocalDate) ?: 0
 
         if (foodItem == null) {
@@ -206,8 +217,7 @@ class NewTaskSheet(var foodItem: FoodItem?) : BottomSheetDialogFragment() {
         binding.name.setText("")
         binding.expirationDate.text = "Date: "
         binding.startingDate.text = "Date: "
-
-        dismiss()
+        findNavController().popBackStack()
     }
 }
 

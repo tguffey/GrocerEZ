@@ -13,6 +13,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.grocerez.R
 import com.example.grocerez.databinding.FragmentDashboardBinding
@@ -93,7 +94,9 @@ class DashboardFragment : Fragment(), FoodItemClickListener {
         // Set OnClickListener for the newItemButton
         binding.addItemFab.setOnClickListener {
             // Show the NewTaskSheet dialog
-            NewTaskSheet(null).show(parentFragmentManager, "newItemTag")
+            if (findNavController().currentDestination?.id == R.id.navigation_dashboard) {
+                findNavController().navigate(R.id.action_dashboard_to_newPantryItem)
+            }
             shrinkFab()
         }
 
@@ -190,7 +193,10 @@ class DashboardFragment : Fragment(), FoodItemClickListener {
     // Method called when a food item is edited
     override fun editFoodItem(foodItem: FoodItem) {
         // Show the NewTaskSheet dialog for editing the food item
-        NewTaskSheet(foodItem).show(parentFragmentManager, "newFoodTag")
+        val bundle = Bundle().apply {
+            putParcelable("pantry item", foodItem)
+        }
+        findNavController().navigate(R.id.action_dashboard_to_newPantryItem, bundle)
     }
 
 }
