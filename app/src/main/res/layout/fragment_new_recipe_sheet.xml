@@ -1,122 +1,177 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    android:orientation="vertical"
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    tools:context=".ui.shopping.NewGrocerySheet">
+    android:layout_height="match_parent"
+    android:id="@+id/newRecipeSheet"
+    >
 
-    <!--Title of the sheet-->
-    <TextView
-        android:id="@+id/recipeTitle"
+    <!-- NestedScrollView for scrollable content -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="New Recipe"
-        android:textSize="30sp"
-        android:layout_marginTop="20dp"
-        android:layout_marginStart="20dp"
-        style="@style/TextAppearance.AppCompat.Title"
-        />
+        android:fillViewport="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <!-- ALL TEXT INPUT FIELDS FOR ADDING A NEW ITEM-->
-    <!--Field for the name of the item-->
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.Material3.AutoCompleteTextView.OutlinedBox.Dense"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/itemName">
+        <!-- Your content here -->
 
-        <!--Label the text input as the name-->
-        <com.google.android.material.textfield.TextInputEditText
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/name"
-            android:hint="Name"
-            />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <!--Field for the description of the item-->
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.Material3.AutoCompleteTextView.OutlinedBox.Dense"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/itemDescription">
-
-        <!--Label the text input as the description-->
-        <com.google.android.material.textfield.TextInputEditText
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/description"
-            android:hint="Description"
-            />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <!--Field for the ingredients of the item-->
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.Material3.AutoCompleteTextView.OutlinedBox.Dense"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/itemCategory">
-
-        <!--Label the text input as the ingredients-->
-        <com.google.android.material.textfield.TextInputEditText
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/ingredients"
-            android:hint="Ingredients"
-            />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <!--Field for any notes of the item-->
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.Material3.AutoCompleteTextView.OutlinedBox.Dense"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/itemNote">
-
-        <!--Labels the text input as notes-->
-        <com.google.android.material.textfield.TextInputEditText
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/notes"
-            android:hint="Notes"
-            />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <!-- Cancel and Save buttons side-by-side -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <!-- Cancel button on the left -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/cancelButton"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:layout_marginHorizontal="20dp"
-            android:layout_weight="1"
-            android:text="Cancel"
-            />
+            android:orientation="vertical"
+            android:padding="16dp">
 
-        <!-- Save button on the right -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/saveButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_marginHorizontal="20dp"
-            android:layout_weight="1"
-            android:text="Save"
-            />
+            <!--Title of the sheet-->
+            <TextView
+                android:id="@+id/recipeTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="New Recipe"
+                android:textSize="30sp"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="20dp"
+                style="@style/TextAppearance.AppCompat.Title"
+                />
 
+            <!--Field for the name of the item-->
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.AutoCompleteTextView.OutlinedBox.Dense"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/itemName">
 
-    </LinearLayout>
+                <!--Label the text input as the name-->
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/name"
+                    android:hint="Name"
+                    />
 
-</LinearLayout>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!--Field for the description of the item-->
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.AutoCompleteTextView.OutlinedBox.Dense"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/itemDescription">
+
+                <!--Label the text input as the description-->
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/description"
+                    android:hint="Description"
+                    />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- RecyclerView for displaying ingredients -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/ingredientRecyclerView"
+                />
+
+            <!-- Add ingredient button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/addIngredientButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Add Ingredient"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="20dp"
+                app:icon="@drawable/ic_add_24"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp"
+                />
+
+            <!--Field for any notes of the item-->
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.AutoCompleteTextView.OutlinedBox.Dense"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/itemNote"
+                android:layout_marginTop="16dp">
+
+                <!--Labels the text input as notes-->
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/notes"
+                    android:hint="Notes"
+                    />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <LinearLayout
+                android:id="@+id/bottomButtonsLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="bottom"
+                android:background="@color/design_default_color_background"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <!-- Cancel button on the left -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/cancelButton"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginStart="125dp"
+                    android:text="Cancel"
+                    />
+
+                <!-- Save button on the right -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/saveButton"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="Save"
+
+                    />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+<!--    &lt;!&ndash; Cancel and Save buttons &ndash;&gt;-->
+<!--    <LinearLayout-->
+<!--        android:id="@+id/bottomButtonsLayout"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:layout_gravity="bottom"-->
+<!--        android:background="@color/design_default_color_background"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent">-->
+
+<!--        &lt;!&ndash; Cancel button on the left &ndash;&gt;-->
+<!--        <com.google.android.material.button.MaterialButton-->
+<!--            android:id="@+id/cancelButton"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginEnd="20dp"-->
+<!--            android:layout_marginStart="190dp"-->
+<!--            android:text="Cancel"-->
+<!--            />-->
+
+<!--        &lt;!&ndash; Save button on the right &ndash;&gt;-->
+<!--        <com.google.android.material.button.MaterialButton-->
+<!--            android:id="@+id/saveButton"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Save"-->
+<!--            />-->
+<!--    </LinearLayout>-->
+
+</androidx.constraintlayout.widget.ConstraintLayout>

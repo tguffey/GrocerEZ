@@ -2,20 +2,25 @@ package com.example.grocerez.ui.recipes
 
 import androidx.recyclerview.widget.DiffUtil
 
+// Callback class for calculating the difference between old and new recipe item lists
 class RecipeDiffCallback (
-    private val oldRecipItems: List<RecipeItem>,
-    private val newRecipeItems: List<RecipeItem>
+    private val oldRecipeItems: List<RecipeItem>, // Old list of recipe items
+    private val newRecipeItems: List<RecipeItem> // New list of recipe items
 ) : DiffUtil.Callback()
 {
-    override fun getOldListSize(): Int = oldRecipItems.size
+    // Return the size of the old recipe item list
+    override fun getOldListSize(): Int = oldRecipeItems.size
 
+    // Return the size of the new recipe item list
     override fun getNewListSize(): Int = newRecipeItems.size
 
+    // Check if the old and new items are the same based on their IDs
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return oldRecipItems[oldItemPosition].id == newRecipeItems[newItemPosition].id
+        return oldRecipeItems[oldItemPosition].id == newRecipeItems[newItemPosition].id
     }
 
+    // Check if the contents of the old and new items are the same
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return oldRecipItems[oldItemPosition] == newRecipeItems[newItemPosition]
+        return oldRecipeItems[oldItemPosition] == newRecipeItems[newItemPosition]
     }
 }

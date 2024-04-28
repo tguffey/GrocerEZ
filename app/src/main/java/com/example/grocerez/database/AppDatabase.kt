@@ -11,13 +11,22 @@ import com.example.grocerez.data.model.Unit
 import com.example.grocerez.dao.ItemDao
 import com.example.grocerez.dao.CategoryDao
 import com.example.grocerez.dao.PantryItemDao
+import com.example.grocerez.dao.RecipeDao
+import com.example.grocerez.dao.RecipeItemDao
 import com.example.grocerez.dao.ShoppingListItemDao
 import com.example.grocerez.dao.UnitDao
 import com.example.grocerez.data.model.PantryItem
+import com.example.grocerez.data.model.Recipe
+import com.example.grocerez.data.model.RecipeItem
 import com.example.grocerez.data.model.ShoppingListItem
 
 
-@Database(entities = [Item::class, Category::class, Unit::class, ShoppingListItem::class, PantryItem::class], version = 1)
+// anytime you add a new database class:
+// 1. add the original object to the @database() notation at the start of the declaration
+// 2. add the DAO object to the abstract fun stuff
+// 3. use it by initializing database, then set local dao object = appdatabase.____dao
+
+@Database(entities = [Item::class, Category::class, Unit::class, ShoppingListItem::class, PantryItem::class, Recipe::class, RecipeItem::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun itemDao(): ItemDao
     abstract fun categoryDao(): CategoryDao
@@ -26,6 +35,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun shoppingListItemDao(): ShoppingListItemDao
 
     abstract fun pantryItemDao(): PantryItemDao
+    abstract fun recipeDao(): RecipeDao
+    abstract fun recipeItemDao(): RecipeItemDao
 
     //making this a singleton object
     companion object {

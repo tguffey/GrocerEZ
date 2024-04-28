@@ -25,12 +25,12 @@ import com.example.grocerez.SocketHandler
 
 class LoginActivity : AppCompatActivity() {
 
+
     private lateinit var loginViewModel: LoginViewModel
     private lateinit var binding: ActivityLoginBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
 
 
         // Make the status bar transparent
@@ -61,7 +61,10 @@ class LoginActivity : AppCompatActivity() {
         val username = binding.loginPgUsernameEntry
         val password = binding.loginPgPasswordEntry
         val login = binding.loginpageLoginBtn
+        val warning_text = binding.loginWarningTextview
         val loading = binding.loading
+
+        warning_text?.text = "" ?: "where the warning message go"
 
         loginViewModel = ViewModelProvider(this, LoginViewModelFactory())
             .get(LoginViewModel::class.java)
@@ -128,9 +131,11 @@ class LoginActivity : AppCompatActivity() {
             // TODO: tyler: debug this section and send info to database.
             login.setOnClickListener {
                 loading.visibility = View.VISIBLE
-                val email = "genericemail@gmail.com"
+//                val email = "genericemail@gmail.com"
                 loginViewModel.login(username.text.toString(), password.text.toString())
-                mSocket.emit("save_signup_info",username.getText().toString(), email.toString(), password.getText().toString())
+//                mSocket.emit("save_signup_info",username.getText().toString(), email.toString(), password.getText().toString())
+                mSocket.emit("log_in", username.text.toString(), password.text.toString())
+
             }
         }
     }

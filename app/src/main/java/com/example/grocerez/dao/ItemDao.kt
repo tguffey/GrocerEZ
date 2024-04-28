@@ -15,8 +15,6 @@ import kotlinx.coroutines.flow.Flow
     string category (foreign key)
     float use_rate (per week)
     string unit (foreign key)
-
-
 */
 
 @Dao

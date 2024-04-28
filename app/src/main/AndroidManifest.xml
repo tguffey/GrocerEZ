@@ -2,7 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
     <!-- Permission added for socket connections -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA"/>
 
     <application
         android:name="androidx.multidex.MultiDexApplication"
@@ -16,6 +21,30 @@
         android:theme="@style/Theme.GrocerEZ"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <activity
+            android:name=".databaseActivities.ViewRecipesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".databaseActivities.NewRecipeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".databaseActivities.NewShoppingListItemActivity"
+            android:exported="false" />
+        <activity
+            android:name=".databaseActivities.NewPantryItemActivity"
+            android:exported="false" />
+        <activity
+            android:name=".databaseActivities.NewItemActivity"
+            android:exported="false" />
+        <activity
+            android:name=".databaseActivities.NewCategoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".databaseActivities.NewUnitActivity"
+            android:exported="false" />
+        <activity
+            android:name=".databaseActivities.DatabaseActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.register.RegisterActivity"
             android:exported="false" />
@@ -38,6 +67,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="com.journeyapps.barcodescanner.CaptureActivity"
+            android:screenOrientation="fullSensor"
+            tools:replace="android:screenOrientation"/>
     </application>
 
 </manifest>

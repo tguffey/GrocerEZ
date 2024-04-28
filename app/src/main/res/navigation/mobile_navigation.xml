@@ -6,11 +6,31 @@
     app:startDestination="@+id/navigation_home">
 
     <!--TODO: notifications can be turned into the My Plate button later on-->
+    <!-- Update MyPlateFragment to include the action -->
     <fragment
         android:id="@+id/navigation_myplate"
         android:name="com.example.grocerez.ui.myplate.MyPlateFragment"
         android:label="@string/title_myplate"
-        tools:layout="@layout/fragment_myplate" />
+        tools:layout="@layout/fragment_myplate" >
+        <action
+            android:id="@+id/action_myPlateFragment_to_myPlateSettingsFragment"
+            app:destination="@id/navigation_myplatesettings" />
+    </fragment>
+
+    <!-- Add the MyPlateSettingsFragment -->
+    <fragment
+        android:id="@+id/navigation_myplatesettings"
+        android:name="com.example.grocerez.ui.myplate.MyPlateSettingsFragment"
+        android:label="My Plate Settings"
+        tools:layout="@layout/fragment_myplate_settings" />
+
+    <!-- Define the action from MyPlateFragment to MyPlateSettingsFragment -->
+    <!-- Make sure to replace R.id.navigation_myplatesettings with the correct ID -->
+    <!-- The action ID should match the ID you use in navigate() method in your code -->
+    <action
+        android:id="@+id/action_myPlateFragment_to_myPlateSettingsFragment"
+        app:destination="@id/navigation_myplatesettings" />
+
 
     <fragment
         android:id="@+id/navigation_dashboard"
@@ -28,12 +48,67 @@
         android:id="@+id/navigation_recipes"
         android:name="com.example.grocerez.ui.recipes.RecipesFragment"
         android:label="@string/title_recipes"
-        tools:layout="@layout/fragment_recipes"/>
+        tools:layout="@layout/fragment_recipes">
+        <action
+            android:id="@+id/action_recipeFragment_to_recipeParsing"
+            app:destination="@+id/recipe_parsing" />
+        <action
+            android:id="@+id/action_recipeFragment_to_myRecipes"
+            app:destination="@+id/myRecipesFragment"/>
+        <action
+            android:id="@+id/action_recipeFragment_to_onlineSearchRecipe"
+            app:destination="@+id/onlineRecipeSearch"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/recipe_parsing"
+        android:name="com.example.grocerez.ui.recipes.RecipeParsingFragment"
+        android:label="@string/recipe_parsing"
+        tools:layout="@layout/recipe_parsing"/>
+
+    <fragment
+        android:id="@+id/newRecipeSheet"
+        android:name="com.example.grocerez.ui.recipes.NewRecipeSheet"
+        android:label="recipeSheet"
+        tools:layout="@layout/fragment_new_recipe_sheet"/>
+
+    <fragment
+        android:id="@+id/onlineRecipeSearch"
+        android:name="com.example.grocerez.ui.recipes.RecipeOnlineSearch"
+        android:label="onlineSearch"
+        tools:layout="@layout/fragment_search_recipe"
+        />
+
+    <fragment
+        android:id="@+id/myRecipesFragment"
+        android:name="com.example.grocerez.ui.recipes.MyRecipesFragment"
+        android:label="myRecipes"
+        tools:layout="@layout/fragment_my_recipes">
+
+        <action
+            android:id="@+id/action_myRecipes_to_newRecipeSheet"
+            app:destination="@id/newRecipeSheet" />
+
+    </fragment>
+
+    <action
+        android:id="@+id/action_recipeFragment_to_myRecipes"
+        app:destination="@id/myRecipesFragment" />
+
+    <action
+        android:id="@+id/action_recipeFragment_to_recipeParsing"
+        app:destination="@id/recipe_parsing" />
+
+    <action
+        android:id="@+id/action_recipeFragment_to_onlineSearchRecipe"
+        app:destination="@+id/onlineRecipeSearch"/>
 
     <fragment
         android:id="@+id/navigation_shopping"
         android:name="com.example.grocerez.ui.shopping.ShoppingFragment"
         android:label="@string/title_shopping"
         tools:layout="@layout/fragment_shopping"/>
+
+
 
 </navigation>
