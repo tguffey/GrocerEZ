@@ -10,11 +10,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.grocerez.data.model.Category
-import com.example.grocerez.data.model.Unit
-<<<<<<< HEAD
 import kotlinx.coroutines.flow.Flow
-=======
->>>>>>> frontend
 
 
 @Dao

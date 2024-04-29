@@ -12,7 +12,6 @@ import com.example.grocerez.data.model.Category
 import com.example.grocerez.data.model.Item
 import com.example.grocerez.data.model.ShoppingListItem
 import com.example.grocerez.data.model.Unit
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
