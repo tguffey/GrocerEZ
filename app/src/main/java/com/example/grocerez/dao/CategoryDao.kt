@@ -11,6 +11,7 @@ import androidx.room.Query
 import androidx.room.Update
 import com.example.grocerez.data.model.Category
 import kotlinx.coroutines.flow.Flow
+import com.example.grocerez.data.model.Unit
 
 
 @Dao
