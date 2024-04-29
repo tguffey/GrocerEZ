@@ -38,7 +38,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun recipeDao(): RecipeDao
     abstract fun recipeItemDao(): RecipeItemDao
 
-
     //making this a singleton object
     companion object {
 

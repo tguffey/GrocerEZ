@@ -1,6 +1,5 @@
 package com.example.grocerez.databaseActivities
 
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -11,13 +10,13 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.grocerez.R
 import com.example.grocerez.dao.CategoryDao
-import com.example.grocerez.dao.UnitDao
 import com.example.grocerez.data.model.Category
-import com.example.grocerez.data.model.Unit
 import com.example.grocerez.database.AppDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class NewCategoryActivity : AppCompatActivity() {
     private lateinit var categoryDao: CategoryDao
@@ -89,17 +88,18 @@ class NewCategoryActivity : AppCompatActivity() {
 
     }
 
-    private fun displayCategories(){
+    private fun displayCategories() {
         try {
             CoroutineScope(Dispatchers.IO).launch {
-                val categories = categoryDao.getAllCategories()
-                val categoryList = categories.joinToString(separator = "\n") { it.name }
-                textViewBox.text = categoryList
+                val categories: List<Category> = categoryDao.getAllCategories().firstOrNull() ?: emptyList()
+                val categoryList = categories.joinToString(separator = "\n") { category: Category -> category.name }
+                withContext(Dispatchers.Main) {
+                    textViewBox.text = categoryList
+                }
             }
-        } catch (e: Exception){
+        } catch (e: Exception) {
             textViewBox.text = "Error: ${e.message}"
         }
-
     }
 
     // search a function by its category and display the result,
