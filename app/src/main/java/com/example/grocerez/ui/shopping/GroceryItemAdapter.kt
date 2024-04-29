@@ -6,21 +6,24 @@ import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.grocerez.data.model.ShoppingListItem
 import com.example.grocerez.databinding.GroceryItemCellBinding
 
 class GroceryItemAdapter(
-    private var groceryItems: List<GroceryItem> // List of grocery items to display
+    private var groceryItems: List<ShoppingListItem>, // List of grocery items to display
+    private val clickListener: ShoppingItemClickListener
 ) : RecyclerView.Adapter<GroceryItemAdapter.GroceryItemViewHolder>() {
 
     inner class GroceryItemViewHolder(
         private val context: Context,
-        private val binding: GroceryItemCellBinding
+        private val binding: GroceryItemCellBinding,
+        private val clickListener: ShoppingItemClickListener
     ) :RecyclerView.ViewHolder(binding.root) {
 
-        fun bindGroceryItem(groceryItem: GroceryItem){
-            binding.name.text = groceryItem.name
+        fun bindGroceryItem(groceryItem: ShoppingListItem){
+            binding.name.text = groceryItem.itemName
             binding.quantity.text = "Qty: " + groceryItem.quantity.toString()
-            binding.notes.text = groceryItem.note
+            binding.notes.text = groceryItem.notes
 
             binding.checkbox.setOnClickListener {
                 if (binding.name.getCurrentTextColor() == Color.BLACK) {
@@ -30,7 +33,7 @@ class GroceryItemAdapter(
                     binding.quantity.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
                     binding.notes.setTextColor(Color.GRAY)
                     binding.notes.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
-                    groceryItem.isChecked = true
+                    groceryItem.checkbox = true
                 }
                 else {
                     binding.name.setTextColor(Color.BLACK)
@@ -39,8 +42,9 @@ class GroceryItemAdapter(
                     binding.quantity.paintFlags = 0
                     binding.notes.setTextColor(Color.BLACK)
                     binding.notes.paintFlags = 0
-                    groceryItem.isChecked = false
+                    groceryItem.checkbox = false
                 }
+                clickListener.checkItem(groceryItem)
             }
         }
     }
@@ -51,7 +55,7 @@ class GroceryItemAdapter(
         val binding = GroceryItemCellBinding.inflate(inflater, parent, false)
 
         // Create and return a new View Holder
-        return GroceryItemViewHolder(parent.context, binding)
+        return GroceryItemViewHolder(parent.context, binding, clickListener)
     }
 
     // Called by RecyclerView to display the data at the specified position
