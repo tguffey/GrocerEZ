@@ -3,21 +3,28 @@ package com.example.grocerez.ui.dashboard
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import java.time.LocalDate
-import java.time.LocalTime
 import java.util.UUID
 
 class DashboardViewModel : ViewModel() {
 
     var foodItems = MutableLiveData<MutableList<FoodItem>?>()
+    var categoryPantryItems = MutableLiveData<MutableList<CategoryPantryItem>?>()
 
     init{
         foodItems.value =  mutableListOf()
+        categoryPantryItems.value = mutableListOf()
     }
 
     fun addFoodItem(newFood: FoodItem){
         val list = foodItems.value
         list!!.add(newFood)
         foodItems.postValue(list)
+    }
+
+    fun addCategoryItem(newCategory: CategoryPantryItem) {
+        val list = categoryPantryItems.value
+        list!!.add(newCategory)
+        categoryPantryItems.postValue(list)
     }
 
     fun updateFoodItem(id: UUID, name: String, startingDate: LocalDate?, expireDate: LocalDate?){
