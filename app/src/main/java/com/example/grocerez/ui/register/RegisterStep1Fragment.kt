@@ -135,55 +135,7 @@ class RegisterStep1Fragment : Fragment() {
             }
             println("checking condition")
         }
-//        try {
-//            println("trying to receive socket 1")
-//            mSocket.on("email_check_error"){args ->
-//                println("fail socket has been received")
-//                if (args[0] != null) {
-//                    val message = args[0] as String
-//                    isEmailUnique = false
-//                    warningTextView.text = message
-//                    CoroutineScope(IO).launch {
-//                        withContext(Dispatchers.Main){
-//                            warningTextView.text = message
-//                        }
-//                    }
-//                }
-//            }
-//            println("trying to receive socket 2")
-//
-//            mSocket.on("testing_emits"){ args ->
-//                println("receive hello event")
-//
-//                warningTextView.text = "so we are able to get the testing emit event"
-//
-//            }
-//
-//            mSocket.on("hitest"){args ->
-//                println("hitest reeieved")
-//                val message = args[0] as String
-//                println(message)
-//                warningTextView.text = "so we are able to get the hitest emit event"
-//            }
-//            mSocket.on("email_check_success"){args ->
-//                println("success socket received")
-//                if (args[0] != null) {
-//                    println("printing a message, email is good, socket received")
-//                    val message = args[0] as String
-//                    isEmailUnique = true
-//                    warningTextView.text = message
-//                    CoroutineScope(IO).launch {
-//                        withContext(Dispatchers.Main){
-//                            warningTextView.text = message
-//
-//                        }
-//                    }
-//                }
-//            }
-//
-//        } catch (e: Exception){
-//            println("somethign is definitely wrong with the fucking socket wtf")
-//        }
+
 
         return view
     }
