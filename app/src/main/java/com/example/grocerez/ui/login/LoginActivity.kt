@@ -133,7 +133,7 @@ class LoginActivity : AppCompatActivity() {
                     }
                 }
 
-                // CASE 4: USER DOES NOT EXIST
+                // CASE 4: server error
                 mSocket.on("loginError"){data ->
                     runOnUiThread {
                         Toast.makeText(
