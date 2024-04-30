@@ -11,12 +11,13 @@ import androidx.room.Query
 import androidx.room.Update
 import com.example.grocerez.data.model.Category
 import com.example.grocerez.data.model.PantryItem
+import com.example.grocerez.data.model.ShoppingListItem
 
 // Dao for PantryItem
 @Dao
 interface PantryItemDao {
     @Query("SELECT * FROM pantry_item")
-    suspend fun getAllPantryItemDao(): List<PantryItem>
+    suspend fun getAllPantryItem(): List<PantryItem>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPantryItemDao(pantryItem: PantryItem)
@@ -27,4 +28,7 @@ interface PantryItemDao {
     @Delete
     suspend fun deletePantryItemDao(pantryItem: PantryItem)
     // Add other CRUD operations as needed
+
+    @Query("SELECT * FROM pantry_item WHERE item_name = :itemName")
+    suspend fun findPantryItemByName(itemName: String): PantryItem?
 }
