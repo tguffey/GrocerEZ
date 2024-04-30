@@ -27,10 +27,10 @@ class ShoppingViewModel(val repository: ShoppingRepository) : ViewModel() {
     }
     val text: LiveData<String> = _text
 
-    lateinit var categoryItems: MutableLiveData<List<CategoryItem>>
+    var categoryItems: MutableLiveData<List<CategoryItem>> = MutableLiveData(emptyList())
 
     fun loadShoppingList() = viewModelScope.launch(Dispatchers.IO) {
-        categoryItems = MutableLiveData(emptyList())
+//        categoryItems = MutableLiveData(emptyList())
         categoryItems = flowOf(repository.allCategoriesAndShopItems()).asLiveData() as MutableLiveData<List<CategoryItem>>
     }
 
@@ -89,9 +89,9 @@ class ShoppingViewModel(val repository: ShoppingRepository) : ViewModel() {
     fun removeCheckedItems() = viewModelScope.launch(Dispatchers.IO) {
         categoryItems.value?.forEach {
             it.shoppingListItems.forEach {
-                if (it.isChecked()) {
+//                if (it.isChecked()) {
                     repository.removeShoppingListItem(it)
-                }
+//                }
             }
         }
         updateData()

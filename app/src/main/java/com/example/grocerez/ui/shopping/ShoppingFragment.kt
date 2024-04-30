@@ -69,7 +69,7 @@ class ShoppingFragment : Fragment(), ShoppingItemClickListener {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        setRecyclerView()
+//        setRecyclerView()
         // Label the shopping list as empty if there are no categories
         if (shoppingViewModel.categoryItems.value?.size == 0) {
             val textView: TextView = binding.textShopping
@@ -114,7 +114,7 @@ class ShoppingFragment : Fragment(), ShoppingItemClickListener {
             }
             shrinkFab()
         }
-//        setRecyclerView()
+        setRecyclerView()
 
         // TODO: this is to test viewing the db. might delete this button later
         binding.addCategoryFab.setOnClickListener {
