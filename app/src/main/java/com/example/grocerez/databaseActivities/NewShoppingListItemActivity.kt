@@ -359,7 +359,10 @@ class NewShoppingListItemActivity : AppCompatActivity() {
                     }
                 }
             }catch (e: Exception){
-                textViewFeedback_box.text = "error when display: $e"
+                withContext(Dispatchers.Main){
+                    textViewFeedback_box.text = "error when display: $e"
+                }
+
             }
         }
     }

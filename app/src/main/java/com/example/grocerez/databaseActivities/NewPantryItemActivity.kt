@@ -192,115 +192,73 @@ class NewPantryItemActivity : AppCompatActivity() {
 
     // DONE
     // Main function to add the stuff to the stuff
-    private fun addPantryItem(itemName: String, category: String, unit: String, inputDate: String, shelfLifeFromInputDate: Int, amount: Float){
+    private fun addPantryItem(
+        itemName: String,
+        category: String,
+        unit: String,
+        inputDate: String,
+        shelfLifeFromInputDate: Int,
+        amount: Float
+    ){
 
         var displayString = ""
         CoroutineScope(Dispatchers.IO).launch {
 
             try {
-                val existingItem = itemDao.findItemByName(itemName)
+                val existingCategory = categoryDao.findCategoryByName(category)
+                val existingUnit = unitDao.findUnitByName(unit)
 
-                // see if item exists in the database already or not.
+                // Check if category exists, add if not_____________________
+                if (existingCategory == null) {
+                    val newCategory = Category(category)
+                    categoryDao.insertCategory(newCategory)
+                }
+
+                // Check if unit exists, add if not__________________________
+                if (existingUnit == null) {
+                    val newUnit = Unit(unit)
+                    unitDao.insertUnit(newUnit)
+                }
+
+                // see if item exists in the database already or not.__________________
+                val existingItem = itemDao.findItemByName(itemName)
                 // if isnull, check for category and unit, add those if not exist. then add item
                 if (existingItem == null) {
-                    withContext(Dispatchers.Main){
-                        textViewFeedbackPantry.text = "no existing item exist with that name in the items table."
-                    }
-                    // Item doesn't exist, create a new one and insert it into the Item table
-                    // this block added the items
-                    try {
-                        val existingCategory = categoryDao.findCategoryByName(category)
-                        val existingUnit = unitDao.findUnitByName(unit)
-
-                        if (existingCategory == null || existingUnit == null){
-
-                            displayString += "category or unit does not exist yet. now adding \n"
-                            val newCategory = Category(category)
-                            val newUnit = Unit(unit)
-
-                            // can only do this because we have onconflictstrategy.replace
-                            categoryDao.insertCategory(newCategory)
-                            unitDao.insertUnit(newUnit)
-
-                            // handle insert item after making sure category and unit is added
-                            val newItem = Item(name = itemName, category = category, unitName = unit, useRate = 0.0f)
-                            itemDao.insertItem(newItem)
-                        } else {
-                            val newItem = Item(name = itemName, category = category, unitName = unit, useRate = 0.0f)
-                            itemDao.insertItem(newItem)
-                        }
-                        // we can do this because the respective DAO objects does replace on conflict
-                        withContext(Dispatchers.Main){
-                            textViewFeedbackPantry.text = (displayString)
-                        }
-
-                    }catch (e: Exception){
-                        withContext(Dispatchers.Main){
-                            textViewFeedbackPantry.text = "adding item to item table Error: ${e.message}"
-                        }
-                    }
-
-                    // now will handle adding pantry item_______________________________
-                    val displayItem = itemDao.findItemByName(itemName)
-//                    var displayString2 = ""
-
-                    // ideally the if line below trigger
-                    if (displayItem != null){
-                        displayString += "\nitem is found in item table: \n" +
-                                "id: ${displayItem.item_id} \n" +
-                                "name: ${displayItem.name} \n" +
-                                "category: ${displayItem.category} \n" +
-                                "userate: ${displayItem.useRate} ${displayItem.unitName} per week \n"
-                    } else {
-                        displayString += "\nerror inserting item"
-                    }
-
-                    var pantryItemName = ""
-                    if (displayItem != null){
-                        pantryItemName = displayItem.name
-                    }
-                    //now insert shoppingListItem
-                    val newPantryItem = PantryItem(itemName = pantryItemName, amountFromInputDate = amount, inputDate = inputDate, shelfLifeFromInputDate = shelfLifeFromInputDate)
-                    pantryItemDao.insertPantryItemDao(newPantryItem)
-
-                    displayString = displayString +
-                            "\nsucessfully insert new item into myPantry: \n" +
-                            "name: ${itemName} \n" +
-                            "inputDate: ${inputDate} \n" +
-                            "shelflife from input date: ${shelfLifeFromInputDate} \n" +
-                            "amount left: ${amount} ${unit}"
-
-                    withContext(Dispatchers.Main){
-                        textViewFeedbackPantry.append(displayString)
-                    }
-
-                } else if (existingItem != null){
-                    //now insert shoppingListItem
-                    val displayItem = itemDao.findItemByName(itemName)
-//                    var displayString2 = ""
-                    var pantryItemName = ""
-                    if (displayItem != null){
-                        pantryItemName = displayItem.name
-                    }
-                    //now insert shoppingListItem
-                    val newPantryItem = PantryItem(itemName = pantryItemName, amountFromInputDate = amount, inputDate = inputDate, shelfLifeFromInputDate = shelfLifeFromInputDate)
-                    pantryItemDao.insertPantryItemDao(newPantryItem)
-
-                    displayString = displayString +
-                            "\nsucessfully insert new item into My Pantry: \n" +
-                            "name: ${itemName} \n" +
-                            "inputDate: ${inputDate} \n" +
-                            "shelflife from input date: ${shelfLifeFromInputDate} \n" +
-                            "amount left: ${amount} ${unit}"
-
-                    withContext(Dispatchers.Main){
-                        textViewFeedbackPantry.append(displayString)
-                    }
-                } else {
-                    withContext(Dispatchers.Main) {
-                        textViewFeedbackPantry.text = "looks lke there were problems inserting"
-                    }
+                    val newItem = Item(name = itemName, category = category, unitName = unit, useRate = 0.0f)
+                    itemDao.insertItem(newItem)
                 }
+
+                // find it again just to make sure__________________________________
+                val displayItem = itemDao.findItemByName(itemName)
+                var pantryItemName = ""
+                if (displayItem != null){
+                    pantryItemName = displayItem.name
+                }
+
+                if (displayItem != null){
+                    displayString += "\nitem is found in item table: \n" +
+                            "id: ${displayItem.item_id} \n" +
+                            "name: ${displayItem.name} \n" +
+                            "category: ${displayItem.category} \n" +
+                            "userate: ${displayItem.useRate} ${displayItem.unitName} per week \n"
+                } else {
+                    displayString += "\nerror inserting item"
+                }
+
+
+                //now insert shoppingListItem__________________________________
+                val newPantryItem = PantryItem(itemName = pantryItemName, amountFromInputDate = amount, inputDate = inputDate, shelfLifeFromInputDate = shelfLifeFromInputDate)
+                pantryItemDao.insertPantryItemDao(newPantryItem)
+                displayString = displayString +
+                        "\nsucessfully insert new item into myPantry: \n" +
+                        "name: ${itemName} \n" +
+                        "inputDate: ${inputDate} \n" +
+                        "shelflife from input date: ${shelfLifeFromInputDate} \n" +
+                        "amount left: ${amount} ${unit}"
+                withContext(Dispatchers.Main){
+                    textViewFeedbackPantry.append(displayString)
+                }
+
 
             } catch (e: Exception){
                 withContext(Dispatchers.Main) {
@@ -355,7 +313,10 @@ class NewPantryItemActivity : AppCompatActivity() {
                     }
                 }
             }catch (e: Exception){
-                textViewFeedbackPantry.text = "error when display: $e"
+                withContext(Dispatchers.Main) {
+                    textViewFeedbackPantry.text = "error when display: $e"
+                }
+
             }
         }
 
