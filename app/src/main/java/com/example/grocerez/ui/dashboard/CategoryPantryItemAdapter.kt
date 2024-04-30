@@ -32,6 +32,22 @@ class CategoryPantryItemAdapter (
 
             val pantryItemAdapter = FoodItemAdapter(categoryPantryItem.pantryItems, clickListener)
         }
+
+//        private fun animateProgressBar(newValue: Int) {
+//            // Animate the progress using ObjectAnimator
+//            val objectAnimator = ObjectAnimator.ofInt(
+//                binding.itemProgressBar,
+//                "progress",
+//                binding.itemProgressBar.progress,
+//                newValue
+//            )
+//
+//            // Set the animation duration
+//            objectAnimator.duration = 1000 // 1000 milliseconds (1 second)
+//
+//            // Start the animation
+//            objectAnimator.start()
+//        }
     }
 
     override fun onCreateViewHolder(

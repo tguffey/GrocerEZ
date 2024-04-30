@@ -12,9 +12,9 @@ import java.time.LocalDate
 class FoodItemAdapter(
     private var pantryItems: List<PantryItem>, // List of food items to display
     private val clickListener: FoodItemClickListener // Click listener for handling item clicks
-) : RecyclerView.Adapter<FoodItemViewHolder>() {
+) : RecyclerView.Adapter<FoodItemAdapter.PantryItemViewHolder>() {
 
-    inner class PantryItemViewholder(
+    inner class PantryItemViewHolder(
         private val context: Context,
         private val binding: FoodItemCellBinding,
         private val clickListener: FoodItemClickListener
@@ -39,16 +39,16 @@ class FoodItemAdapter(
     }
 
     // Called when RecyclerView needs a new ViewHolder of the given type to represent an item
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FoodItemViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PantryItemViewHolder {
         // Inflating the layout for the food item cell using Data Binding
         val inflater = LayoutInflater.from(parent.context)
         val binding = FoodItemCellBinding.inflate(inflater, parent, false)
-        return FoodItemViewHolder(parent.context, binding, clickListener) // Creating and returning a new ViewHolder
+        return PantryItemViewHolder(parent.context, binding, clickListener) // Creating and returning a new ViewHolder
     }
 
     // Called by RecyclerView to display the data at the specified position
-    override fun onBindViewHolder(holder: FoodItemViewHolder, position: Int) {
-        holder.bindFoodItem(pantryItems[position]) // Binding the data to the ViewHolder
+    override fun onBindViewHolder(holder: PantryItemViewHolder, position: Int) {
+        holder.bindPantryItem(pantryItems[position]) // Binding the data to the ViewHolder
     }
 
     // Returns the total number of items in the data set held by the adapter

@@ -114,16 +114,20 @@
             android:layout_gravity="center"
             />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/btnShowDatePicker"
-            android:text="Choose Date"
-            android:layout_gravity="end"
-            android:layout_marginStart="10dp"
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/expirationLength"
+            android:hint="Days"
+            android:layout_marginEnd="12dp"
+            android:imeOptions="actionDone"
+            android:inputType="text"
             />
 
+
     </LinearLayout>
+
 
 
     <LinearLayout

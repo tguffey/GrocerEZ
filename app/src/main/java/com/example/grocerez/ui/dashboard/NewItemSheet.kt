@@ -35,6 +35,9 @@ class NewTaskSheet() : Fragment() {
     // Define the date formatter
     val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
+    private lateinit var pantryItemViewModel: DashboardViewModel
+    private lateinit var selectedUnit: String
+
     // declaring all the things related to the database operations
     private lateinit var categoryDao: CategoryDao
     private lateinit var unitDao: UnitDao
@@ -97,11 +100,6 @@ class NewTaskSheet() : Fragment() {
 
         binding.btnShowStartDatePicker.setOnClickListener{
             showStartDatePicker()
-        }
-
-        // Set OnClickListener for datePickerButton
-        binding.btnShowDatePicker.setOnClickListener {
-            showExpDatePicker()
         }
 
         // Set OnEditorActionListener for the TextInputEditText "name"

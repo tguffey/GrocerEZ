@@ -27,7 +27,7 @@ interface PantryItemDao {
     suspend fun deletePantryItemDao(pantryItem: PantryItem)
     // Add other CRUD operations as needed
 
-    @Query("SELECT item_id, item_name, amount_from_input_date, input_date, shelf_life_from_input_date FROM pantry_item INNER JOIN items ON item_name = name WHERE category_name = :catName")
+    @Query("SELECT pantry_item_id, item_name, amount_from_input_date, input_date, shelf_life_from_input_date FROM pantry_item INNER JOIN items ON item_name = name WHERE category_name = :catName")
     fun findPantryItemByCategory(catName: String): List<PantryItem>
 
 }
