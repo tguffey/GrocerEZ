@@ -1,8 +1,9 @@
 package com.example.grocerez.ui.dashboard
 
-import com.example.grocerez.ui.shopping.GroceryItem
+import com.example.grocerez.data.model.Category
+import com.example.grocerez.data.model.PantryItem
 
 class CategoryPantryItem(
-    var category: String,
-    var recipeItem: MutableList<GroceryItem>
+    var category: Category,
+    var pantryItems: List<PantryItem>
 )

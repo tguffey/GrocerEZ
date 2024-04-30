@@ -3,6 +3,7 @@ package com.example.grocerez.ui.dashboard
 import android.animation.ObjectAnimator
 import android.content.Context
 import androidx.recyclerview.widget.RecyclerView
+import com.example.grocerez.data.model.PantryItem
 import com.example.grocerez.databinding.FoodItemCellBinding
 
 class FoodItemViewHolder(
@@ -11,7 +12,7 @@ class FoodItemViewHolder(
     private val clickListener: FoodItemClickListener
 ):RecyclerView.ViewHolder(binding.root)
 {
-    fun bindFoodItem(foodItem: FoodItem){
+    fun bindFoodItem(foodItem: PantryItem){
         binding.name.text = foodItem.name
         val intValue: Int =  foodItem.calculateProgress(foodItem.startingDate, foodItem.expirationDate) // Default value if newValue is null or not an Int
 
