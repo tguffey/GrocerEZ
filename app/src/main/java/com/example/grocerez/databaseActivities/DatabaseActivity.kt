@@ -74,6 +74,12 @@ class DatabaseActivity : AppCompatActivity() {
             finish()
         }
 
+        val myPlateButton = findViewById<Button>(R.id.myPlateButton)
+        myPlateButton.setOnClickListener {
+            val intent = Intent(this, MyPlateActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
     }
 
 
