@@ -8,9 +8,10 @@ import androidx.room.Update
 import com.example.grocerez.data.model.Item
 import com.example.grocerez.data.model.MyPlateItem
 
+@Dao
 interface MyPlateDao {
 
-    @Query("SELECT * FROM MyPantryItem")
+    @Query("SELECT * FROM my_plate_item")
     suspend fun getAllMyPlateItems(): List<MyPlateItem>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
