@@ -10,7 +10,6 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.grocerez.data.model.PantryItem
-import com.example.grocerez.data.model.ShoppingListItem
 
 // Dao for PantryItem
 @Dao

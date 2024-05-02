@@ -44,7 +44,7 @@ class PantryRepository(
     @WorkerThread
     suspend fun allPantryItems(): List<PantryItem> {
         return withContext(Dispatchers.IO){
-            return@withContext pantryItemDao.getAllPantryItemDao()
+            return@withContext pantryItemDao.getAllPantryItem()
         }
     }
 

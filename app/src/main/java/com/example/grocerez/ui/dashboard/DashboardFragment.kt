@@ -86,6 +86,8 @@ class DashboardFragment : Fragment(), FoodItemClickListener {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         setRecyclerView()
 
         val context = requireContext()

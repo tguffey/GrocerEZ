@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.grocerez.data.PantryRepository
 import com.example.grocerez.data.model.Category
 import com.example.grocerez.data.model.Item
+import com.example.grocerez.data.model.PantryItem
 import com.example.grocerez.data.model.Unit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOf
@@ -56,7 +57,7 @@ class DashboardViewModel (val repository: PantryRepository) : ViewModel() {
         categoryPantryItems.postValue(repository.allCategoriesAndPantryItems())
     }
 
-    fun addFoodItem(newFood: FoodItem){
+    fun addFoodItem(newFood: PantryItem){
         Log.v("VIEW MODEL", "in add pantry item")
         updateData()
         Log.v("VIEW MODEL", "added new item")
