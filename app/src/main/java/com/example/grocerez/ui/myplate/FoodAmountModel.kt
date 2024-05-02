@@ -4,7 +4,6 @@ class FoodAmountModel(
     var categoryDescription: String = "",
     var image: Int = 0
 ) {
-    // Constructor removed as it's not needed
-    // Getter methods are also not needed as Kotlin generates them automatically
+
 }
 

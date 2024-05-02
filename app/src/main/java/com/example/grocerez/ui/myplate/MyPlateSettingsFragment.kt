@@ -1,5 +1,6 @@
 package com.example.grocerez.ui.myplate
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -171,12 +172,6 @@ class MyPlateSettingsFragment : Fragment(), GoalAdapter.GoalClickListener {
         val info = determineMyPlateInfo(goal.calories)
         // Update shared view model
         sharedModel.updateFoodAmounts(info)
-//        println("Recommended servings:")
-//        println("Fruit: ${info.fruitAmount}")
-//        println("Vegetable: ${info.vegetableAmount}")
-//        println("Grain: ${info.grainAmount}")
-//        println("Protein: ${info.proteinAmount}")
-//        println("Dairy: ${info.dairyAmount}")
     }
 }
 

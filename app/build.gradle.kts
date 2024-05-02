@@ -90,4 +90,5 @@ dependencies {
     //adding implementation for pieChart - Jocelyn
     implementation("com.github.AnyChart:AnyChart-Android:1.1.5")
     implementation("androidx.multidex:multidex:2.0.1")
+
 }

@@ -20,7 +20,7 @@ class MyPlateRecyclerAdapter(private val context: Context, private val foodAmoun
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.food_amount_infocells, parent, false) // Replace R.layout.item_layout with your actual layout resource
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.myplate_infocells, parent, false) // Replace R.layout.item_layout with your actual layout resource
         return MyViewHolder(view)
     }
 
