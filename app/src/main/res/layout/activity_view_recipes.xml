@@ -41,10 +41,22 @@
 
     <TextView
         android:id="@+id/viewRecipeTextView"
-        android:layout_width="409dp"
-        android:layout_height="391dp"
-        android:layout_marginTop="252dp"
+        android:layout_width="403dp"
+        android:layout_height="326dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="316dp"
         android:text="TextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/sendRecipeToShopListButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="244dp"
+        android:text="send recipe to shopping list"
+        android:visibility="invisible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
