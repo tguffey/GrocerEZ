@@ -168,14 +168,27 @@ class ViewRecipesActivity : AppCompatActivity() {
 
                     // loop to go throguh the lsit of ingredients
                     for (ingredient in ingredients){
-                        val notes = "Added from $recipeName recipe"
-                        val shoppingListItem = ShoppingListItem(
-                            itemName = ingredient.name,
-                            quantity = ingredient.amount,
-                            checkbox = false,
-                            notes = notes
-                        )
-                        shoppingListItemDao.insertShoppingListItem(shoppingListItem)
+                        // see if item already exists in the shopping list yet right now.
+                        val existingItem = shoppingListItemDao.findShoppingListItemByName(ingredient.name)
+                        // item is already in the shoppinglist
+                        if (existingItem != null) {
+// Item with the same name already exists, update the quantity
+                            val updatedQuantity = existingItem.quantity + ingredient.amount
+                            existingItem.quantity = updatedQuantity
+                            shoppingListItemDao.updateShoppingListItem(existingItem)
+                        }
+                        else{
+                            val notes = "Added from $recipeName recipe"
+                            val shoppingListItem = ShoppingListItem(
+                                itemName = ingredient.name,
+                                quantity = ingredient.amount,
+                                checkbox = false,
+                                notes = notes
+                            )
+                            shoppingListItemDao.insertShoppingListItem(shoppingListItem)
+                        }
+
+
                         displayText.append("- ${ingredient.name} : ${ingredient.amount} ${ingredient.unit}\n")
                     }
 
