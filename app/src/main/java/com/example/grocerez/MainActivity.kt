@@ -51,32 +51,23 @@ class MainActivity : AppCompatActivity() {
             return  // Finish the activity to prevent further execution
         }
 
-//
-////        // ESTABLISH SOCKET CONNECTION
-////        SocketHandler.setSocket()
-//        // singleton object
-//        val mSocket = SocketHandler.getSocket()
-////        mSocket.connect()
-//        mSocket.emit("hellotest")
-////        // ______________________________
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         val navView: BottomNavigationView = binding.navView
-
-        // I added a condition to check if the user is in dark or light mode
-        val isDarkMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
-
-        // If the user is in dark mode, the navbar will be green001; else, it will be black
-        // I added this because before it was light green even for dark mode
-        if (isDarkMode) {
-            // Dark mode
-            navView.setBackgroundColor(resources.getColor(R.color.black))
-        } else {
-            // Light mode
-            navView.setBackgroundColor(resources.getColor(R.color.green001))
-        }
+//
+//        // I added a condition to check if the user is in dark or light mode
+//        val isDarkMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
+//
+//        // If the user is in dark mode, the navbar will be green001; else, it will be black
+//        // I added this because before it was light green even for dark mode
+//        if (isDarkMode) {
+//            // Dark mode
+//            navView.setBackgroundColor(resources.getColor(R.color.black))
+//        } else {
+//            // Light mode
+//            navView.setBackgroundColor(resources.getColor(R.color.green001))
+//        }
 
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
         // Passing each menu ID as a set of Ids because each

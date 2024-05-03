@@ -27,7 +27,8 @@
         android:text="test database"
         android:visibility="visible"
         tools:layout_editor_absoluteX="31dp"
-        tools:layout_editor_absoluteY="83dp" />
+        tools:layout_editor_absoluteY="83dp"
+        tools:ignore="MissingConstraints" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/nav_view"

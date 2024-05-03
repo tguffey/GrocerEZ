@@ -5,9 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#86aec6"
     tools:context=".ui.myplate.MyPlateSettingsFragment">
-
+<!--    android:background="#86aec6"-->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -75,7 +74,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="40dp"
                 android:layout_marginEnd="20dp"
-                android:background="#ff7171"
+                android:background=" #e34234"
                 android:orientation="horizontal"
                 android:padding="15dp">
                 <TextView
@@ -106,7 +105,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="20dp"
-                android:background="#9cca93"
+                android:background="#4cbb17"
                 android:orientation="horizontal"
                 android:padding="15dp">
 
@@ -133,7 +132,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="20dp"
-                android:background="#ffb871"
+                android:background="#FFA500"
                 android:orientation="horizontal"
                 android:padding="15dp">
                 <TextView
@@ -166,7 +165,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="20dp"
-                android:background="#c4acc9"
+                android:background="#A865C9"
                 android:orientation="horizontal"
                 android:padding="15dp">
                 <TextView
@@ -199,7 +198,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginBottom="40dp"
-                android:background="#c8dae9"
+                android:background="#0096ff"
                 android:orientation="horizontal"
                 android:padding="15dp">
                 <TextView
