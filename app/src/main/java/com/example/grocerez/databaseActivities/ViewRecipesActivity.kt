@@ -17,6 +17,7 @@ import com.example.grocerez.dao.RecipeItemDao
 import com.example.grocerez.dao.ShoppingListItemDao
 import com.example.grocerez.dao.UnitDao
 import com.example.grocerez.data.Ingredient
+import com.example.grocerez.data.model.ShoppingListItem
 import com.example.grocerez.database.AppDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -149,6 +150,8 @@ class ViewRecipesActivity : AppCompatActivity() {
 
     private fun sendToShopList(){
         val recipeName = recipeNameTofindEdittext.text.toString().trim()
+
+        var displayText = StringBuilder()
         if (recipeName.isNotBlank()) {
             CoroutineScope(Dispatchers.IO).launch {
                 val recipe = recipeDao.findRecipeByName(recipeName)
@@ -157,13 +160,32 @@ class ViewRecipesActivity : AppCompatActivity() {
                 // shoppinglist item requires: name (ez to get), checkbox (default false), notes (fill: from which recipes), quantity (from recipeItem)
                 // recipe items can infer: item name, unit, category
                 if (recipe != null) {
-                    withContext(Dispatchers.Main){
-                        viewRecipeTextview.text = "Recipe found"
-                    }
+
 
                     // code to add to shopping list
-                    // this one returns a list of ingredients i believe
+                    // this one retrieves the list of ingredients
                     val ingredients = recipeItemDao.getIngredientsForRecipe(recipe.recipeId)
+
+                    // loop to go throguh the lsit of ingredients
+                    for (ingredient in ingredients){
+                        val notes = "Added from $recipeName recipe"
+                        val shoppingListItem = ShoppingListItem(
+                            itemName = ingredient.name,
+                            quantity = ingredient.amount,
+                            checkbox = false,
+                            notes = notes
+                        )
+                        shoppingListItemDao.insertShoppingListItem(shoppingListItem)
+                        displayText.append("- ${ingredient.name} : ${ingredient.amount} ${ingredient.unit}\n")
+                    }
+
+                    withContext(Dispatchers.Main){
+                        viewRecipeTextview.text = "Recipe found. adding these to shopping list:\n" +
+                                "$displayText"
+
+                    }
+
+
                 }
                 else {
                     withContext(Dispatchers.Main){
