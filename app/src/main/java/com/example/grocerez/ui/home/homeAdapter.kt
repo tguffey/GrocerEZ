@@ -24,10 +24,9 @@ class NewsAdapter(private val listDomains: ArrayList<ListDomain>) : RecyclerView
             holder.removeItem.setImageResource(drawableResourceId)
         } else {
             // Handle case where drawable resource is not found, for example, set a default image
-            holder.removeItem.setImageResource(R.drawable.dairy_icon)
+            holder.removeItem.setImageResource(R.drawable.carrots)
         }
     }
-
 
     override fun getItemCount(): Int {
         return listDomains.size
