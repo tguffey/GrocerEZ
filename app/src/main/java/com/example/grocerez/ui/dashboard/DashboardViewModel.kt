@@ -57,8 +57,9 @@ class DashboardViewModel (val repository: PantryRepository) : ViewModel() {
         categoryPantryItems.postValue(repository.allCategoriesAndPantryItems())
     }
 
-    fun addFoodItem(newFood: PantryItem){
+    fun addFoodItem(newFood: PantryItem) = viewModelScope.launch(Dispatchers.IO){
         Log.v("VIEW MODEL", "in add pantry item")
+        repository.insertPantryItem(newFood)
         updateData()
         Log.v("VIEW MODEL", "added new item")
     }

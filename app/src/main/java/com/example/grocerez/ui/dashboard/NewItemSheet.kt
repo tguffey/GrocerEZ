@@ -56,9 +56,12 @@ class NewTaskSheet() : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Initialize ViewModel
+        val activity = requireActivity()
+        itemViewModel = ViewModelProvider(activity)[DashboardViewModel::class.java]
+
         val args = arguments
         val foodItem = args?.getParcelable<FoodItem>("pantry item")
-
 
         // Initialize database and DAO objects
 //        appDatabase = AppDatabase.getInstance(context)
@@ -81,9 +84,6 @@ class NewTaskSheet() : Fragment() {
             binding.foodTitle.text = "New Item"
         }
 
-        // Initialize ViewModel
-        val activity = requireActivity()
-        itemViewModel = ViewModelProvider(activity)[DashboardViewModel::class.java]
 
         // Set OnClickListener for cancleButton
         binding.cancelButton.setOnClickListener {
@@ -186,8 +186,8 @@ class NewTaskSheet() : Fragment() {
         val name = binding.name.text.toString()
         val category = binding.category.text.toString()
         val startingDateText = binding.startingDate.text.toString().replace("Date: ", "")
-        val expirationLengthText = binding.expirationLength.text.toString().toIntOrNull()
-        val quantity = binding.quantity.text.toString().toFloatOrNull()
+        val expirationLengthText = binding.expirationLength.text.toString().toIntOrNull()?:0
+        val quantity = binding.quantity.text.toString().toFloatOrNull()?:0.0f
         selectedUnit = "count"
 
         // Check if the name is empty
@@ -232,7 +232,7 @@ class NewTaskSheet() : Fragment() {
                         unitName = selectedUnit, useRate = 0.0f
                     )
                     itemViewModel.addItem(newItem)
-
+                }
                     // Wait for the item addition operation to complete
                     val displayItem = itemViewModel.findItemByName(name)
 
@@ -243,20 +243,19 @@ class NewTaskSheet() : Fragment() {
 //                    }
 //                    Log.v("NEW SHEET", "item dne, $displayItem, $name")
                     //now insert shoppingListItem
-                    if (quantity != null){
-                    val newPantryItem = expirationLengthText?.let {
-                        PantryItem(
-                            itemName = pantryName,
-                            amountFromInputDate = quantity,
-                            inputDate = startingDateText,
-                            shelfLifeFromInputDate = it
-                        )
-                    }
-                    if (newPantryItem != null) {
-                        itemViewModel.addFoodItem(newPantryItem)
-                    }
-                }
-                }
+
+                    val newPantryItem = PantryItem(
+                        itemName = pantryName,
+                        amountFromInputDate = quantity,
+                        inputDate = startingDateText,
+                        shelfLifeFromInputDate = expirationLengthText
+                    )
+
+
+
+                    itemViewModel.addFoodItem(newPantryItem)
+
+
 
             } catch (e: Exception) {
                 // Handle the exception here

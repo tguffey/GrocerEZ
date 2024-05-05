@@ -31,6 +31,10 @@ class CategoryPantryItemAdapter (
             layoutManager.initialPrefetchItemCount = categoryPantryItem.pantryItems.size
 
             val pantryItemAdapter = FoodItemAdapter(categoryPantryItem.pantryItems, clickListener)
+            binding.groceryListRecyclerView.layoutManager = layoutManager
+            binding.groceryListRecyclerView.adapter = pantryItemAdapter
+            binding.groceryListRecyclerView.setRecycledViewPool(viewPool)
+            pantryItemAdapter.notifyDataSetChanged()
         }
 
 //        private fun animateProgressBar(newValue: Int) {
