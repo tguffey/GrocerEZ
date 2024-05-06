@@ -47,6 +47,7 @@ class IngredientInputDialog(var ingredientItem: IngredientItem?) : DialogFragmen
             binding.ingredientTitle.text = "Edit Item"
             val editable = Editable.Factory.getInstance()
             binding.name.text = editable.newEditable(ingredientItem!!.name)
+            binding.category.text = editable.newEditable(ingredientItem!!.category)
             binding.quantity.text = editable.newEditable(ingredientItem!!.quantity.toString())
         }
 
@@ -132,6 +133,8 @@ class IngredientInputDialog(var ingredientItem: IngredientItem?) : DialogFragmen
         val name = binding.name.text.toString().trim()
 
         // ingredientAmount
+        val category = binding.category.text.toString().trim()
+
         val quantity = binding.quantity.text.toString().trim()
 
         // NULL CHECKS
@@ -155,7 +158,8 @@ class IngredientInputDialog(var ingredientItem: IngredientItem?) : DialogFragmen
 
         }
         // TODO: figure out what this does.
-        val ingredient = IngredientItem(name, quantity.toDouble(), selectedUnit)
+
+        val ingredient = IngredientItem(name, quantity.toDouble(), selectedUnit, category)
         ingredientItemAdapter.addIngredients(ingredient)
         clearFields()
     }

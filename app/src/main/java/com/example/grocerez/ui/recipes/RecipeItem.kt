@@ -7,14 +7,12 @@ import java.util.UUID
 // Represents a recipe item with its properties
 class RecipeItem(
     var name: String, // Name of the food item
-    var description: String,
     var ingredients: MutableList<IngredientItem>, // List of ingredient items
     var note: String,
     var id: UUID = UUID.randomUUID() // Unique identifier of the food item
 ) : Parcelable {
 
     constructor(parcel: Parcel) : this(
-        parcel.readString() ?: "",
         parcel.readString() ?: "",
         mutableListOf<IngredientItem>().apply {
             parcel.readTypedList(this, IngredientItem.CREATOR)
@@ -25,7 +23,6 @@ class RecipeItem(
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(name)
-        parcel.writeString(description)
         parcel.writeTypedList(ingredients)
         parcel.writeString(note)
         parcel.writeString(id.toString()) // Convert UUID to String

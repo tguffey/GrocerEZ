@@ -3,6 +3,7 @@ package com.example.grocerez.ui.recipes
 import IngredientInputDialog
 import android.os.Bundle
 import android.text.Editable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +12,12 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.grocerez.data.model.Recipe
 import com.example.grocerez.databinding.FragmentNewRecipeSheetBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class NewRecipeSheet : Fragment(), IngredentItemClickListener {
 
@@ -38,7 +44,7 @@ class NewRecipeSheet : Fragment(), IngredentItemClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        recipeViewModel = ViewModelProvider(this.requireActivity()).get(RecipesViewModel::class.java)
+        recipeViewModel = ViewModelProvider(this.requireActivity())[RecipesViewModel::class.java]
 
         ingredientItemAdapter = RecipeIngredientAdapter(mutableListOf(), this)
 
@@ -50,7 +56,6 @@ class NewRecipeSheet : Fragment(), IngredentItemClickListener {
             binding.recipeTitle.text = "Edit Recipe"
             val editable = Editable.Factory.getInstance()
             binding.name.text = editable.newEditable(recipeItem.name)
-            binding.description.text = editable.newEditable(recipeItem.description)
             recipeItem.ingredients.forEach { ingredient ->
                 ingredientItemAdapter.addIngredients(ingredient)
             }
@@ -82,7 +87,6 @@ class NewRecipeSheet : Fragment(), IngredentItemClickListener {
         binding.recipeTitle.text = "Edit Recipe"
         val editable = Editable.Factory.getInstance()
         binding.name.text = editable.newEditable(recipeItem.name)
-        binding.description.text = editable.newEditable(recipeItem.description)
         recipeItem.ingredients.forEach { ingredient ->
             ingredientItemAdapter.addIngredients(ingredient)
         }
@@ -97,17 +101,11 @@ class NewRecipeSheet : Fragment(), IngredentItemClickListener {
 
     private fun saveAction() {
         val name = binding.name.text.toString()
-        val description = binding.description.text.toString()
         val notes = binding.notes.text.toString()
 
         // Check if name or description is empty
         if (name.isEmpty()) {
             Toast.makeText(requireContext(), "Name cannot be empty", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        if (description.isEmpty()) {
-            Toast.makeText(requireContext(), "Description cannot be empty", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -127,25 +125,48 @@ class NewRecipeSheet : Fragment(), IngredentItemClickListener {
         val args = arguments
         val recipeItem = args?.getParcelable<RecipeItem>("recipeItem")
 
+        CoroutineScope(Dispatchers.IO).launch{
+            try{
+                val newRecipe = Recipe(
+                name = name,
+                instruction = notes
+            )
 
-        if (recipeItem == null) {
-            val newRecipe = RecipeItem(name, description, ingredients, notes)
-            recipeViewModel.addRecipeItem(newRecipe)
-        } else {
-            recipeItem.name = name
-            recipeItem.description = description
-            recipeItem.note = notes
-            recipeItem.ingredients.clear()
-            recipeItem.ingredients.addAll(ingredients)
-            recipeViewModel.updateRecipeItem(recipeItem)
+            recipeViewModel.addRecipes(newRecipe)
+        } catch (e: Exception) {
+            // Handle the exception here
+            Log.e("Error", "An error occurred: ${e.message}")
+            // You can also show an error message to the user if needed
+            // For example:
+            withContext(Dispatchers.Main) {
+                // Show a toast or a snackbar with the error message
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        context,
+                        "An error occurred: ${e.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
         }
+    }
+
+//        if (recipeItem == null) {
+//            val newRecipe = RecipeItem(name, ingredients, notes)
+//            recipeViewModel.addRecipeItem(newRecipe)
+//        } else {
+//            recipeItem.name = name
+//            recipeItem.note = notes
+//            recipeItem.ingredients.clear()
+//            recipeItem.ingredients.addAll(ingredients)
+//            recipeViewModel.updateRecipeItem(recipeItem)
+//        }
         clearFields()
         findNavController().popBackStack()
     }
 
     private fun clearFields() {
         binding.name.setText("")
-        binding.description.setText("")
         binding.notes.setText("")
     }
 

@@ -1,6 +1,5 @@
 package com.example.grocerez.databaseActivities
 
-import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.Button
@@ -15,10 +14,12 @@ import com.example.grocerez.R
 import com.example.grocerez.dao.CategoryDao
 import com.example.grocerez.dao.ItemDao
 import com.example.grocerez.dao.UnitDao
+import com.example.grocerez.data.model.Category
 import com.example.grocerez.data.model.Item
 import com.example.grocerez.database.AppDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -61,7 +62,8 @@ class NewItemActivity : AppCompatActivity() {
         // Populate unit and category dropdown menu
         CoroutineScope(Dispatchers.IO).launch{
             // get the category objects from category dao
-            val categories = categoryDao.getAllCategories()
+            val categories: List<Category> = categoryDao.getAllCategories().firstOrNull() ?: emptyList()
+
 
             // use the map function to map each object in the list of object, to a list of its name
             // then convert that list of its name to an array of strings
@@ -148,14 +150,13 @@ class NewItemActivity : AppCompatActivity() {
         }
 
         buttonDisplay.setOnClickListener {
-
-            //perform database function on the IO thread to be safe
+            // Perform database function on the IO thread to be safe
             CoroutineScope(Dispatchers.IO).launch {
-                val items = itemDao.getAllItems()
+                val items: List<Item> = itemDao.getAllItems().firstOrNull() ?: emptyList()
 
-                // once have the items, switch back to main thread to update UI
+                // Switch back to the main thread to update UI
                 withContext(Dispatchers.Main) {
-                    if (items.isEmpty()){
+                    if (items.isEmpty()) {
                         textViewBox.text = "no items added yet"
                     } else {
                         val itemListText = StringBuilder()
@@ -165,10 +166,9 @@ class NewItemActivity : AppCompatActivity() {
                         textViewBox.text = itemListText.toString()
                     }
                 }
-
-
             }
         }
+
 
         buttonSearchByName.setOnClickListener {
             searchItemByName(itemName = editTextItemName.text.toString())

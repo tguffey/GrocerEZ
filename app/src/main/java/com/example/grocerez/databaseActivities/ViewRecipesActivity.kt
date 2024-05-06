@@ -11,7 +11,6 @@ import androidx.core.view.WindowInsetsCompat
 import com.example.grocerez.R
 import com.example.grocerez.dao.RecipeDao
 import com.example.grocerez.dao.RecipeItemDao
-import com.example.grocerez.data.Ingredient
 import com.example.grocerez.database.AppDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -65,16 +64,15 @@ class ViewRecipesActivity : AppCompatActivity() {
     private fun displayAllItems() {
 
         // we can do this instead of coroutine becasue apparently of that LiveData thing
-        recipeDao.getAllRecipes().observe(this) { recipes ->
-            val recipeDetails = StringBuilder()
-            recipeDetails.append("displaying all recipes now\n")
+        val allRecipes = recipeDao.getAllRecipes()
 
-            for (recipe in recipes) {
-                recipeDetails.append("Recipe ID: ${recipe.recipeId},\nName: ${recipe.name}\n\n")
-            }
-            viewRecipeTextview.text = recipeDetails.toString()
+        val recipeDetails = StringBuilder()
+        recipeDetails.append("displaying all recipes now\n")
+
+        for (recipe in allRecipes) {
+            recipeDetails.append("Recipe ID: ${recipe.recipeId},\nName: ${recipe.name}\n\n")
         }
-
+        viewRecipeTextview.text = recipeDetails.toString()
     }
 
     private fun displayOneRecipe() {

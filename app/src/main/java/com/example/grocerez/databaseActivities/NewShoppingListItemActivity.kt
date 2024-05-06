@@ -20,6 +20,7 @@ import com.example.grocerez.data.model.Unit
 import com.example.grocerez.database.AppDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -90,7 +91,7 @@ class NewShoppingListItemActivity : AppCompatActivity() {
         }
 
         buttonInsert.setOnClickListener {
-            if (areAllRequiredFieldsNotNull() == false){
+            if (!areAllRequiredFieldsNotNull()){
                 textViewFeedback_box.text = "please fill out all the required fields (all fields are required except for notes)"
             } else {
                 val itemName = editTextName.text.toString()
@@ -121,7 +122,7 @@ class NewShoppingListItemActivity : AppCompatActivity() {
         }
     }
 
-    fun areAllRequiredFieldsNotNull(): Boolean {
+    private fun areAllRequiredFieldsNotNull(): Boolean {
         val isNameNotEmpty = editTextName.text.isNotEmpty()
         val isCategoryNotEmpty = editTextCategory.text.isNotEmpty()
         val isUnitNotEmpty = editTextUnit.text.isNotEmpty()
@@ -331,35 +332,40 @@ class NewShoppingListItemActivity : AppCompatActivity() {
 
         CoroutineScope(Dispatchers.IO).launch {
             try{
-                val allShoppingListItems = shoppingListItemDao.getAllShoppingListItem()
+                val allShoppingListItems = shoppingListItemDao.getAllShoppingListItem().firstOrNull()
                 withContext(Dispatchers.Main) {
-                    if (allShoppingListItems.isEmpty()){
-                        textViewFeedback_box.text = "no items added to shopping list yet"
-                    } else {
-                        val itemListText = StringBuilder()
-                        for (shopListItem in allShoppingListItems) {
-                            // retrieving data to display
-                            val item = itemDao.findItemByName(shopListItem.itemName)
+                    if (allShoppingListItems != null) {
+                        if (allShoppingListItems.isEmpty()){
+                            textViewFeedback_box.text = "no items added to shopping list yet"
+                        } else {
+                            val itemListText = StringBuilder()
+                            for (shopListItem in allShoppingListItems) {
+                                // retrieving data to display
+                                val item = itemDao.findItemByName(shopListItem.itemName)
 
-                            var unitForThis = "unit"
-                            if (item != null){
-                                unitForThis = item.unitName.toString()
+                                var unitForThis = "unit"
+                                if (item != null){
+                                    unitForThis = item.unitName.toString()
+                                }
+
+                                //string to display
+                                var displayString = "ID: ${shopListItem.shoppingListItemId},\n" +
+                                        "Name: ${shopListItem.itemName},\n"+
+                                        "Check: ${shopListItem.checkbox},\n"+
+                                        "notes: ${shopListItem.notes},\n"+
+                                        "quantity: ${shopListItem.quantity} $unitForThis\n\n"
+
+                                itemListText.append(displayString)
                             }
-
-                            //string to display
-                            var displayString = "ID: ${shopListItem.shoppingListItemId},\n" +
-                                    "Name: ${shopListItem.itemName},\n"+
-                                    "Check: ${shopListItem.checkbox},\n"+
-                                    "notes: ${shopListItem.notes},\n"+
-                                    "quantity: ${shopListItem.quantity} $unitForThis\n\n"
-
-                            itemListText.append(displayString)
+                            textViewFeedback_box.text = "shopping list:\n" + itemListText.toString()
                         }
-                        textViewFeedback_box.text = "shopping list:\n" + itemListText.toString()
                     }
                 }
             }catch (e: Exception){
-                textViewFeedback_box.text = "error when display: $e"
+                withContext(Dispatchers.Main){
+                    textViewFeedback_box.text = "error when display: $e"
+                }
+
             }
         }
     }

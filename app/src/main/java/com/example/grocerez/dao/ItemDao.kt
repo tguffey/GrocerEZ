@@ -7,6 +7,7 @@ import androidx.room.Query
 import androidx.room.Update
 import com.example.grocerez.data.model.Item
 import com.example.grocerez.data.model.Unit
+import kotlinx.coroutines.flow.Flow
 
 
 /* Item has:
@@ -19,7 +20,7 @@ import com.example.grocerez.data.model.Unit
 @Dao
 interface ItemDao {
     @Query("SELECT * FROM items")
-    suspend fun getAllItems(): List<Item>
+    fun getAllItems(): Flow<List<Item>>
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -35,4 +36,9 @@ interface ItemDao {
     @Query("SELECT * FROM items WHERE name = :itemName")
     suspend fun findItemByName(itemName: String): Item?
 
+    @Query("SELECT category_name FROM items WHERE name = :itemName")
+    suspend fun findCategoryByName(itemName: String): String
+
+    @Query("SELECT * FROM items WHERE category_name = :catName")
+    fun findItemsByCategory(catName: String) : Flow<List<Item>>
 }

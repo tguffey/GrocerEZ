@@ -56,21 +56,6 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <!--Field for the description of the item-->
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.Material3.AutoCompleteTextView.OutlinedBox.Dense"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/itemDescription">
-
-                <!--Label the text input as the description-->
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/description"
-                    android:hint="Description"
-                    />
-
-            </com.google.android.material.textfield.TextInputLayout>
 
             <!-- RecyclerView for displaying ingredients -->
             <androidx.recyclerview.widget.RecyclerView

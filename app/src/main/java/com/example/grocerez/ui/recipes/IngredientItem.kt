@@ -7,12 +7,14 @@ class IngredientItem(
     var name: String, // Name of the ingredient
     var quantity: Double,
     var ingredientUnit: String,
+    var category: String,
     var id: UUID = UUID.randomUUID() // Unique identifier of the ingredient item
 ) : Parcelable {
 
     constructor(parcel: Parcel) : this(
         parcel.readString() ?: "",
         parcel.readDouble(),
+        parcel.readString() ?: "",
         parcel.readString() ?: "",
         UUID.fromString(parcel.readString()) // Parse UUID from String
     )

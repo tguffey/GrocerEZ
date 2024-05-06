@@ -11,13 +11,22 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.grocerez.R
+import com.example.grocerez.data.ShoppingRepository
+import com.example.grocerez.data.model.ShoppingListItem
+import com.example.grocerez.database.AppDatabase
 import com.example.grocerez.databinding.FragmentShoppingBinding
+import com.example.grocerez.ui.dashboard.FoodItem
+import com.example.grocerez.ui.dashboard.FoodItemAdapter
 
-class ShoppingFragment : Fragment() {
+// The Shopping page
+// No adding logic here
+// Just retrieving from db and if statements for already initialized values
+class ShoppingFragment : Fragment(), ShoppingItemClickListener {
 
     private var _binding : FragmentShoppingBinding? = null
     private lateinit var shoppingViewModel: ShoppingViewModel
@@ -40,15 +49,33 @@ class ShoppingFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        shoppingViewModel = ViewModelProvider(this.requireActivity()).get(ShoppingViewModel::class.java)
+        val appDatabase = AppDatabase.getInstance(requireContext())
+        shoppingViewModel = ViewModelProvider(this.requireActivity(),
+            ShoppingViewModel.ShoppingModelFactory(
+                ShoppingRepository(
+                    categoryDao = appDatabase.categoryDao(),
+                    itemDao = appDatabase.itemDao(),
+                    shoppingListItemDao = appDatabase.shoppingListItemDao(),
+                    unitDao = appDatabase.unitDao()
+                )
+            )).get(ShoppingViewModel::class.java)
+
+        shoppingViewModel.loadShoppingList()
 
         _binding = FragmentShoppingBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        // Label the shopping list as empty
-        val textView: TextView = binding.textShopping
-        shoppingViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
+        return root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+//        setRecyclerView()
+        // Label the shopping list as empty if there are no categories
+        if (shoppingViewModel.categoryItems.value?.size == 0) {
+            val textView: TextView = binding.textShopping
+            shoppingViewModel.text.observe(viewLifecycleOwner) {
+                textView.text = it
+            }
         }
 
         // Animate the expandable Edit Item button
@@ -89,7 +116,10 @@ class ShoppingFragment : Fragment() {
         }
         setRecyclerView()
 
-        return root
+        // TODO: this is to test viewing the db. might delete this button later
+        binding.addCategoryFab.setOnClickListener {
+            // fill this in
+        }
     }
 
     // Destroy the view once the user navigates to a different page
@@ -123,8 +153,10 @@ class ShoppingFragment : Fragment() {
 
     // Sets up the RecyclerView to display the list of grocery items
     private fun setRecyclerView() {
+        val thisClickListener = this
+
         // Observe changes in the list of category items in the ViewModel
-        shoppingViewModel.categoryItems.observe(viewLifecycleOwner){
+        shoppingViewModel.categoryItems.observe(viewLifecycleOwner) {
             // Apply any changes to the category RecyclerView
             binding.categoryListRecyclerView.apply {
                 // Set the layout manager
@@ -133,30 +165,14 @@ class ShoppingFragment : Fragment() {
                 // If the list of categories is not null, create an adapter for the list
                 // and set it to the category RecyclerView
                 if (it != null) {
-                    adapter = CategoryItemAdapter(it)
-
+                    adapter = CategoryItemAdapter(it, thisClickListener)
                 }
             }
         }
-
-        // Observe changes in the list of grocery items in the ViewModel
-        shoppingViewModel.groceryItems.observe(viewLifecycleOwner){
-            // Apply any changes to the item RecyclerView
-            val groceryRecyclerView = view?.findViewById<RecyclerView>(R.id.groceryListRecyclerView)
-            groceryRecyclerView?.apply {
-                // Set the layout manager
-                groceryRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-                // Set the adapter for the grocery RecyclerView
-                // If the list of grocery is not null, create an adapter for the list
-                // and set it to the grocery RecyclerView
-                if (it != null) {
-                    groceryRecyclerView.adapter = GroceryItemAdapter(it)
-                }
-            }
-        }
+        binding.categoryListRecyclerView.adapter?.notifyDataSetChanged()
     }
 
-    // Build the dialog that allows the user what they want to delete
+    // Build the dialog that allows the user to confirm clearing the list
     private fun buildClearItemDialog() {
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle("Clear Items")
@@ -185,4 +201,7 @@ class ShoppingFragment : Fragment() {
         ).show()
     }
 
+    override fun checkItem(shoppingListItem: ShoppingListItem) {
+        shoppingViewModel.toggleCheck(shoppingListItem)
+    }
 }

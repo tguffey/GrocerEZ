@@ -16,7 +16,7 @@ import androidx.room.PrimaryKey
             onDelete = ForeignKey.CASCADE // ensure if the field in parent table is delted, all child objects will be delted as well
         )
     ],
-    indices = [Index(value = ["itemName"], unique = true)]
+    indices = [Index(value = ["itemName"], unique = false)]
 )
 data class ShoppingListItem(
     @PrimaryKey(autoGenerate = true) val shoppingListItemId: Long = 0,
@@ -30,4 +30,7 @@ data class ShoppingListItem(
     // because it's a static quality of "Item". as long as we know the item name
     // we will also know its category and unit, so we can just retrieve it that way for display.
 
-    )
+)
+{
+    fun isChecked() = checkbox
+}
