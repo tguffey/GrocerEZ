@@ -62,17 +62,23 @@ class ViewRecipesActivity : AppCompatActivity() {
     }
 
     private fun displayAllItems() {
-
-        // we can do this instead of coroutine becasue apparently of that LiveData thing
-        val allRecipes = recipeDao.getAllRecipes()
-
         val recipeDetails = StringBuilder()
         recipeDetails.append("displaying all recipes now\n")
+        // we can do this instead of coroutine becasue apparently of that LiveData thing
+        // UPDATE 5/6/2024: Thong here, since we got rid of that live data thing, we will need to use coroutine
+        CoroutineScope(Dispatchers.IO).launch {
+            val allRecipes = recipeDao.getAllRecipes()
+            for (recipe in allRecipes) {
+                recipeDetails.append("Recipe ID: ${recipe.recipeId},\nName: ${recipe.name}\n\n")
+            }
 
-        for (recipe in allRecipes) {
-            recipeDetails.append("Recipe ID: ${recipe.recipeId},\nName: ${recipe.name}\n\n")
+            withContext(Dispatchers.Main){
+                viewRecipeTextview.text = recipeDetails.toString()
+            }
         }
-        viewRecipeTextview.text = recipeDetails.toString()
+//        val allRecipes = recipeDao.getAllRecipes()
+
+
     }
 
     private fun displayOneRecipe() {
