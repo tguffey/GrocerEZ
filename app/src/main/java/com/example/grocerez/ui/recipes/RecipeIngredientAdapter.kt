@@ -1,5 +1,6 @@
 package com.example.grocerez.ui.recipes
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -7,10 +8,24 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.grocerez.databinding.RecipeIngredientBinding
 
 class RecipeIngredientAdapter(
-    private var ingredientItems: MutableList<IngredientItem>, // List of recipe items to be displayed
+    private var ingredientItems: List<IngredientItem>, // List of recipe items to be displayed
     private val clickListener: IngredentItemClickListener
-): RecyclerView.Adapter<IngredientItemViewHolder>()
+): RecyclerView.Adapter<RecipeIngredientAdapter.IngredientViewHolder>()
 {
+    inner class IngredientViewHolder(
+        private val context: Context,
+        private val binding: RecipeIngredientBinding,
+        private val clickListener: IngredentItemClickListener
+    ) :RecyclerView.ViewHolder(binding.root){
+        fun bindIngredients(ingredientItem: IngredientItem){
+            val ingredientAdapter = RecipeIngredientAdapter(ingredientItems, clickListener)
+            binding.ingredientName.text = ingredientItem.name
+            binding.ingredientQuantity.text = ingredientItem.quantity.toString()
+            binding.ingredientUnit.text = ingredientItem.ingredientUnit
+            ingredientAdapter.notifyDataSetChanged()
+        }
+    }
+
     // Constructor for NewRecipeSheet fragment
     constructor(ingredientItems: MutableList<IngredientItem>, clickListener: NewRecipeSheet) : this(ingredientItems, clickListener as IngredentItemClickListener)
 
@@ -26,17 +41,17 @@ class RecipeIngredientAdapter(
         diffResult.dispatchUpdatesTo(this)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): IngredientItemViewHolder{
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): IngredientViewHolder{
         val inflater = LayoutInflater.from(parent.context)
         val binding = RecipeIngredientBinding.inflate(inflater, parent, false)
-        return IngredientItemViewHolder(binding)
+        return IngredientViewHolder(parent.context, binding, clickListener)
     }
 
     override fun getItemCount(): Int = ingredientItems.size
 
-    override fun onBindViewHolder(holder: IngredientItemViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: IngredientViewHolder, position: Int) {
         val ingredientItem = ingredientItems[position]
-        holder.bindRecipeIngredient(ingredientItem)
+        holder.bindIngredients(ingredientItem)
 
         // Set click listener for each item
         holder.itemView.setOnClickListener {
@@ -45,7 +60,7 @@ class RecipeIngredientAdapter(
     }
 
     fun addIngredients(ingredientItem: IngredientItem) {
-        ingredientItems.add(ingredientItem)
+        ingredientItems
         notifyDataSetChanged()
     }
 

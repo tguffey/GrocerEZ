@@ -1,7 +1,9 @@
+
 import android.app.Dialog
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,18 +13,24 @@ import android.widget.ArrayAdapter
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.ViewModelProvider
 import com.example.grocerez.R
+import com.example.grocerez.data.Ingredient
 import com.example.grocerez.databinding.DialogAddIngredientsBinding
 import com.example.grocerez.ui.ItemAmount
 import com.example.grocerez.ui.recipes.IngredientItem
-import com.example.grocerez.ui.recipes.IngredientItemViewHolder
 import com.example.grocerez.ui.recipes.RecipeIngredientAdapter
+import com.example.grocerez.ui.recipes.RecipesViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class IngredientInputDialog(var ingredientItem: IngredientItem?) : DialogFragment() {
 
     private var _binding: DialogAddIngredientsBinding? = null
     private val binding get() = _binding!!
-    private lateinit var ingredientItemViewHolder: IngredientItemViewHolder
+    private lateinit var ingredientViewModel: RecipesViewModel
     lateinit var ingredientItemAdapter: RecipeIngredientAdapter
     private lateinit var selectedUnit: String
 
@@ -31,12 +39,15 @@ class IngredientInputDialog(var ingredientItem: IngredientItem?) : DialogFragmen
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         _binding = DialogAddIngredientsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        ingredientViewModel  = ViewModelProvider(this.requireActivity())[RecipesViewModel::class.java]
 
         setSpinner()
 
@@ -127,11 +138,11 @@ class IngredientInputDialog(var ingredientItem: IngredientItem?) : DialogFragmen
     fun saveButton(){
         val name = binding.name.text.toString().trim()
         val category = binding.category.text.toString().trim()
-        val quantity = binding.quantity.text.toString().trim()
+        val quantity = binding.quantity.text.toString().toFloat()
 
         // Check if name or quantity is empty
-        if (name.isEmpty() || quantity.isEmpty()) {
-            Toast.makeText(requireContext(), "Name and quantity cannot be empty", Toast.LENGTH_SHORT).show()
+        if (name.isEmpty()) {
+            Toast.makeText(requireContext(), "Name cannot be empty", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -140,8 +151,31 @@ class IngredientInputDialog(var ingredientItem: IngredientItem?) : DialogFragmen
             return
         }
 
-        val ingredient = IngredientItem(name, quantity.toDouble(), selectedUnit, category)
-        ingredientItemAdapter.addIngredients(ingredient)
+        CoroutineScope(Dispatchers.IO).launch{
+            try{
+                val ingredient =
+                    Ingredient(name, quantity, category, selectedUnit)
+
+                ingredientViewModel.addToTemporaryList(ingredient)
+
+            } catch (e: Exception) {
+                // Handle the exception here
+                Log.e("Error", "An error occurred: ${e.message}")
+                // You can also show an error message to the user if needed
+                // For example:
+                withContext(Dispatchers.Main) {
+                    // Show a toast or a snackbar with the error message
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            context,
+                            "An error occurred: ${e.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+        }
+
         clearFields()
     }
     override fun onDestroyView() {

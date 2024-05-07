@@ -70,6 +70,7 @@ class NewRecipeSheet : Fragment(), IngredentItemClickListener {
 
         binding.cancelButton.setOnClickListener {
             clearFields()
+            recipeViewModel.clearTemporaryList()
             findNavController().popBackStack()
         }
 
@@ -133,6 +134,28 @@ class NewRecipeSheet : Fragment(), IngredentItemClickListener {
             )
 
             recipeViewModel.addRecipes(newRecipe)
+
+            val insertedRecipe = recipeViewModel.findRecipeByName(newRecipe)
+
+            val temporaryIngredientList = recipeViewModel.returnTemporaryList()
+
+            if (insertedRecipe != null){
+                for (ingredient in temporaryIngredientList){
+                    val ingredient_name = ingredient.name
+                    val item = recipeViewModel.findItemByName(ingredient_name)
+
+                    if (item != null){
+                        val recipeItem = com.example.grocerez.data.model.RecipeItem(
+                            recipeId = insertedRecipe.recipeId,
+                            itemId = item.item_id,
+                            amount = ingredient.amount
+                        )
+
+                        recipeViewModel.addRecipeItems(recipeItem)
+                    }
+                }
+                recipeViewModel.clearTemporaryList()
+            }
         } catch (e: Exception) {
             // Handle the exception here
             Log.e("Error", "An error occurred: ${e.message}")
