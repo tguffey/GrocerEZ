@@ -11,7 +11,6 @@ import androidx.room.Query
 import androidx.room.Update
 import com.example.grocerez.data.model.Category
 import kotlinx.coroutines.flow.Flow
-import com.example.grocerez.data.model.Unit
 
 
 @Dao
@@ -35,4 +34,7 @@ interface CategoryDao {
 
     @Query("SELECT DISTINCT category.name FROM category INNER JOIN items ON category.name = items.category_name INNER JOIN shopping_list_item ON itemName = items.name")
     fun getAllShoppingListCategories(): List<Category>
+
+    @Query("SELECT DISTINCT category.name FROM category INNER JOIN items ON category.name = items.category_name INNER JOIN pantry_item ON item_name = items.name")
+    fun getAllPantryItemCategories(): List<Category>
 }
