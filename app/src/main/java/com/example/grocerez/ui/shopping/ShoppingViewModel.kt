@@ -63,10 +63,10 @@ class ShoppingViewModel(val repository: ShoppingRepository) : ViewModel() {
     }
 
     fun addShoppingListItem(newGrocery: ShoppingListItem) = viewModelScope.launch(Dispatchers.IO) {
-        Log.v("VIEW MODEL", "in add shop item")
+//        Log.v("VIEW MODEL", "in add shop item")
         repository.insertShoppingListItem(newGrocery)
         updateData()
-        Log.v("VIEW MODEL", "added new item")
+//        Log.v("VIEW MODEL", "added new item")
     }
 
     fun addCategory(newCategory: Category) = viewModelScope.launch(Dispatchers.IO) {

@@ -151,7 +151,10 @@ class NewGrocerySheet(
 //                    it
 //                )
 //            }
-        val quantityVal = binding.quantity.text.toString().toFloat()
+        var quantityVal = 0.0F
+        if (binding.quantity.text.toString() != "") {
+            quantityVal = binding.quantity.text.toString().toFloat()
+        }
         val note = binding.Note.text.toString()
 
         // THONG: i realized i was very stupid with my previous code, here is a cleaner and more effiicent code probably.
