@@ -10,7 +10,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.grocerez.R
+import com.example.grocerez.data.RecipeRepository
+import com.example.grocerez.data.model.Recipe
+import com.example.grocerez.database.AppDatabase
 import com.example.grocerez.databinding.FragmentMyRecipesBinding
+import com.example.grocerez.databinding.FragmentShoppingBinding
+import com.example.grocerez.ui.shopping.ShoppingViewModel
 
 class MyRecipesFragment : Fragment(), RecipeItemClickListener{
 
@@ -20,7 +25,7 @@ class MyRecipesFragment : Fragment(), RecipeItemClickListener{
     private lateinit var recipesViewModel: RecipesViewModel
 
     // Original unfiltered list of recipe items
-    private var originalRecipeList: List<RecipeItem> = emptyList()
+    private var originalRecipeList: List<Recipe>? = emptyList()
 
     // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
@@ -30,21 +35,34 @@ class MyRecipesFragment : Fragment(), RecipeItemClickListener{
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        super.onCreateView(inflater, container, savedInstanceState)
+        val appDatabase = AppDatabase.getInstance(requireContext())
 
-        // Initialize ViewModel
-        recipesViewModel = ViewModelProvider(this.requireActivity())[RecipesViewModel::class.java]
+        recipesViewModel = ViewModelProvider(this.requireActivity(),
+            RecipesViewModel.RecipeModelFactory(
+                RecipeRepository(
+                    categoryDao = appDatabase.categoryDao(),
+                    itemDao = appDatabase.itemDao(),
+                    recipeDao = appDatabase.recipeDao(),
+                    recipeItemDao = appDatabase.recipeItemDao(),
+                    unitDao = appDatabase.unitDao()
+                )
+            )).get(RecipesViewModel::class.java)
 
-        // Inflate the layout for this fragment using view binding
+        recipesViewModel.loadRecipes()
+
         _binding = FragmentMyRecipesBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
+        return root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         // Set up RecyclerView
         setRecyclerView()
 
-        recipesViewModel.recipeItems.observe(viewLifecycleOwner) { recipeItems ->
-            if (recipeItems != null) {
-                originalRecipeList = recipeItems
+        recipesViewModel.recipes.observe(viewLifecycleOwner) { recipes ->
+            if (recipes != null) {
+                originalRecipeList = recipesViewModel.recipes.value
             }
         }
 
@@ -59,7 +77,7 @@ class MyRecipesFragment : Fragment(), RecipeItemClickListener{
 
             override fun onQueryTextChange(newText: String?): Boolean {
                 // Handle query text change
-                newText?.let { filterList(it, recipesViewModel.recipeItems.value.orEmpty()) }
+                newText?.let { filterList(it, recipesViewModel.recipes.value.orEmpty()) }
                 return true
             }
         })
@@ -77,21 +95,20 @@ class MyRecipesFragment : Fragment(), RecipeItemClickListener{
             // Navigate back
             findNavController().popBackStack()
         }
-
-        return root
     }
 
-    private fun filterList(query: String, recipeItems: List<RecipeItem>) {
+    private fun filterList(query: String, recipeItems: List<Recipe>) {
         val filteredList = if (query.isNotEmpty()) {
             recipeItems.filter { recipe ->
-                recipe.name.contains(query, ignoreCase = true) ||
-                        recipe.ingredients.any { it.name.contains(query, ignoreCase = true) }
+                recipe.name.contains(query, ignoreCase = true)
             }
         } else {
             originalRecipeList
         }
         // Update RecyclerView adapter with filtered list
-        (binding.recipeListRecyclerView.adapter as RecipeItemAdapter).updateRecipeItems(filteredList)
+        if (filteredList != null) {
+            (binding.recipeListRecyclerView.adapter as RecipeItemAdapter).updateRecipeItems(filteredList)
+        }
     }
 
     private fun setRecyclerView(){
@@ -101,16 +118,17 @@ class MyRecipesFragment : Fragment(), RecipeItemClickListener{
             layoutManager = LinearLayoutManager(requireContext())
             adapter = recipeItemAdapter
         }
-
-        // Observe changes in recipe items and update the RecyclerView
-        recipesViewModel.recipeItems.observe(viewLifecycleOwner) {newRecipeItems ->
-            val recipeItemList: List<RecipeItem> = newRecipeItems.orEmpty()
-            recipeItemAdapter.updateRecipeItems(recipeItemList)
-            recipeItemAdapter.notifyDataSetChanged()
-
-            // Initialize the original unfiltered list when it's first received
-            originalRecipeList = newRecipeItems.orEmpty()
-        }
+        binding.recipeListRecyclerView.adapter?.notifyDataSetChanged()
+//
+//        // Observe changes in recipe items and update the RecyclerView
+//        recipesViewModel.recipeItems.observe(viewLifecycleOwner) {newRecipeItems ->
+//            val recipeItemList: List<RecipeItem> = newRecipeItems.orEmpty()
+//            recipeItemAdapter.updateRecipeItems(recipeItemList)
+//            recipeItemAdapter.notifyDataSetChanged()
+//
+//            // Initialize the original unfiltered list when it's first received
+//            originalRecipeList = newRecipeItems.orEmpty()
+//        }
     }
 
     override fun editRecipeItem(recipeItem: RecipeItem) {

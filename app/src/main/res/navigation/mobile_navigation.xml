@@ -36,7 +36,21 @@
         android:id="@+id/navigation_dashboard"
         android:name="com.example.grocerez.ui.dashboard.DashboardFragment"
         android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        tools:layout="@layout/fragment_dashboard">
+        <action
+            android:id="@+id/action_dashboard_to_newPantryItem"
+            app:destination="@+id/newPantryItem" />
+        </fragment>
+
+    <fragment
+        android:id="@+id/newPantryItem"
+        android:name="com.example.grocerez.ui.dashboard.NewTaskSheet"
+        android:label="NewPantryItem"
+        tools:layout="@layout/fragment_new_item_sheet"/>
+
+    <action
+        android:id="@+id/action_dashboard_to_newPantryItem"
+        app:destination="@+id/newPantryItem" />
 
     <fragment
         android:id="@+id/navigation_home"
