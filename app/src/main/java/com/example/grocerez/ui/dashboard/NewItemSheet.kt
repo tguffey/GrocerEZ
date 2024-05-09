@@ -22,8 +22,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
-import java.time.Instant
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
@@ -169,25 +167,6 @@ class NewTaskSheet() : Fragment() {
         datePickerDialog.show()
     }
 
-
-    private fun showExpDatePicker() {
-        val datePickerDialog = DatePickerDialog(
-            requireContext(), { datePicker, year: Int, monthOfYear: Int, dayOfMonth: Int ->
-                val selectedDate = Calendar.getInstance()
-                selectedDate.set(year, monthOfYear, dayOfMonth)
-                val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                val formattedDate = dateFormat.format(selectedDate.time)
-                binding.expirationDate.text = "Date: $formattedDate"
-            },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
-        )
-//        val colorInt: Int = Color.parseColor("#99D982")
-//        datePickerDialog.datePicker.setBackgroundColor(colorInt)
-        datePickerDialog.show()
-    }
-
     private fun clearFields() {
         binding.name.setText("")
     }
@@ -297,14 +276,6 @@ class NewTaskSheet() : Fragment() {
                     }
                 }
             }
-        }
-
-        val startingLocalDate = if (startingDate != null) {
-            Instant.ofEpochMilli(startingDate.time)
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate()
-        } else {
-            null
         }
 
         binding.name.setText("")

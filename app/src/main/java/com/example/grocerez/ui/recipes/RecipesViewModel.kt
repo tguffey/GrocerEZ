@@ -61,6 +61,12 @@ class RecipesViewModel (private val repository: RecipeRepository) : ViewModel(){
         }
     }
 
+    suspend fun getIngredientsForRecipe(recipeId: Long) : List<Ingredient>{
+        return withContext(Dispatchers.IO){
+            return@withContext repository.getIngredientsForRecipe(recipeId)
+        }
+    }
+
     private fun updateRecipeData() = viewModelScope.launch(Dispatchers.IO) {
         recipes.postValue(repository.getAllRecipes())
     }
@@ -69,14 +75,14 @@ class RecipesViewModel (private val repository: RecipeRepository) : ViewModel(){
         ingredients.postValue(repository.getAllRecipeItems())
     }
 
-    fun addRecipes(newRecipe: Recipe) = viewModelScope.launch(Dispatchers.IO) {
+    suspend fun addRecipes(newRecipe: Recipe) = viewModelScope.launch(Dispatchers.IO) {
         Log.v("VIEW MODEL", "in add shop item")
         repository.insertRecipe(newRecipe)
         updateRecipeData()
         Log.v("VIEW MODEL", "added new item")
     }
 
-    fun addRecipeItems (newRecipeItem: RecipeItem) = viewModelScope.launch(Dispatchers.IO){
+    suspend fun addRecipeItems (newRecipeItem: RecipeItem) = viewModelScope.launch(Dispatchers.IO){
         Log.v("VIEW MODEL", "in add shop item")
         repository.insertRecipeItem(newRecipeItem)
         updateRecipeData()
@@ -87,7 +93,7 @@ class RecipesViewModel (private val repository: RecipeRepository) : ViewModel(){
         repository.insertCategory(newCategory)
     }
 
-    fun addItem(newItem: Item) = viewModelScope.launch(Dispatchers.IO) {
+    suspend fun addItem(newItem: Item) = viewModelScope.launch(Dispatchers.IO) {
         repository.insertItem(newItem)
     }
 
@@ -103,25 +109,25 @@ class RecipesViewModel (private val repository: RecipeRepository) : ViewModel(){
         temporaryIngredientList.clear()
     }
 
-    suspend fun findRecipeByName(recipe: Recipe): Recipe?{
+    suspend fun findRecipeByName(recipe: String): Recipe?{
         return withContext(Dispatchers.IO){
             return@withContext repository.findRecipeByName(recipe)
         }
     }
 
-    fun returnTemporaryList() : MutableList<Ingredient> {
+    suspend fun returnTemporaryList() : MutableList<Ingredient> {
         return temporaryIngredientList
     }
 
-    fun insertCategory(newCategory: Category) = viewModelScope.launch(Dispatchers.IO) {
+    suspend fun insertCategory(newCategory: Category) = viewModelScope.launch(Dispatchers.IO) {
         repository.insertCategory(newCategory)
     }
 
-    fun insertUnit(newUnit: Unit) = viewModelScope.launch(Dispatchers.IO) {
+    suspend fun insertUnit(newUnit: Unit) = viewModelScope.launch(Dispatchers.IO) {
         repository.insertUnit(newUnit)
     }
 
-    fun insertItem(newItem: Item) = viewModelScope.launch(Dispatchers.IO) {
+    suspend fun insertItem(newItem: Item) = viewModelScope.launch(Dispatchers.IO) {
         repository.insertItem(newItem)
     }
 

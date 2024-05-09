@@ -99,6 +99,13 @@ class NewRecipeSheet : Fragment(), IngredentItemClickListener, IngredientInputDi
         dialog.show(childFragmentManager, "newIngredientTag")
     }
 
+    private suspend fun insertRecipeAndGetId(recipe: Recipe): Long {
+        return withContext(Dispatchers.IO) {
+            recipeViewModel.addRecipes(recipe)
+            return@withContext recipeViewModel.findRecipeByName(recipe.name)?.recipeId ?: -1
+        }
+    }
+
     private fun saveAction() {
         val name = binding.name.text.toString()
         val notes = binding.notes.text.toString()
@@ -124,13 +131,11 @@ class NewRecipeSheet : Fragment(), IngredentItemClickListener, IngredientInputDi
                     instruction = notes
                 )
 
-                recipeViewModel.addRecipes(newRecipe)
-
-                val insertedRecipe = recipeViewModel.findRecipeByName(newRecipe)
+                val insertedRecipeId = insertRecipeAndGetId(newRecipe)
 
                 val temporaryIngredientList = recipeViewModel.returnTemporaryList()
 
-                if (insertedRecipe != null) {
+                if (insertedRecipeId != -1L) {
                     for (ingredient in temporaryIngredientList) {
                         val ingredientName = ingredient.name
                         val item = recipeViewModel.findItemByName(ingredientName)
@@ -141,23 +146,21 @@ class NewRecipeSheet : Fragment(), IngredentItemClickListener, IngredientInputDi
                             recipeViewModel.addItem(newItem)
 
                             val newRecipeItem = com.example.grocerez.data.model.RecipeItem(
-                                recipeId = insertedRecipe.recipeId,
+                                recipeId = insertedRecipeId,
                                 itemId = newItem.item_id,
                                 amount = ingredient.amount
                             )
 
                             recipeViewModel.addRecipeItems(newRecipeItem)
-                        }
-                        else {
+                        } else {
                             val newRecipeItem = com.example.grocerez.data.model.RecipeItem(
-                                recipeId = insertedRecipe.recipeId,
+                                recipeId = insertedRecipeId,
                                 itemId = item.item_id,
                                 amount = ingredient.amount
                             )
 
                             recipeViewModel.addRecipeItems(newRecipeItem)
                         }
-
                     }
                     recipeViewModel.clearTemporaryList()
                 }
@@ -179,6 +182,7 @@ class NewRecipeSheet : Fragment(), IngredentItemClickListener, IngredientInputDi
         clearFields()
         findNavController().popBackStack()
     }
+
 
 
     private fun clearFields() {

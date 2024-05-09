@@ -25,9 +25,9 @@ class RecipeRepository(
 )
 {
     @WorkerThread
-    suspend fun findRecipeByName(recipe: Recipe): Recipe?{
+    suspend fun findRecipeByName(recipe: String): Recipe?{
         return withContext(Dispatchers.IO){
-            recipeDao.findRecipeByName(recipe.name)
+            recipeDao.findRecipeByName(recipe)
         }
     }
 

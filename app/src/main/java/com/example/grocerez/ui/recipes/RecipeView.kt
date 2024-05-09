@@ -1,20 +1,20 @@
 package com.example.grocerez.ui.recipes
 
-import IngredientInputDialog
 import android.os.Bundle
-import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.grocerez.R
-import com.example.grocerez.data.Ingredient
 import com.example.grocerez.databinding.FragmentRecipeViewBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class RecipeView : Fragment(), IngredentItemClickListener{
+class RecipeView : Fragment(){
 
     private var _binding: FragmentRecipeViewBinding? = null
     private val binding get() = _binding!!
@@ -41,19 +41,25 @@ class RecipeView : Fragment(), IngredentItemClickListener{
 
         recipeViewModel = ViewModelProvider(this.requireActivity()).get(RecipesViewModel::class.java)
 
-        ingredientItemAdapter = RecipeIngredientAdapter(mutableListOf(), this)
-
         // Retrieve the recipeItem from the arguments bundle
         val args = arguments
-        val recipeItem = args?.getParcelable<RecipeItem>("recipeItem")
+        val recipeItemName = args?.getString("recipeItem")
+        CoroutineScope(Dispatchers.IO).launch{
+            if (recipeItemName != null){
+                val recipeItem = recipeViewModel.findRecipeByName(recipeItemName)
+                val recipeIngredients = recipeViewModel.getIngredientsForRecipe(recipeItem!!.recipeId)
 
-        if (recipeItem != null) {
-            val editable = Editable.Factory.getInstance()
-            binding.recipeTitle.text = editable.newEditable(recipeItem.name)
-            binding.recipeNotes.text = editable.newEditable(recipeItem.note)
-        } else {
-            binding.recipeTitle.text = "New Recipe"
+                withContext(Dispatchers.IO){
+                    binding.recipeTitle.text = recipeItem.name
+                    val ingredientDisplayText = recipeIngredients.joinToString("\n") { ingredient ->
+                        "- ${ingredient.name}, ${ingredient.amount} ${ingredient.unit}"
+                    }
+                    binding.recipeIngredients.text = ingredientDisplayText
+                    binding.recipeNotes.text = recipeItem.instruction
+                }
+            }
         }
+
 
         binding.backButton.setOnClickListener {
             findNavController().popBackStack()
@@ -70,18 +76,13 @@ class RecipeView : Fragment(), IngredentItemClickListener{
         binding.editRecipeButton.setOnClickListener{
             if (findNavController().currentDestination?.id == R.id.recipesViewFragment) {
                 val bundle = Bundle().apply {
-                    putParcelable("recipeItem", recipeItem)
+                    putString("recipeItem", recipeItemName)
                 }
                 findNavController().navigate(R.id.action_recipeView_to_newRecipeSheet, bundle)            }
         }
 
         binding.nutritionButton.setOnClickListener{
             showNutritionFactsDialog()
-        }
-
-        binding.ingredientRecyclerView.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = ingredientItemAdapter
         }
     }
 
@@ -93,12 +94,5 @@ class RecipeView : Fragment(), IngredentItemClickListener{
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    override fun editIngredientItem(ingredientItem: Ingredient) {
-        // Open the dialog window to update the ingredient item
-        val dialog = IngredientInputDialog(ingredientItem)
-        dialog.ingredientItemAdapter = ingredientItemAdapter
-        dialog.show(childFragmentManager, "editIngredientTag")
     }
 }

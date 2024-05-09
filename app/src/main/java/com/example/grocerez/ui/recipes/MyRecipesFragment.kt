@@ -62,9 +62,19 @@ class MyRecipesFragment : Fragment(), RecipeItemClickListener{
         recipesViewModel.recipes.observe(viewLifecycleOwner) { recipes ->
             if (recipes != null) {
                 // Update RecyclerView with the list of recipes
-                (binding.recipeListRecyclerView.adapter as RecipeItemAdapter).updateRecipeItems(recipes)
+                val adapter = binding.recipeListRecyclerView.adapter as RecipeItemAdapter
+                adapter.updateRecipeItems(recipes)
+                adapter.setOnItemClickListener { recipe ->
+                    // Handle click action here
+                    // For example, navigate to the recipe details fragment
+                    val bundle = Bundle().apply {
+                        putString("recipeItem", recipe.name)
+                    }
+                    findNavController().navigate(R.id.action_myRecipes_to_recipeView, bundle)
+                }
             }
         }
+
 
         // Set up search view
         val searchView = binding.recipeSearchBar
@@ -133,9 +143,9 @@ class MyRecipesFragment : Fragment(), RecipeItemClickListener{
 //        }
     }
 
-    override fun editRecipeItem(recipeItem: RecipeItem) {
+    override fun editRecipeItem(recipeItem: String) {
         val bundle = Bundle().apply {
-            putParcelable("recipeItem", recipeItem)
+            putString("recipeItem", recipeItem)
         }
         findNavController().navigate(R.id.action_myRecipes_to_recipeView, bundle)
     }
