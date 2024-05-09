@@ -89,7 +89,17 @@ class RecipeParsingFragment : Fragment() {
             }
         }
 
+        binding.barcodeLookupButton.setOnClickListener {
+            // Retrieve the barcode entered by the user
+            val barcode = binding.linkEditText.text.toString()
 
+            // Perform parsing with the link
+            if (barcode.isNotEmpty()) {
+                mSocket.emit("get-barcode-info", barcode)
+            } else {
+                mSocket.emit("get-barcode-info", "0024100106851")
+            }
+        }
 
         // Establish a connection for the socket answer
         setupSocketListeners()
@@ -103,7 +113,7 @@ class RecipeParsingFragment : Fragment() {
                 // Initialize a JSONObject with the string
                 val jsonObject = JSONObject(recipeDataJson)
 
-                // Get the ingredients put in an ingredient list string
+                // Get the ingredients and format them as a list
                 val ingredientsJsonArray = jsonObject.getJSONArray("ingredients")
                 val ingredientsList = StringBuilder("Ingredients:\n")
                 for (i in 0 until ingredientsJsonArray.length()) {
@@ -114,27 +124,31 @@ class RecipeParsingFragment : Fragment() {
                     ingredientsList.append("Amount: $amount, Unit: $unit, Name: $name\n")
                 }
 
-                // Get the instructions put in an instructions list string
+                // Get the instructions and format them as a list
                 val instructionsJsonArray = jsonObject.getJSONArray("instructions")
                 val instructionsList = StringBuilder("\nInstructions:\n")
                 for (i in 0 until instructionsJsonArray.length()) {
-                    // Ensure that each instruction is treated as a string
                     val step = instructionsJsonArray.optString(i)
                     instructionsList.append("Step ${i + 1}: $step\n")
                 }
 
-                // This combines both ingredients and instructions into one string list
-                val combinedResult = ingredientsList.append(instructionsList.toString())
+                // Combine ingredients and instructions into one StringBuilder
+                ingredientsList.append(instructionsList)
 
                 // Log the combined result to Logcat
-                Log.d("RecipeDataResult", combinedResult.toString())
+                Log.d("RecipeDataResult", ingredientsList.toString())
+
+                // Update the TextView to display both ingredients and instructions
+                activity?.runOnUiThread {
+                    binding.textViewResult.text = ingredientsList.toString()
+                }
             } catch (e: JSONException) {
                 e.printStackTrace()
                 Log.d("RecipeDataError", "Error parsing recipe data")
             }
         }
-        // Function for getting ingredients only
-        mSocket.on("ingredients-result-for-shopping-list") { args ->
+        // THIS FUNCTION VERSION IS FOR GETTING INGREDIENTS ONLY
+        /*mSocket.on("ingredients-result") { args ->
             val recipeDataJson = args[0]?.toString()
             try {
                 // Initialize a JSONObject with the string
@@ -151,53 +165,75 @@ class RecipeParsingFragment : Fragment() {
                     ingredientsList.append("Amount: $amount, Unit: $unit, Name: $name\n")
                 }
 
-                // Log the combined result to Logcat as a string
+                // Log the ingredients list to Logcat
                 Log.d("RecipeDataResult", ingredientsList.toString())
+
+                // Update the TextView to display the ingredients
+                activity?.runOnUiThread {
+                    binding.textViewResult.text = ingredientsList.toString()
+                }
             } catch (e: JSONException) {
                 e.printStackTrace()
                 Log.d("RecipeDataError", "Error parsing recipe data")
             }
-        }
-        // Function for getting nutritional value from recipes
-        /*mSocket.on("ingredients-result-for-nutritional-data") { args ->
-            val nutritionalDataJson = args[0]?.toString()
-            try {
-                // Parse the JSON array received from the socket event
-                val jsonArray = JSONArray(nutritionalDataJson)
+        }*/
 
+        // Function for getting Nutritional Data from recipe ingredients
+        // Currently has errors, need to change JSON type sent from backend
+        /*mSocket.on("ingredients-result-for-nutritional-data") { args ->
+            val nutritionalDataJson = args[0]?.toString() ?: throw IllegalArgumentException("First argument expected to be a non-null string")
+
+            try {
+                val jsonArray = JSONArray(nutritionalDataJson)
                 val nutritionalDataList = StringBuilder("Nutritional Data:\n")
                 for (i in 0 until jsonArray.length()) {
                     val foodItem = jsonArray.getJSONObject(i)
+                    val name = foodItem.optString("Name", "Unknown Ingredient")
+                    val description = foodItem.optString("description", "No description available")
+                    val myPlateCategory = foodItem.optString("myPlateCategory", "Not classified")
 
-                    val name = foodItem.optString("Name")
-                    val description = foodItem.optString("description")
-                    val myPlateCategory = foodItem.optString("myPlateCategory")
-                    val nutrients = foodItem.optJSONObject("nutrients")
-
-                    nutritionalDataList.append("Name: $name\n")
+                    nutritionalDataList.append("\n$name:\n")
                     nutritionalDataList.append("Description: $description\n")
                     nutritionalDataList.append("MyPlate Category: $myPlateCategory\n")
 
+                    val nutrients = foodItem.optJSONObject("nutrients")
                     nutrients?.let {
                         for (key in it.keys()) {
-                            // Explicitly telling Kotlin that we expect a String value here.
-                            // This approach forces a cast from Any? to String, which should be avoided without checks
-                            val nutrientValue: Any? = it.get(key)
-                            val value = nutrientValue?.toString() ?: "N/A" // Safely convert to String, providing a fallback
+                            val value = it.optString(key, "N/A")  // Safely extract string value
                             nutritionalDataList.append("$key: $value\n")
                         }
                     }
-
-                    nutritionalDataList.append("\n") // Adds a newline for spacing between items
                 }
 
-                // Log the combined result to Logcat
-                Log.d("NutritionalDataResult", nutritionalDataList.toString())
+                // Update the TextView to display nutritional data
+                activity?.runOnUiThread {
+                    binding.textViewResult.text = nutritionalDataList.toString()
+                }
             } catch (e: JSONException) {
                 e.printStackTrace()
                 Log.d("NutritionalDataError", "Error parsing nutritional data")
+            } catch (e: IllegalArgumentException) {
+                e.printStackTrace()
+                Log.d("SocketDataError", "Invalid data received from socket")
             }
         }*/
+
+        // Function for grabbing barcode data
+        mSocket.on("productInfo") { args ->
+            val productName = args[0]?.toString() ?: "Unknown product"
+            try {
+                // Log the product name to Logcat
+                Log.d("ProductInfoResult", productName)
+
+                // Update the TextView to display the product name
+                activity?.runOnUiThread {
+                    binding.textViewResult.text = productName
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.d("ProductInfoError", "Error displaying product info")
+            }
+        }
 
     }
 
