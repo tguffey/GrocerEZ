@@ -35,6 +35,11 @@ class CategoryPantryItemAdapter (
             binding.groceryListRecyclerView.adapter = pantryItemAdapter
             binding.groceryListRecyclerView.setRecycledViewPool(viewPool)
             pantryItemAdapter.notifyDataSetChanged()
+
+            pantryItemAdapter.setOnItemClickListener { pantryItem ->
+                // Call the listener method to handle the item click
+                clickListener.editFoodItem(pantryItem.itemName)
+            }
         }
 
 //        private fun animateProgressBar(newValue: Int) {

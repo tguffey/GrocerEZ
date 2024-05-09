@@ -49,6 +49,13 @@ class PantryRepository(
     }
 
     @WorkerThread
+    suspend fun findPantryItemByName (pantryItemName: String) : PantryItem? {
+        return withContext(Dispatchers.IO){
+            return@withContext pantryItemDao.findPantryItemByName(pantryItemName)
+        }
+    }
+
+    @WorkerThread
     suspend fun pantryItemsInCategory(category: Category) : Flow<List<PantryItem>> {
         return flowOf(pantryItemDao.findPantryItemByCategory(category.name))
     }
@@ -91,6 +98,13 @@ class PantryRepository(
     }
 
     @WorkerThread
+    suspend fun updateItem(item: Item) {
+        return withContext(Dispatchers.IO) {
+            itemDao.updateItem(item)
+        }
+    }
+
+    @WorkerThread
     suspend fun insertUnit(unit: com.example.grocerez.data.model.Unit) {
         return withContext(Dispatchers.IO) {
             unitDao.insertUnit(unit)
@@ -126,4 +140,27 @@ class PantryRepository(
         }
     }
 
+    @WorkerThread
+    suspend fun deleteItem(item: Item) {
+        itemDao.deleteItem(item)
+    }
+
+    @WorkerThread
+    suspend fun updatePantryItem(pantryItemId: String, update: PantryItemUpdate) {
+        return withContext(Dispatchers.IO) {
+            val pantryItem = pantryItemDao.findPantryItemById(pantryItemId)
+
+            pantryItem?.apply {
+                update.itemName?.let { itemName = it }
+                update.amountFromInputDate?.let { amountFromInputDate = it }
+                update.inputDate?.let { inputDate = it }
+                update.shelfLifeFromInputDate?.let { shelfLifeFromInputDate = it }
+                // Update other fields as needed
+            }
+
+            if (pantryItem != null) {
+                pantryItemDao.updatePantryItemDao(pantryItem)
+            }
+        }
+    }
 }

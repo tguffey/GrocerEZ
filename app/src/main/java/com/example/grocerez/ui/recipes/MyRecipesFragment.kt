@@ -14,8 +14,6 @@ import com.example.grocerez.data.RecipeRepository
 import com.example.grocerez.data.model.Recipe
 import com.example.grocerez.database.AppDatabase
 import com.example.grocerez.databinding.FragmentMyRecipesBinding
-import com.example.grocerez.databinding.FragmentShoppingBinding
-import com.example.grocerez.ui.shopping.ShoppingViewModel
 
 class MyRecipesFragment : Fragment(), RecipeItemClickListener{
 
@@ -60,12 +58,15 @@ class MyRecipesFragment : Fragment(), RecipeItemClickListener{
         // Set up RecyclerView
         setRecyclerView()
 
+        // Observe changes in recipes LiveData
         recipesViewModel.recipes.observe(viewLifecycleOwner) { recipes ->
             if (recipes != null) {
-                originalRecipeList = recipesViewModel.recipes.value
+                // Update RecyclerView with the list of recipes
+                (binding.recipeListRecyclerView.adapter as RecipeItemAdapter).updateRecipeItems(recipes)
             }
         }
 
+        // Set up search view
         val searchView = binding.recipeSearchBar
         searchView.clearFocus()
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener,
@@ -96,6 +97,7 @@ class MyRecipesFragment : Fragment(), RecipeItemClickListener{
             findNavController().popBackStack()
         }
     }
+
 
     private fun filterList(query: String, recipeItems: List<Recipe>) {
         val filteredList = if (query.isNotEmpty()) {

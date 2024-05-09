@@ -29,6 +29,12 @@ class DashboardViewModel (val repository: PantryRepository) : ViewModel() {
         categoryPantryItems = flowOf(repository.allCategoriesAndPantryItems()).asLiveData() as MutableLiveData<List<CategoryPantryItem>>
     }
 
+    suspend fun findPantryItemByName(name: String) : PantryItem? {
+        return withContext(Dispatchers.IO){
+            return@withContext repository.findPantryItemByName(name)
+        }
+    }
+
     suspend fun findItemByName(name: String) : Item? {
         return withContext(Dispatchers.IO) {
             return@withContext repository.findItemByName(name)
@@ -91,6 +97,22 @@ class DashboardViewModel (val repository: PantryRepository) : ViewModel() {
         if(food.startingDate == null)
             food.startingDate = LocalDate.now()
         foodItems.postValue(list)
+    }
+
+    fun updateItem(item: Item) = viewModelScope.launch(Dispatchers.IO) {
+        repository.updateItem(item)
+    }
+
+    fun updatePantryItem(pantryItem: PantryItem) = viewModelScope.launch(Dispatchers.IO) {
+        repository.updatePantryItem(pantryItem)
+    }
+
+    fun deletePantryItem(pantryItem: PantryItem) = viewModelScope.launch(Dispatchers.IO) {
+        repository.deletePantryItem(pantryItem)
+    }
+
+    fun deleteItem(item: Item) = viewModelScope.launch(Dispatchers.IO) {
+        repository.deleteItem(item)
     }
 
     class PantryModelFactory(private val repository: PantryRepository) : ViewModelProvider.Factory
