@@ -14,10 +14,12 @@ import com.example.grocerez.dao.CategoryDao
 import com.example.grocerez.dao.ItemDao
 import com.example.grocerez.dao.RecipeDao
 import com.example.grocerez.dao.RecipeItemDao
+
 import com.example.grocerez.dao.ShoppingListItemDao
 import com.example.grocerez.dao.UnitDao
 import com.example.grocerez.data.Ingredient
 import com.example.grocerez.data.model.ShoppingListItem
+
 import com.example.grocerez.database.AppDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -91,17 +93,22 @@ class ViewRecipesActivity : AppCompatActivity() {
     }
 
     private fun displayAllItems() {
-
+        val recipeDetails = StringBuilder()
+        recipeDetails.append("displaying all recipes now\n")
         // we can do this instead of coroutine becasue apparently of that LiveData thing
-        recipeDao.getAllRecipes().observe(this) { recipes ->
-            val recipeDetails = StringBuilder()
-            recipeDetails.append("displaying all recipes now\n")
-
-            for (recipe in recipes) {
+        // UPDATE 5/6/2024: Thong here, since we got rid of that live data thing, we will need to use coroutine
+        CoroutineScope(Dispatchers.IO).launch {
+            val allRecipes = recipeDao.getAllRecipes()
+            for (recipe in allRecipes) {
                 recipeDetails.append("Recipe ID: ${recipe.recipeId},\nName: ${recipe.name}\n\n")
             }
-            viewRecipeTextview.text = recipeDetails.toString()
+
+            withContext(Dispatchers.Main){
+                viewRecipeTextview.text = recipeDetails.toString()
+            }
         }
+//        val allRecipes = recipeDao.getAllRecipes()
+
 
     }
 

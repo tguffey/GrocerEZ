@@ -2,6 +2,7 @@ package com.example.grocerez.ui.recipes
 
 import android.content.Context
 import androidx.recyclerview.widget.RecyclerView
+import com.example.grocerez.data.model.Recipe
 import com.example.grocerez.databinding.RecipeItemCellBinding
 
 // ViewHolder class for recipe items in the RecyclerView
@@ -12,13 +13,8 @@ class RecipeItemViewHolder (
 ):RecyclerView.ViewHolder(binding.root)
 {
     // Function to bind recipe item data to the ViewHolder
-    fun bindRecipeItem(recipeItem: RecipeItem){
+    fun bindRecipeItem(recipeItem: Recipe){
         // Set the recipe name and description in the corresponding views
         binding.recipeName.text = recipeItem.name
-
-        // Set a click listener to handle editing the recipe item
-        binding.recipeCellContainer.setOnClickListener{
-            clickListener.editRecipeItem(recipeItem)
-        }
     }
 }
