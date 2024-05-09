@@ -113,6 +113,18 @@ class RecipesViewModel (private val repository: RecipeRepository) : ViewModel(){
         return temporaryIngredientList
     }
 
+    fun insertCategory(newCategory: Category) = viewModelScope.launch(Dispatchers.IO) {
+        repository.insertCategory(newCategory)
+    }
+
+    fun insertUnit(newUnit: Unit) = viewModelScope.launch(Dispatchers.IO) {
+        repository.insertUnit(newUnit)
+    }
+
+    fun insertItem(newItem: Item) = viewModelScope.launch(Dispatchers.IO) {
+        repository.insertItem(newItem)
+    }
+
 //    fun toggleCheck(recipeItem: RecipeItem) = viewModelScope.launch(Dispatchers.IO) {
 //        RecipeItem.checkbox = !recipeItem.checkbox
 //        repository.updateRecipeItem(recipeItem)

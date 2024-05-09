@@ -3,12 +3,12 @@ package com.example.grocerez.ui.recipes
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.example.grocerez.data.Ingredient
 import com.example.grocerez.databinding.RecipeIngredientBinding
 
 class RecipeIngredientAdapter(
-    private var ingredientItems: List<IngredientItem>, // List of recipe items to be displayed
+    private var ingredientItems: MutableList<Ingredient>, // List of recipe items to be displayed
     private val clickListener: IngredentItemClickListener
 ): RecyclerView.Adapter<RecipeIngredientAdapter.IngredientViewHolder>()
 {
@@ -17,29 +17,29 @@ class RecipeIngredientAdapter(
         private val binding: RecipeIngredientBinding,
         private val clickListener: IngredentItemClickListener
     ) :RecyclerView.ViewHolder(binding.root){
-        fun bindIngredients(ingredientItem: IngredientItem){
+        fun bindIngredients(ingredientItem: Ingredient){
             val ingredientAdapter = RecipeIngredientAdapter(ingredientItems, clickListener)
             binding.ingredientName.text = ingredientItem.name
-            binding.ingredientQuantity.text = ingredientItem.quantity.toString()
-            binding.ingredientUnit.text = ingredientItem.ingredientUnit
+            binding.ingredientQuantity.text = ingredientItem.amount.toString()
+            binding.ingredientUnit.text = ingredientItem.unit
             ingredientAdapter.notifyDataSetChanged()
         }
     }
 
     // Constructor for NewRecipeSheet fragment
-    constructor(ingredientItems: MutableList<IngredientItem>, clickListener: NewRecipeSheet) : this(ingredientItems, clickListener as IngredentItemClickListener)
+//    constructor(ingredientItems: MutableList<IngredientItem>, clickListener: NewRecipeSheet) : this(ingredientItems, clickListener as IngredentItemClickListener)
+//
+//    // Constructor for RecipeView fragment
+//    constructor(ingredientItems: MutableList<IngredientItem>, clickListener: RecipeView) : this(ingredientItems, clickListener as IngredentItemClickListener)
 
-    // Constructor for RecipeView fragment
-    constructor(ingredientItems: MutableList<IngredientItem>, clickListener: RecipeView) : this(ingredientItems, clickListener as IngredentItemClickListener)
 
-
-    fun updateIngredientItems(newIngredientItems: MutableList<IngredientItem>){
-        val diffCallback = IngredientDiffCallback(ingredientItems, newIngredientItems)
-        val diffResult = DiffUtil.calculateDiff(diffCallback)
-
-        ingredientItems = newIngredientItems
-        diffResult.dispatchUpdatesTo(this)
-    }
+//    fun updateIngredientItems(newIngredientItems: MutableList<IngredientItem>){
+//        val diffCallback = IngredientDiffCallback(ingredientItems, newIngredientItems)
+//        val diffResult = DiffUtil.calculateDiff(diffCallback)
+//
+//        ingredientItems = newIngredientItems
+//        diffResult.dispatchUpdatesTo(this)
+//    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): IngredientViewHolder{
         val inflater = LayoutInflater.from(parent.context)
@@ -59,12 +59,12 @@ class RecipeIngredientAdapter(
         }
     }
 
-    fun addIngredients(ingredientItem: IngredientItem) {
-        ingredientItems
+    fun addIngredients(ingredient: Ingredient) {
+        ingredientItems.add(ingredient)
         notifyDataSetChanged()
     }
 
-    fun getIngredients(): List<IngredientItem> {
+    fun getIngredients(): List<Ingredient> {
         return ingredientItems
     }
 }

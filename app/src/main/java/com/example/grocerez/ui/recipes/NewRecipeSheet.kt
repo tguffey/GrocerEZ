@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.grocerez.data.Ingredient
+import com.example.grocerez.data.model.Item
 import com.example.grocerez.data.model.Recipe
 import com.example.grocerez.databinding.FragmentNewRecipeSheetBinding
 import kotlinx.coroutines.CoroutineScope
@@ -19,7 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class NewRecipeSheet : Fragment(), IngredentItemClickListener {
+class NewRecipeSheet : Fragment(), IngredentItemClickListener, IngredientInputDialog.IngredientDialogListener{
 
     private var _binding: FragmentNewRecipeSheetBinding? = null
     private val binding get() = _binding!!
@@ -56,9 +58,6 @@ class NewRecipeSheet : Fragment(), IngredentItemClickListener {
             binding.recipeTitle.text = "Edit Recipe"
             val editable = Editable.Factory.getInstance()
             binding.name.text = editable.newEditable(recipeItem.name)
-            recipeItem.ingredients.forEach { ingredient ->
-                ingredientItemAdapter.addIngredients(ingredient)
-            }
             binding.notes.text = editable.newEditable(recipeItem.note)
         } else {
             binding.recipeTitle.text = "New Recipe"
@@ -84,15 +83,15 @@ class NewRecipeSheet : Fragment(), IngredentItemClickListener {
         }
     }
 
-    private fun populateFields(recipeItem: RecipeItem) {
-        binding.recipeTitle.text = "Edit Recipe"
-        val editable = Editable.Factory.getInstance()
-        binding.name.text = editable.newEditable(recipeItem.name)
-        recipeItem.ingredients.forEach { ingredient ->
-            ingredientItemAdapter.addIngredients(ingredient)
-        }
-        binding.notes.text = editable.newEditable(recipeItem.note)
-    }
+//    private fun populateFields(recipeItem: RecipeItem) {
+//        binding.recipeTitle.text = "Edit Recipe"
+//        val editable = Editable.Factory.getInstance()
+//        binding.name.text = editable.newEditable(recipeItem.name)
+//        recipeItem.ingredients.forEach { ingredient ->
+//            ingredientItemAdapter.addIngredients(ingredient)
+//        }
+//        binding.notes.text = editable.newEditable(recipeItem.note)
+//    }
 
     private fun showIngredientInputDialog() {
         val dialog = IngredientInputDialog(null)
@@ -110,58 +109,61 @@ class NewRecipeSheet : Fragment(), IngredentItemClickListener {
             return
         }
 
-        val ingredients = ingredientItemAdapter.getIngredients().toMutableList()
-
-        // Check if ingredients list is empty
-        if (ingredients.isEmpty()) {
-            Toast.makeText(requireContext(), "Please add at least one ingredient", Toast.LENGTH_SHORT).show()
-            return
-        }
-
         if (notes.isEmpty()) {
-            Toast.makeText(requireContext(), "Add a note the recipe item", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Add a note to the recipe item", Toast.LENGTH_SHORT).show()
             return
         }
 
         val args = arguments
         val recipeItem = args?.getParcelable<RecipeItem>("recipeItem")
 
-        CoroutineScope(Dispatchers.IO).launch{
-            try{
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
                 val newRecipe = Recipe(
-                name = name,
-                instruction = notes
-            )
+                    name = name,
+                    instruction = notes
+                )
 
-            recipeViewModel.addRecipes(newRecipe)
+                recipeViewModel.addRecipes(newRecipe)
 
-            val insertedRecipe = recipeViewModel.findRecipeByName(newRecipe)
+                val insertedRecipe = recipeViewModel.findRecipeByName(newRecipe)
 
-            val temporaryIngredientList = recipeViewModel.returnTemporaryList()
+                val temporaryIngredientList = recipeViewModel.returnTemporaryList()
 
-            if (insertedRecipe != null){
-                for (ingredient in temporaryIngredientList){
-                    val ingredient_name = ingredient.name
-                    val item = recipeViewModel.findItemByName(ingredient_name)
+                if (insertedRecipe != null) {
+                    for (ingredient in temporaryIngredientList) {
+                        val ingredientName = ingredient.name
+                        val item = recipeViewModel.findItemByName(ingredientName)
 
-                    if (item != null){
-                        val recipeItem = com.example.grocerez.data.model.RecipeItem(
-                            recipeId = insertedRecipe.recipeId,
-                            itemId = item.item_id,
-                            amount = ingredient.amount
-                        )
+                        if (item == null) {
+                            // Assuming you have a function to add a new item in your ViewModel
+                            val newItem = Item(name = ingredientName, category = ingredient.category, useRate = ingredient.amount, unitName = ingredient.unit)
+                            recipeViewModel.addItem(newItem)
 
-                        recipeViewModel.addRecipeItems(recipeItem)
+                            val newRecipeItem = com.example.grocerez.data.model.RecipeItem(
+                                recipeId = insertedRecipe.recipeId,
+                                itemId = newItem.item_id,
+                                amount = ingredient.amount
+                            )
+
+                            recipeViewModel.addRecipeItems(newRecipeItem)
+                        }
+                        else {
+                            val newRecipeItem = com.example.grocerez.data.model.RecipeItem(
+                                recipeId = insertedRecipe.recipeId,
+                                itemId = item.item_id,
+                                amount = ingredient.amount
+                            )
+
+                            recipeViewModel.addRecipeItems(newRecipeItem)
+                        }
+
                     }
+                    recipeViewModel.clearTemporaryList()
                 }
-                recipeViewModel.clearTemporaryList()
-            }
-        } catch (e: Exception) {
-            // Handle the exception here
-            Log.e("Error", "An error occurred: ${e.message}")
-            // You can also show an error message to the user if needed
-            // For example:
-            withContext(Dispatchers.Main) {
+            } catch (e: Exception) {
+                // Handle the exception here
+                Log.e("Error", "An error occurred: ${e.message}")
                 // Show a toast or a snackbar with the error message
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
@@ -172,21 +174,12 @@ class NewRecipeSheet : Fragment(), IngredentItemClickListener {
                 }
             }
         }
-    }
 
-//        if (recipeItem == null) {
-//            val newRecipe = RecipeItem(name, ingredients, notes)
-//            recipeViewModel.addRecipeItem(newRecipe)
-//        } else {
-//            recipeItem.name = name
-//            recipeItem.note = notes
-//            recipeItem.ingredients.clear()
-//            recipeItem.ingredients.addAll(ingredients)
-//            recipeViewModel.updateRecipeItem(recipeItem)
-//        }
+        // If everything is successful, clear the fields and navigate back
         clearFields()
         findNavController().popBackStack()
     }
+
 
     private fun clearFields() {
         binding.name.setText("")
@@ -198,13 +191,20 @@ class NewRecipeSheet : Fragment(), IngredentItemClickListener {
         _binding = null
     }
 
-    override fun editIngredientItem(ingredientItem: IngredientItem) {
+    override fun editIngredientItem(ingredient: Ingredient) {
         // Open the dialog window to update the ingredient item
-        val dialog = IngredientInputDialog(ingredientItem)
+        val dialog = IngredientInputDialog(ingredient)
         dialog.ingredientItemAdapter = ingredientItemAdapter
         dialog.show(childFragmentManager, "editIngredientTag")
     }
 
     fun setOnCancelListener(function: () -> Unit) {
+    }
+
+    override fun onIngredientAdded(ingredient: Ingredient) {
+        // Add the ingredient to the temporary list
+        recipeViewModel.addToTemporaryList(ingredient)
+        // Update the RecyclerView to display the new ingredient
+        ingredientItemAdapter.addIngredients(ingredient)
     }
 }

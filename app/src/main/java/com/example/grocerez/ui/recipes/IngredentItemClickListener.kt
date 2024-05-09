@@ -1,7 +1,8 @@
 package com.example.grocerez.ui.recipes
 
+import com.example.grocerez.data.Ingredient
 
 
 interface IngredentItemClickListener {
-    fun editIngredientItem(ingredientItem: IngredientItem)
+    fun editIngredientItem(ingredient: Ingredient)
 }
