@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.grocerez.R
+import com.example.grocerez.data.Ingredient
 import com.example.grocerez.databinding.FragmentRecipeViewBinding
 
 class RecipeView : Fragment(), IngredentItemClickListener{
@@ -49,9 +50,6 @@ class RecipeView : Fragment(), IngredentItemClickListener{
         if (recipeItem != null) {
             val editable = Editable.Factory.getInstance()
             binding.recipeTitle.text = editable.newEditable(recipeItem.name)
-            recipeItem.ingredients.forEach { ingredient ->
-                ingredientItemAdapter.addIngredients(ingredient)
-            }
             binding.recipeNotes.text = editable.newEditable(recipeItem.note)
         } else {
             binding.recipeTitle.text = "New Recipe"
@@ -97,7 +95,7 @@ class RecipeView : Fragment(), IngredentItemClickListener{
         _binding = null
     }
 
-    override fun editIngredientItem(ingredientItem: IngredientItem) {
+    override fun editIngredientItem(ingredientItem: Ingredient) {
         // Open the dialog window to update the ingredient item
         val dialog = IngredientInputDialog(ingredientItem)
         dialog.ingredientItemAdapter = ingredientItemAdapter

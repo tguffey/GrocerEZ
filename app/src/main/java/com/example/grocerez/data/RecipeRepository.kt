@@ -2,7 +2,6 @@ package com.example.grocerez.data
 
 import android.util.Log
 import androidx.annotation.WorkerThread
-import androidx.lifecycle.LiveData
 import com.example.grocerez.dao.CategoryDao
 import com.example.grocerez.dao.ItemDao
 import com.example.grocerez.dao.RecipeDao
@@ -26,7 +25,7 @@ class RecipeRepository(
 )
 {
     @WorkerThread
-    suspend fun findRecipeByName(recipe: Recipe){
+    suspend fun findRecipeByName(recipe: Recipe): Recipe?{
         return withContext(Dispatchers.IO){
             recipeDao.findRecipeByName(recipe.name)
         }
@@ -70,20 +69,21 @@ class RecipeRepository(
     }
 
     @WorkerThread
-    suspend fun getAllRecipeItems(): LiveData<List<RecipeItem>> {
+    suspend fun getAllRecipeItems(): List<RecipeItem> {
         return withContext(Dispatchers.Default) {
-            recipeItemDao.getAllRecipeItems()
+            return@withContext recipeItemDao.getAllRecipeItems()
         }
     }
 
     @WorkerThread
-    suspend fun insertRecipe(recipeItem: RecipeItem) {
+    suspend fun insertRecipeItem(recipeItem: RecipeItem) {
         return withContext(Dispatchers.IO) {
             Log.v("REPO", "adding item...")
             recipeItemDao.insertRecipeItem(recipeItem)
             Log.v("REPO", "done adding")
         }
     }
+
 
     @WorkerThread
     suspend fun deleteRecipe(recipeItem: RecipeItem) {
