@@ -46,7 +46,7 @@
                 android:layout_height="50dp"
                 android:layout_marginTop="40dp"
                 android:padding="8dp"
-                android:hint="@string/prompt_email"
+                android:hint="Username"
                 android:drawableStart="@drawable/baseline_person_24"
                 android:drawablePadding="8dp"
                 android:inputType="textEmailAddress"/>
@@ -86,7 +86,7 @@
                 android:layout_height="60dp"
                 android:layout_gravity="start"
                 android:layout_marginTop="40dp"
-                android:layout_marginBottom="64dp"
+                android:layout_marginBottom="20dp"
                 android:enabled="false"
                 android:text="@string/action_sign_in"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -95,6 +95,16 @@
                 app:layout_constraintTop_toBottomOf="@+id/login_pg_password_entry"
                 app:layout_constraintVertical_bias="0.2"
                 app:cornerRadius = "20dp"/>
+
+            <TextView
+                android:id="@+id/login_warning_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Login"
+                android:textAllCaps="false"
+                android:textColor="#Ff0000"
+                android:layout_marginBottom="20dp"
+                android:textSize="18sp" />
 
             <ProgressBar
                 android:id="@+id/loading"

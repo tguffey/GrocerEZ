@@ -22,15 +22,17 @@ import com.example.grocerez.MainActivity
 import com.example.grocerez.databinding.ActivityLoginBinding
 import com.example.grocerez.R
 import com.example.grocerez.SocketHandler
+import com.example.grocerez.ui.login.LoginResult
+
 
 class LoginActivity : AppCompatActivity() {
+
 
     private lateinit var loginViewModel: LoginViewModel
     private lateinit var binding: ActivityLoginBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
 
 
         // Make the status bar transparent
@@ -46,13 +48,7 @@ class LoginActivity : AppCompatActivity() {
          val mSocket = SocketHandler.getSocket()
 //        mSocket.connect()
          mSocket.emit("hellotest")
-//        // ______________________________
-//        // ESTABLISH SOCKET CONNECTION
-//        SocketHandler.setSocket()
-//        val mSocket = SocketHandler.getSocket()
-//        mSocket.connect()
-//        mSocket.emit("hello")
-//        // ______________________________
+
 
 
         binding = ActivityLoginBinding.inflate(layoutInflater)
@@ -61,7 +57,10 @@ class LoginActivity : AppCompatActivity() {
         val username = binding.loginPgUsernameEntry
         val password = binding.loginPgPasswordEntry
         val login = binding.loginpageLoginBtn
+        val warning_text = binding.loginWarningTextview
         val loading = binding.loading
+
+        warning_text?.text = "" ?: "where the warning message go"
 
         loginViewModel = ViewModelProvider(this, LoginViewModelFactory())
             .get(LoginViewModel::class.java)
@@ -87,14 +86,73 @@ class LoginActivity : AppCompatActivity() {
             if (loginResult.error != null) {
                 showLoginFailed(loginResult.error)
             }
-
+            // this part goes to the main home activity
             if (loginResult.success != null) {
-                updateUiWithUser(loginResult.success)
+                // CASE -1: BACKDOOR
+                if (username.text.toString() == "developer" && password.text.toString() == "backdoor123") {
+                    runOnUiThread {
+                        updateUiWithUser(loginResult.success)
+                    }
+                    finish() // Exit observer after backdoor access
+                }
+
+                // CASE 0: NO SOCKET CONNECTION
+                if (!mSocket.connected()){
+                    Toast.makeText(applicationContext, "if not able to log in, check your connection!", Toast.LENGTH_SHORT).show()
+                    finish() // Exit observer
+                }
+
+                // CASE 1: USER EXISTS, CORRECT PASSWORD
+                mSocket.on("success_login"){data ->
+                    runOnUiThread {
+                        updateUiWithUser(loginResult.success)
+                    }
+                    finish()
+                }
+
+                // CASE 2: USER EXISTS, WRONG PASSWORD
+                mSocket.on("fail_wrongPassword"){data ->
+                    runOnUiThread {
+                        Toast.makeText(
+                            applicationContext,
+                            "The password is incorrect!",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+
+                }
+
+                // CASE 3: USER DOES NOT EXIST
+                mSocket.on("fail_noUserExist"){data ->
+                    runOnUiThread {
+                        Toast.makeText(
+                            applicationContext,
+                            "There is no user with that name, check your spelling!",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+
+                // CASE 4: server error
+                mSocket.on("loginError"){data ->
+                    runOnUiThread {
+                        Toast.makeText(
+                            applicationContext,
+                            "Internal Server Error, try again later!",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                    finish()
+                }
+
+
+
+
             }
             setResult(Activity.RESULT_OK)
 
             // Complete and destroy login activity once successful
-            finish()
+//            finish()
         })
 
         username.afterTextChanged {
@@ -128,10 +186,19 @@ class LoginActivity : AppCompatActivity() {
             // TODO: tyler: debug this section and send info to database.
             login.setOnClickListener {
                 loading.visibility = View.VISIBLE
-                val email = "genericemail@gmail.com"
+//                val email = "genericemail@gmail.com"
                 loginViewModel.login(username.text.toString(), password.text.toString())
-                mSocket.emit("save_signup_info",username.getText().toString(), email.toString(), password.getText().toString())
+//                mSocket.emit("save_signup_info",username.getText().toString(), email.toString(), password.getText().toString())
+                mSocket.emit("log_in", username.text.toString(), password.text.toString())
+
             }
+
+//            mSocket.on("success_login"){data ->
+//                runOnUiThread {
+//                    // Handle the success login event
+////                    updateUiWithUser(LoginResult(success = LoggedInUserView(data.toString(), "", "")))
+//                }
+//            }
         }
     }
 
@@ -148,6 +215,34 @@ class LoginActivity : AppCompatActivity() {
             if (isPasswordVisible) R.drawable.eye_closed_green001 else R.drawable.eye_closed
         )
     }
+
+    /*
+    private fun updateUiWithUser(loginResult: LoginResult) {
+        val welcome = getString(R.string.welcome)
+//        val displayName = model.displayName
+        when (loginResult) {
+            is LoginResult.success -> {
+                // Display a toast message indicating successful login
+                Toast.makeText(
+                    applicationContext,
+                    getString(R.string.welcome, loginResult.success?.displayName ?: ""),
+                    Toast.LENGTH_LONG
+                ).show()
+
+                // Navigate to the MainActivity upon successful login
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+                finish() // Finish the LoginActivity to prevent going back to it with the back button
+            }
+            is LoginResult.error -> {
+                // Display a toast message indicating login failure
+                Toast.makeText(applicationContext, R.string.login_failed, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+     */
+
 
     private fun updateUiWithUser(model: LoggedInUserView) {
         val welcome = getString(R.string.welcome)

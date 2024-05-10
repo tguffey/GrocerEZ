@@ -1,38 +1,171 @@
 package com.example.grocerez.ui.recipes
 
-import androidx.lifecycle.LiveData
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import java.util.UUID
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
+import com.example.grocerez.data.Ingredient
+import com.example.grocerez.data.RecipeRepository
+import com.example.grocerez.data.model.Category
+import com.example.grocerez.data.model.Item
+import com.example.grocerez.data.model.Recipe
+import com.example.grocerez.data.model.RecipeItem
+import com.example.grocerez.data.model.Unit
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 // ViewModel for managing recipe items
-class RecipesViewModel : ViewModel(){
+class RecipesViewModel(private val repository: RecipeRepository) : ViewModel() {
 
-    // LiveData for storing recipe items
-    var recipeItems = MutableLiveData<MutableList<RecipeItem>?>()
+    var recipes = MutableLiveData<List<Recipe>>()
+    var ingredients = MutableLiveData<List<RecipeItem>>()
+    private var temporaryIngredientList = mutableListOf<Ingredient>()
 
-    // Initialize the recipeItems LiveData with an empty mutable list
     init {
-        recipeItems.value = mutableListOf()
+        loadRecipes()
+        loadIngredients()
     }
 
-    // Function to add a new recipe item
-    fun addRecipeItem(newRecipe: RecipeItem){
-        val list = recipeItems.value
-        list!!.add(newRecipe)
-        recipeItems.postValue(list)
+    fun loadRecipes() = viewModelScope.launch(Dispatchers.IO) {
+        recipes = MutableLiveData(emptyList())
+        recipes = flowOf(repository.getAllRecipes()).asLiveData() as MutableLiveData<List<Recipe>>
     }
 
-    // Function to update an existing recipe item
-    // Function to update an existing recipe item
-    fun updateRecipeItem(recipeItem: RecipeItem) {
-        val list = recipeItems.value
-        val index = list!!.indexOfFirst { it.id == recipeItem.id }
-        if (index != -1) {
-            list[index] = recipeItem
-            recipeItems.postValue(list)
+    fun loadIngredients() = viewModelScope.launch(Dispatchers.IO){
+        ingredients = MutableLiveData(emptyList())
+        ingredients = flowOf(repository.getAllRecipeItems()).asLiveData() as MutableLiveData<List<RecipeItem>>
+    }
+
+    suspend fun findItemByName(name: String) : Item? {
+        return withContext(Dispatchers.IO) {
+            return@withContext repository.findItemByName(name)
         }
     }
 
+    suspend fun findCategoryByName(cat: String) : Category? {
+        return withContext(Dispatchers.IO) {
+            return@withContext repository.findCategoryByName(cat)
+        }
+    }
+
+    suspend fun findUnitByName(unit: String) : Unit? {
+        return withContext(Dispatchers.IO) {
+            return@withContext repository.findUnitByName(unit)
+        }
+    }
+
+    suspend fun getItemName(item: Item) : String {
+        return withContext(Dispatchers.IO) {
+            return@withContext item.getItemName()
+        }
+    }
+
+    suspend fun getIngredientsForRecipe(recipeId: Long) : List<Ingredient>{
+        return withContext(Dispatchers.IO){
+            return@withContext repository.getIngredientsForRecipe(recipeId)
+        }
+    }
+
+    private suspend fun updateRecipeData() = viewModelScope.launch(Dispatchers.IO) {
+        recipes.postValue(repository.getAllRecipes())
+    }
+
+    private fun updateRecipeItemData()  = viewModelScope.launch(Dispatchers.IO){
+        ingredients.postValue(repository.getAllRecipeItems())
+    }
+
+    suspend fun addRecipes(newRecipe: Recipe) = viewModelScope.launch(Dispatchers.IO) {
+        Log.v("VIEW MODEL", "in add shop item")
+        repository.insertRecipe(newRecipe)
+        updateRecipeData()
+        Log.v("VIEW MODEL", "added new item")
+    }
+
+    suspend fun addRecipeItems (newRecipeItem: RecipeItem) = viewModelScope.launch(Dispatchers.IO){
+        Log.v("VIEW MODEL", "in add shop item")
+        repository.insertRecipeItem(newRecipeItem)
+        updateRecipeItemData()
+        Log.v("VIEW MODEL", "added new item")
+    }
+
+    suspend fun addCategory(newCategory: Category) = viewModelScope.launch(Dispatchers.IO) {
+        repository.insertCategory(newCategory)
+    }
+
+    suspend fun addItem(newItem: Item) = viewModelScope.launch(Dispatchers.IO) {
+        repository.insertItem(newItem)
+    }
+
+    fun addUnit(newUnit: com.example.grocerez.data.model.Unit) = viewModelScope.launch(Dispatchers.IO) {
+        repository.insertUnit(newUnit)
+    }
+
+    fun addToTemporaryList (ingredient: Ingredient){
+        temporaryIngredientList.add(ingredient)
+    }
+
+    fun clearTemporaryList(){
+        temporaryIngredientList.clear()
+    }
+
+    suspend fun findRecipeByName(recipe: String): Recipe?{
+        return withContext(Dispatchers.IO){
+            return@withContext repository.findRecipeByName(recipe)
+        }
+    }
+
+    fun returnTemporaryList() : MutableList<Ingredient> {
+        return temporaryIngredientList
+    }
+
+    suspend fun insertCategory(newCategory: Category) = viewModelScope.launch(Dispatchers.IO) {
+        repository.insertCategory(newCategory)
+    }
+
+    suspend fun insertUnit(newUnit: Unit) = viewModelScope.launch(Dispatchers.IO) {
+        repository.insertUnit(newUnit)
+    }
+
+    suspend fun insertItem(newItem: Item) = viewModelScope.launch(Dispatchers.IO) {
+        repository.insertItem(newItem)
+    }
+
+    suspend fun deleteRecipe(recipe: Recipe) = viewModelScope.launch (Dispatchers.IO){
+        repository.deleteRecipe(recipe)
+    }
+
+    suspend fun deleteIngredients(recipeItem: RecipeItem) = viewModelScope.launch (Dispatchers.IO) {
+        repository.deleteRecipe(recipeItem)
+    }
+
+//    fun toggleCheck(recipeItem: RecipeItem) = viewModelScope.launch(Dispatchers.IO) {
+//        RecipeItem.checkbox = !recipeItem.checkbox
+//        repository.updateRecipeItem(recipeItem)
+//    }
+
+//    fun removeCheckedItems() = viewModelScope.launch(Dispatchers.IO) {
+//
+//        recipeItems.value?.forEach {
+////                if (it.isChecked()) {
+//            repository.removeRecipeItem(it)
+////                }
+//        }
+//    }
+
+    class RecipeModelFactory(private val repository: RecipeRepository) : ViewModelProvider.Factory
+    {
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel> create(modelClass: Class<T>): T
+        {
+            if (modelClass.isAssignableFrom(RecipesViewModel::class.java))
+                return RecipesViewModel(repository) as T
+
+            throw IllegalArgumentException("Unknown ViewModel class")
+        }
+    }
 
 }

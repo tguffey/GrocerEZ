@@ -2,6 +2,7 @@ package com.example.grocerez.ui.shopping
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,20 +12,29 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.example.grocerez.R
-
+import com.example.grocerez.data.model.Category
+import com.example.grocerez.data.model.Item
+import com.example.grocerez.data.model.ShoppingListItem
 import com.example.grocerez.databinding.FragmentNewShoppingItemBinding
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.example.grocerez.ui.ItemAmount
 import com.example.grocerez.ui.Unit
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class NewGrocerySheet(
-    var groceryItem: GroceryItem?,
-    var categoryItem: CategoryItem?
+    // will need these to implement editing items
+    var groceryItem: Item?,
+    var categoryItem: Category?
 ) : BottomSheetDialogFragment() {
 
     private lateinit var binding: FragmentNewShoppingItemBinding
     private lateinit var itemViewModel: ShoppingViewModel
     private lateinit var selectedUnit: String
+//    private val TAG = "NEW ITEM SHEET" // for the debug log
 
     // Create the UI for the sheet
     override fun onCreateView(
@@ -47,6 +57,7 @@ class NewGrocerySheet(
 
         setSpinner()
 
+        // add the entered item to the list
         binding.saveButton.setOnClickListener{
             saveAction()
         }
@@ -104,7 +115,7 @@ class NewGrocerySheet(
                 selectedUnit = parent?.getItemAtPosition(position) as String
 
                 if (position == 0) {
-                    selectedUnit = ""
+                    selectedUnit = "unit"
                 }
 
                 // Only the units choices can be selected and not the Units label
@@ -123,7 +134,7 @@ class NewGrocerySheet(
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                selectedUnit = ""
+                selectedUnit = "unit"
             }
         }
     }
@@ -132,31 +143,94 @@ class NewGrocerySheet(
     private fun saveAction() {
         val name = binding.name.text.toString()
         val category = binding.category.text.toString()
-        val quantity =
-            Unit.getBySymbol(selectedUnit)?.let {
-                ItemAmount(binding.quantity.text.toString().toFloat(),
-                    it
-                )
-            }
-        val note = binding.Note.text.toString()
-        if (name.isNotEmpty())
-        {
-            val newGrocery = quantity?.let { GroceryItem(name, it, note, false) }
-
-            if (newGrocery != null) {
-                itemViewModel.addGroceryItem(newGrocery)
-            }
+        // not using this variable right now
+//        val quantity =
+//            Unit.getBySymbol(selectedUnit)?.let {
+//                ItemAmount(
+//                    binding.quantity.text.toString().toFloat(),
+//                    it
+//                )
+//            }
+        var quantityVal = 0.0F
+        if (binding.quantity.text.toString() != "") {
+            quantityVal = binding.quantity.text.toString().toFloat()
         }
-        // Check if category name is provided
-        if ((category.isNotEmpty()) && (name.isNotEmpty())) {
-            val newGrocery = quantity?.let { GroceryItem(name, it, note, false) }
-            var groceries = mutableListOf<GroceryItem>()
-            if (newGrocery != null) {
-                groceries = mutableListOf(newGrocery)
+        val note = binding.Note.text.toString()
+
+        // THONG: i realized i was very stupid with my previous code, here is a cleaner and more effiicent code probably.
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                // Check if the category exists, and add it if it doesn't
+                val existingCategory = itemViewModel.findCategoryByName(category)
+                if (existingCategory == null) {
+                    val newCategory = Category(category)
+                    itemViewModel.addCategory(newCategory)
+                }
+
+                // Check if the unit exists, and add it if it doesn't
+                val existingUnit = itemViewModel.findUnitByName(selectedUnit)
+                if (existingUnit == null) {
+                    val newUnit = com.example.grocerez.data.model.Unit(selectedUnit)
+                    itemViewModel.addUnit(newUnit)
+                }
+
+                val existingItem = itemViewModel.findItemByName(name)
+
+                // see if item exists in the database already or not.
+                if (existingItem == null) {
+                    // Item doesn't exist, create a new one and insert it into the Item table
+                    val newItem = Item(
+                        name = name, category = category,
+                        unitName = selectedUnit, useRate = 0.0f
+                    )
+                    itemViewModel.addItem(newItem)
+
+                    // Wait for the item addition operation to complete
+                    val displayItem = itemViewModel.findItemByName(name)
+
+                    var shopListName = displayItem?.name ?: name
+//                    if (displayItem != null) {
+//                        shopListName = itemViewModel.getItemName(displayItem)
+////                        Log.v("NEW SHEET", "item dne, ${displayItem.getItemName()}, $name")
+//                    }
+//                    Log.v("NEW SHEET", "item dne, $displayItem, $name")
+                    //now insert shoppingListItem
+                    val newShoppingListItem = ShoppingListItem(
+                        itemName = shopListName,
+                        checkbox = false, notes = note, quantity = quantityVal
+                    )
+                    itemViewModel.addShoppingListItem(newShoppingListItem)
+
+                } else {
+                    // now insert shoppingListItem if item exists
+//                    var shopListName = ""
+                    val displayItem = itemViewModel.findItemByName(name)
+                    var shopListName = displayItem?.name ?: name
+//                    if (displayItem != null) {
+//                        shopListName = itemViewModel.getItemName(displayItem)
+////                        Log.v("NEW SHEET", "item exists, ${displayItem.getItemName()}, $name")
+//                    }
+//                    Log.v("NEW SHEET", "item exists, $displayItem, $name")
+                    val newShoppingListItem = ShoppingListItem(
+                        itemName = shopListName,
+                        checkbox = false, notes = note, quantity = quantityVal
+                    )
+                    itemViewModel.addShoppingListItem(newShoppingListItem)
+                }
+
+            } catch (e: Exception) {
+                // Handle the exception here
+                        Log.e("Error", "An error occurred: ${e.message}")
+                // You can also show an error message to the user if needed
+                // For example:
+                withContext(Dispatchers.Main) {
+                    // Show a toast or a snackbar with the error message
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "An error occurred: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
-            val newCategory = CategoryItem(category, groceries)
-            // Save category item
-            itemViewModel.addCategoryItem(newCategory)
+
         }
 
         // Clear input fields and dismiss the sheet

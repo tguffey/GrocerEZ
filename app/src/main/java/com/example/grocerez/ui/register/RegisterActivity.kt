@@ -24,17 +24,33 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     // Function to navigate to the second fragment
-    fun navigateToStep2() {
+    // Thong: we need to pass email and password into step 2,
+    // because i do need it all in one place to send at once to backend.
+    fun navigateToStep2(email: String, password: String) {
         val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.fragmentContainer, RegisterStep2Fragment())
+
+        // Thong: adding field passing of email and password to step 2 frag
+        val fragment = RegisterStep2Fragment().apply {
+            arguments = Bundle().apply {
+                putString("email", email)
+                putString("password", password)
+            }
+        }
+
+        // THONG: replace RegisterStep2Fragment() with fragment, with appliance of new arguments
+        fragmentTransaction.replace(R.id.fragmentContainer, fragment)
+        // we will retrieve this in step2 fragemnt
+
         fragmentTransaction.addToBackStack(null) // Optional: Add to back stack
         fragmentTransaction.commit()
     }
 
     // Function to finish registration and navigate to MainActivity
     // Function to finish registration and navigate to MainActivity
+    // Thong: gonna add email and password to this.
     fun finishRegistration(username: String) {
         // Store the username in SharedPreferences
+
         val sharedPreferences = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putString("username", username)

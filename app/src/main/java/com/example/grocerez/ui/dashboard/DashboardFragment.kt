@@ -13,8 +13,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.grocerez.R
+import com.example.grocerez.data.PantryRepository
+import com.example.grocerez.database.AppDatabase
 import com.example.grocerez.databinding.FragmentDashboardBinding
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanIntentResult
@@ -49,7 +52,7 @@ class DashboardFragment : Fragment(), FoodItemClickListener {
     private var _binding: FragmentDashboardBinding? = null
 
     private val binding get() = _binding!!
-    private lateinit var itemViewModel: DashboardViewModel
+    private lateinit var dashboardViewModel: DashboardViewModel
     private var isExpanded = false
 
     // Animation variables
@@ -63,15 +66,29 @@ class DashboardFragment : Fragment(), FoodItemClickListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Call the superclass onCreateView method
-        super.onCreateView(inflater, container, savedInstanceState)
+        val appDatabase = AppDatabase.getInstance(requireContext())
+        dashboardViewModel = ViewModelProvider(this.requireActivity(),
+            DashboardViewModel.PantryModelFactory(
+                PantryRepository(
+                    categoryDao = appDatabase.categoryDao(),
+                    itemDao = appDatabase.itemDao(),
+                    pantryItemDao = appDatabase.pantryItemDao(),
+                    unitDao = appDatabase.unitDao()
+                )
+            )).get(DashboardViewModel::class.java)
 
-        // Initialize the ViewModel
-        itemViewModel = ViewModelProvider(this.requireActivity())[DashboardViewModel::class.java]
-
-        // Inflate the layout using view binding
+        dashboardViewModel.loadPantryList()
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
         val root: View = binding.root
+
+        // Return the root view
+        return root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setRecyclerView()
 
         val context = requireContext()
         fabOpen = AnimationUtils.loadAnimation(context, R.anim.from_bottom_fab)
@@ -93,17 +110,15 @@ class DashboardFragment : Fragment(), FoodItemClickListener {
         // Set OnClickListener for the newItemButton
         binding.addItemFab.setOnClickListener {
             // Show the NewTaskSheet dialog
-            NewTaskSheet(null).show(parentFragmentManager, "newItemTag")
+            if (findNavController().currentDestination?.id == R.id.navigation_dashboard) {
+                findNavController().navigate(R.id.action_dashboard_to_newPantryItem)
+            }
             shrinkFab()
         }
 
         binding.scanBarcode.setOnClickListener {
             checkPermissionCamera(requireContext())
         }
-        setRecyclerView()
-
-        // Return the root view
-        return root
     }
 
     private fun checkPermissionCamera(context: Context) {
@@ -164,33 +179,29 @@ class DashboardFragment : Fragment(), FoodItemClickListener {
     }
 
     private fun setRecyclerView() {
-        // Initialize the adapter
-        val foodItemAdapter = FoodItemAdapter(mutableListOf(), this)
+        val thisClickListener = this
 
-        // Set the layout manager and adapter for the RecyclerView
-        binding.foodListRecyclerView.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = foodItemAdapter
+        dashboardViewModel.categoryPantryItems.observe(viewLifecycleOwner){
+            // Set the layout manager and adapter for the RecyclerView
+            binding.foodListRecyclerView.apply {
+                layoutManager = LinearLayoutManager(requireContext())
+                if (it != null){
+                    adapter = CategoryPantryItemAdapter(it, thisClickListener)
+                }
+            }
         }
 
-        // Observe changes in the list of food items in the ViewModel
-        itemViewModel.foodItems.observe(viewLifecycleOwner) { newFoodItems ->
-            // Convert the MutableList to List before passing it to the adapter
-            val foodItemsList: List<FoodItem> = newFoodItems.orEmpty()
-            // Update the adapter with the new list of food items
-            foodItemAdapter.updateFoodItems(foodItemsList)
-
-            // Notify the RecyclerView about the change in the dataset
-            foodItemAdapter.notifyDataSetChanged()
-        }
     }
 
 
 
     // Method called when a food item is edited
-    override fun editFoodItem(foodItem: FoodItem) {
-        // Show the NewTaskSheet dialog for editing the food item
-        NewTaskSheet(foodItem).show(parentFragmentManager, "newFoodTag")
+    override fun editFoodItem(pantryItemName: String) {
+        // Show the NewPantryItem dialog for editing the pantry item
+        val bundle = Bundle().apply {
+            putString("pantryItemName", pantryItemName)
+        }
+        findNavController().navigate(R.id.action_dashboard_to_newPantryItem, bundle)
     }
 
 }

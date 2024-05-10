@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <variable
+            name="goal"
+            type="com.example.grocerez.ui.myplate.MyPlateViewModel.Goal" />
+    </data>
+
+    <androidx.cardview.widget.CardView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/foodCellContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="10dp"
+        android:layout_margin="10dp">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/round_back_white10_20">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/goal"
+                android:text="Plan"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:gravity="center"
+                android:layout_margin="5dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/goal_description"
+                android:text="@{goal.goalDescription}"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:gravity="center"
+                android:layout_margin="5dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/calories_goal"
+                android:text="@{String.valueOf(goal.calories)}"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:gravity="center"
+                android:layout_margin="8dp"
+                android:textSize="27sp"/>
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</layout>

@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.recipes.RecipesFragment">
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
     <View
         android:id="@+id/transparentBg"
@@ -27,77 +31,182 @@
         android:text="Recipes"
         android:textSize="30sp"
         android:layout_marginTop="20dp"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="10dp"
         style="@style/TextAppearance.AppCompat.Title"
         />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:orientation="horizontal"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:layout_below="@+id/Title"
         android:gravity="center"
         android:id="@+id/buttonLayout"
         >
 
-        <!--Edit Item option 1: Clear List button-->
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/parseRecipeButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="15dp"
-            android:contentDescription="Parse Recipe"
-            android:text="Parse Recipe"
-            android:textColor="?colorOnPrimary"
-            app:backgroundTint="?attr/colorPrimary"
-            app:icon="@drawable/baseline_search_24"
-            app:iconTint="@color/white"
-            />
+        <androidx.cardview.widget.CardView
+            android:layout_width="390dp"
+            android:layout_height="180dp"
+            app:cardCornerRadius="40dp"
+            android:id="@+id/my_recipes_btn"
+            android:layout_margin="10dp"
+            >
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/how_to_cut_fruit_veg_feature_photo"
+                android:scaleType="centerCrop"
+                android:alpha="0.2"/>
 
-        <Space
-            android:layout_width="20dp"
-            android:layout_height="match_parent"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                >
 
-        <!--Edit Item option 2: Add Item button-->
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/add_item_fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="15sp"
-            android:contentDescription="@string/button_add_item"
-            android:text="Add Recipe"
-            android:textColor="?colorOnPrimary"
-            app:backgroundTint="?attr/colorPrimary"
-            app:icon="@drawable/ic_add_24"
-            app:iconTint="@color/white"
-            android:layout_marginEnd="20dp"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="My Recipes"
+                    android:textSize="30sp"
+                    android:textColor="#000000"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="10dp"
+                    />
 
-            />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Explore your collection of delicious homemade recipes"
+                    android:textSize="20sp"
+                    android:textColor="#000000"
+                    android:layout_marginStart="10dp"
+                    />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="390dp"
+            android:layout_height="180dp"
+            app:cardCornerRadius="40dp"
+            android:id="@+id/parse_recipe_btn"
+            android:layout_margin="10dp"
+            >
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/reading_a_recipe"
+                android:scaleType="centerCrop"
+                android:alpha="0.2"
+                android:scaleX="-1"
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Parse Recipes"
+                    android:textSize="30sp"
+                    android:textColor="#000000"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="10dp"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Effortlessly organize and understand recipes"
+                    android:textSize="20sp"
+                    android:textColor="#000000"
+                    android:layout_marginStart="10dp"
+                    />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="390dp"
+            android:layout_height="180dp"
+            app:cardCornerRadius="40dp"
+            android:id="@+id/search_recipe_btn"
+            android:layout_margin="10dp"
+            >
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/food_stock_photo"
+                android:scaleType="centerCrop"
+                android:alpha="0.2"
+
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Search Recipe"
+                    android:textSize="30sp"
+                    android:textColor="#000000"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="10dp"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Discover a world of culinary possibilities"
+                    android:textSize="20sp"
+                    android:textColor="#000000"
+                    android:layout_marginStart="10dp"
+                    />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
     </LinearLayout>
 
-    <androidx.cardview.widget.CardView
+
+    <LinearLayout
+        android:id="@+id/recyclerLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        app:cardElevation="4dp"
-        app:cardCornerRadius="8dp"
-        android:layout_below="@+id/buttonLayout"> <!-- Adjust corner radius if needed -->
+        android:layout_below="@+id/buttonLayout"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        >
 
-    <android.widget.SearchView
-        android:id="@+id/recipeSearchBar"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:queryHint="Search Recipe..."
-        android:iconifiedByDefault="false"/>
+        <TextView
+            android:id="@+id/historyTitle"
+            style="@style/TextAppearance.AppCompat.Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="20dp"
+            android:text="History"
+            android:textSize="30sp" />
 
-</androidx.cardview.widget.CardView>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recipeListRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:backgroundTint="@color/design_default_color_background" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="210dp"
-        android:id="@+id/recipeListRecyclerView"
-        android:backgroundTint="@color/design_default_color_background"
-        />
-
+    </LinearLayout>
 </RelativeLayout>
+</ScrollView>

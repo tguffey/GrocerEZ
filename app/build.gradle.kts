@@ -1,6 +1,8 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    kotlin("kapt") // Apply the Kotlin Annotation Processing plugin
+
 }
 
 android {
@@ -51,7 +53,22 @@ android {
 
 dependencies {
 
-    implementation ("io.socket:socket.io-client:2.1.0")
+
+    // socket connection dependency
+    implementation ("io.socket:socket.io-client:2.0.0")
+    implementation("androidx.activity:activity:1.8.0")
+
+    // add room dependencies
+    val room_version = ("2.6.1")
+    implementation ("androidx.room:room-runtime:$room_version")
+    annotationProcessor ("androidx.room:room-compiler:$room_version")
+    // To use Kotlin annotation processing tool (kapt)
+    kapt ("androidx.room:room-compiler:$room_version")
+    implementation ("androidx.room:room-ktx:$room_version")
+
+
+
+
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
@@ -73,4 +90,5 @@ dependencies {
     //adding implementation for pieChart - Jocelyn
     implementation("com.github.AnyChart:AnyChart-Android:1.1.5")
     implementation("androidx.multidex:multidex:2.0.1")
+
 }
