@@ -14,8 +14,6 @@ import com.example.grocerez.data.RecipeRepository
 import com.example.grocerez.data.model.Recipe
 import com.example.grocerez.database.AppDatabase
 import com.example.grocerez.databinding.FragmentMyRecipesBinding
-import com.example.grocerez.databinding.FragmentShoppingBinding
-import com.example.grocerez.ui.shopping.ShoppingViewModel
 
 class MyRecipesFragment : Fragment(), RecipeItemClickListener{
 
@@ -60,12 +58,25 @@ class MyRecipesFragment : Fragment(), RecipeItemClickListener{
         // Set up RecyclerView
         setRecyclerView()
 
+        // Observe changes in recipes LiveData
         recipesViewModel.recipes.observe(viewLifecycleOwner) { recipes ->
             if (recipes != null) {
-                originalRecipeList = recipesViewModel.recipes.value
+                // Update RecyclerView with the list of recipes
+                val adapter = binding.recipeListRecyclerView.adapter as RecipeItemAdapter
+                adapter.updateRecipeItems(recipes)
+                adapter.setOnItemClickListener { recipe ->
+                    // Handle click action here
+                    // For example, navigate to the recipe details fragment
+                    val bundle = Bundle().apply {
+                        putString("recipeItem", recipe.name)
+                    }
+                    findNavController().navigate(R.id.action_myRecipes_to_recipeView, bundle)
+                }
             }
         }
 
+
+        // Set up search view
         val searchView = binding.recipeSearchBar
         searchView.clearFocus()
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener,
@@ -96,6 +107,7 @@ class MyRecipesFragment : Fragment(), RecipeItemClickListener{
             findNavController().popBackStack()
         }
     }
+
 
     private fun filterList(query: String, recipeItems: List<Recipe>) {
         val filteredList = if (query.isNotEmpty()) {
@@ -131,9 +143,9 @@ class MyRecipesFragment : Fragment(), RecipeItemClickListener{
 //        }
     }
 
-    override fun editRecipeItem(recipeItem: RecipeItem) {
+    override fun editRecipeItem(recipeItem: String) {
         val bundle = Bundle().apply {
-            putParcelable("recipeItem", recipeItem)
+            putString("recipeItem", recipeItem)
         }
         findNavController().navigate(R.id.action_myRecipes_to_recipeView, bundle)
     }

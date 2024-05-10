@@ -33,10 +33,10 @@ import androidx.room.Index
 )
 data class Item(
     @PrimaryKey(autoGenerate = true) val item_id: Long = 0,
-    val name: String,
+    var name: String,
     val useRate: Float,
-    @ColumnInfo(name = "category_name") val category: String,
-    @ColumnInfo(name = "unit_name") val unitName: String
+    @ColumnInfo(name = "category_name") var category: String,
+    @ColumnInfo(name = "unit_name") var unitName: String
 )
 {
     fun getItemName() = name

@@ -3,7 +3,6 @@ package com.example.grocerez.ui.dashboard
 import android.app.DatePickerDialog
 import android.content.Context
 import android.os.Bundle
-import android.text.Editable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -23,8 +22,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
-import java.time.Instant
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
@@ -41,6 +38,8 @@ class NewTaskSheet() : Fragment() {
 
     private lateinit var pantryItemViewModel: DashboardViewModel
     private lateinit var selectedUnit: String
+    private lateinit var itemPrevious: Item
+    private lateinit var pantryItemPrevious: PantryItem
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -60,8 +59,31 @@ class NewTaskSheet() : Fragment() {
         val activity = requireActivity()
         itemViewModel = ViewModelProvider(activity)[DashboardViewModel::class.java]
 
+        // Retrieving the pantryItemId from fragment arguments in onViewCreated
         val args = arguments
-        val foodItem = args?.getParcelable<FoodItem>("pantry item")
+        val pantryItemName = args?.getString("pantryItemName", "none") // Default value 'none' if not found
+        CoroutineScope(Dispatchers.IO).launch{
+            if (pantryItemName != null){
+                val pantryItem = itemViewModel.findPantryItemByName(pantryItemName)
+                val item = itemViewModel.findItemByName(pantryItemName)
+                if(pantryItem != null && item != null)
+                {
+                    itemPrevious = item
+                    pantryItemPrevious = pantryItem
+                    binding.foodTitle.text = "Edit Item"
+                    withContext(Dispatchers.Main) {
+                        binding.name.setText(pantryItem.itemName)
+                        binding.startingDate.text = pantryItem.inputDate.format(dateFormatter)
+                        binding.quantity.setText(pantryItem.amountFromInputDate.toString())
+                        binding.category.setText(item.category)
+                        binding.expirationLength.setText(pantryItem.shelfLifeFromInputDate.toString())
+                    }
+                }
+            }
+            else {
+                binding.foodTitle.text = "New Item"
+            }
+        }
 
         // Initialize database and DAO objects
 //        appDatabase = AppDatabase.getInstance(context)
@@ -70,19 +92,6 @@ class NewTaskSheet() : Fragment() {
 //        categoryDao = appDatabase.categoryDao()
 //        unitDao = appDatabase.unitDao()
 //        itemDao = appDatabase.itemDao()
-
-
-        if(foodItem != null)
-        {
-
-            binding.foodTitle.text = "Edit Item"
-            val editable = Editable.Factory.getInstance()
-            binding.name.text = editable.newEditable(foodItem!!.name)
-            binding.startingDate.text = "Date: ${foodItem!!.startingDate?.format(dateFormatter)}"
-            binding.expirationDate.text = "Date: ${foodItem!!.expirationDate?.format(dateFormatter)}"
-        } else {
-            binding.foodTitle.text = "New Item"
-        }
 
 
         // Set OnClickListener for cancleButton
@@ -158,24 +167,6 @@ class NewTaskSheet() : Fragment() {
         datePickerDialog.show()
     }
 
-    private fun showExpDatePicker() {
-        val datePickerDialog = DatePickerDialog(
-            requireContext(), { datePicker, year: Int, monthOfYear: Int, dayOfMonth: Int ->
-                val selectedDate = Calendar.getInstance()
-                selectedDate.set(year, monthOfYear, dayOfMonth)
-                val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                val formattedDate = dateFormat.format(selectedDate.time)
-                binding.expirationDate.text = "Date: $formattedDate"
-            },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
-        )
-//        val colorInt: Int = Color.parseColor("#99D982")
-//        datePickerDialog.datePicker.setBackgroundColor(colorInt)
-        datePickerDialog.show()
-    }
-
     private fun clearFields() {
         binding.name.setText("")
     }
@@ -189,6 +180,8 @@ class NewTaskSheet() : Fragment() {
         val expirationLengthText = binding.expirationLength.text.toString().toIntOrNull()?:0
         val quantity = binding.quantity.text.toString().toFloatOrNull()?:0.0f
         selectedUnit = "count"
+
+
 
         // Check if the name is empty
         if (name.isEmpty()) {
@@ -222,21 +215,17 @@ class NewTaskSheet() : Fragment() {
                 }
 
                 val existingItem = itemViewModel.findItemByName(name)
-
+                val newItem = Item(
+                    name = name, category = category,
+                    unitName = selectedUnit, useRate = 0.0f
+                )
 
                 // see if item exists in the database already or not.
-                if (existingItem == null) {
-                    // Item doesn't exist, create a new one and insert it into the Item table
-                    val newItem = Item(
-                        name = name, category = category,
-                        unitName = selectedUnit, useRate = 0.0f
-                    )
+                if (existingItem == null || newItem != itemPrevious) {
                     itemViewModel.addItem(newItem)
                 }
-                    // Wait for the item addition operation to complete
-                    val displayItem = itemViewModel.findItemByName(name)
 
-                    var pantryName = displayItem?.name ?: name
+
 //                    if (displayItem != null) {
 //                        shopListName = itemViewModel.getItemName(displayItem)
 ////                        Log.v("NEW SHEET", "item dne, ${displayItem.getItemName()}, $name")
@@ -244,18 +233,32 @@ class NewTaskSheet() : Fragment() {
 //                    Log.v("NEW SHEET", "item dne, $displayItem, $name")
                     //now insert shoppingListItem
 
-                    val newPantryItem = PantryItem(
-                        itemName = pantryName,
-                        amountFromInputDate = quantity,
-                        inputDate = startingDateText,
-                        shelfLifeFromInputDate = expirationLengthText
-                    )
+                // Check if the pantry item already exists
+                val existingPantryItem = itemViewModel.findPantryItemByName(name)
+                val newPantryItem = PantryItem(
+                    itemName = name,
+                    amountFromInputDate = quantity,
+                    inputDate = startingDateText,
+                    shelfLifeFromInputDate = expirationLengthText
+                )
 
-
-
+                if (existingPantryItem == null || pantryItemPrevious != newPantryItem) {
                     itemViewModel.addFoodItem(newPantryItem)
+                }
 
+                if (binding.foodTitle.text == "Edit Item" && (newPantryItem != pantryItemPrevious && newItem == itemPrevious)){
+                    itemViewModel.deletePantryItem(pantryItemPrevious)
+                }
+                else if (binding.foodTitle.text == "Edit Item" && (newPantryItem == pantryItemPrevious && newItem != itemPrevious)) {
+                    itemViewModel.deleteItem(itemPrevious)
+                }
+                else if (binding.foodTitle.text == "Edit Item"){
+                    itemViewModel.deleteItem(itemPrevious)
+                    itemViewModel.deletePantryItem(pantryItemPrevious)
+                }
+                else if (binding.foodTitle.text == "Edit Item" && itemPrevious == newItem && pantryItemPrevious == newPantryItem) {
 
+                }
 
             } catch (e: Exception) {
                 // Handle the exception here
@@ -275,22 +278,9 @@ class NewTaskSheet() : Fragment() {
             }
         }
 
-        val startingLocalDate = if (startingDate != null) {
-            Instant.ofEpochMilli(startingDate.time)
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate()
-        } else {
-            null
-        }
-
         binding.name.setText("")
         binding.expirationDate.text = "Date: "
         binding.startingDate.text = "Date: "
         findNavController().popBackStack()
     }
 }
-
-
-
-
-

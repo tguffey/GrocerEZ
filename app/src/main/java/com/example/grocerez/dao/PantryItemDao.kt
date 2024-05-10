@@ -33,4 +33,7 @@ interface PantryItemDao {
     @Query("SELECT * FROM pantry_item WHERE item_name = :itemName")
     suspend fun findPantryItemByName(itemName: String): PantryItem?
 
+    @Query("SELECT * FROM pantry_item WHERE pantry_item_id = :id")
+    suspend fun findPantryItemById(id: String): PantryItem?
+
 }

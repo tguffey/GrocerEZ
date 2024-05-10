@@ -1,6 +1,5 @@
 package com.example.grocerez.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -21,7 +20,7 @@ interface RecipeItemDao {
     suspend fun updateRecipeItem(recipeItem: RecipeItem)
 
     @Query("SELECT * FROM recipe_items")
-    fun getAllRecipeItems(): LiveData<List<RecipeItem>>
+    fun getAllRecipeItems(): List<RecipeItem>
 
     @Query("SELECT i.name, ri.amount, i.category_name AS category, i.unit_name AS unit " +
             "FROM recipe_items ri " +

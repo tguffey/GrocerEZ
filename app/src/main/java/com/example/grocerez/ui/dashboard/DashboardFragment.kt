@@ -196,10 +196,10 @@ class DashboardFragment : Fragment(), FoodItemClickListener {
 
 
     // Method called when a food item is edited
-    override fun editFoodItem(foodItem: FoodItem) {
-        // Show the NewTaskSheet dialog for editing the food item
+    override fun editFoodItem(pantryItemName: String) {
+        // Show the NewPantryItem dialog for editing the pantry item
         val bundle = Bundle().apply {
-            putParcelable("pantry item", foodItem)
+            putString("pantryItemName", pantryItemName)
         }
         findNavController().navigate(R.id.action_dashboard_to_newPantryItem, bundle)
     }

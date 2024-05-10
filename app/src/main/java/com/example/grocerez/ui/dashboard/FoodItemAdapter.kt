@@ -14,6 +14,12 @@ class FoodItemAdapter(
     private val clickListener: FoodItemClickListener // Click listener for handling item clicks
 ) : RecyclerView.Adapter<FoodItemAdapter.PantryItemViewHolder>() {
 
+    private var onItemClickListener: ((PantryItem) -> Unit)? = null
+
+    fun setOnItemClickListener(listener: (PantryItem) -> Unit) {
+        onItemClickListener = listener
+    }
+
     inner class PantryItemViewHolder(
         private val context: Context,
         private val binding: FoodItemCellBinding,
@@ -23,6 +29,10 @@ class FoodItemAdapter(
         fun bindPantryItem(pantryItem: PantryItem) {
             binding.name.text = pantryItem.itemName
             binding.itemProgressBar.progress = pantryItem.shelfLifeFromInputDate
+
+            binding.root.setOnClickListener {
+                onItemClickListener?.invoke(pantryItem)
+            }
         }
     }
 

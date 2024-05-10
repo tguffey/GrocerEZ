@@ -14,6 +14,12 @@ class RecipeItemAdapter (
     private val clickListener: RecipeItemClickListener // Click listener interface for editing recipe items
 ): RecyclerView.Adapter<RecipeItemAdapter.RecipeViewHolder>() {
 
+    private var onItemClickListener: ((Recipe) -> Unit)? = null
+
+    fun setOnItemClickListener(listener: (Recipe) -> Unit) {
+        onItemClickListener = listener
+    }
+
     inner class RecipeViewHolder(
         private val context: Context,
         private val binding: RecipeItemCellBinding,
@@ -23,6 +29,10 @@ class RecipeItemAdapter (
             val recipeAdapter = RecipeItemAdapter(recipes, clickListener)
             binding.recipeName.text = recipe.name
             recipeAdapter.notifyDataSetChanged()
+
+            binding.root.setOnClickListener{
+                onItemClickListener?.invoke(recipe)
+            }
         }
     }
 

@@ -1,7 +1,9 @@
+
 import android.app.Dialog
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,21 +13,26 @@ import android.widget.ArrayAdapter
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.ViewModelProvider
 import com.example.grocerez.R
+import com.example.grocerez.data.Ingredient
+import com.example.grocerez.data.model.Category
+import com.example.grocerez.data.model.Item
+import com.example.grocerez.data.model.Unit
 import com.example.grocerez.databinding.DialogAddIngredientsBinding
 import com.example.grocerez.ui.ItemAmount
-import com.example.grocerez.ui.recipes.IngredientItem
-import com.example.grocerez.ui.recipes.IngredientItemViewHolder
 import com.example.grocerez.ui.recipes.RecipeIngredientAdapter
+import com.example.grocerez.ui.recipes.RecipesViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class IngredientInputDialog(var ingredientItem: IngredientItem?) : DialogFragment() {
+class IngredientInputDialog(var ingredientItem: Ingredient?) : DialogFragment() {
 
     private var _binding: DialogAddIngredientsBinding? = null
     private val binding get() = _binding!!
-    private lateinit var ingredientItemViewHolder: IngredientItemViewHolder
+    private lateinit var ingredientViewModel: RecipesViewModel
     lateinit var ingredientItemAdapter: RecipeIngredientAdapter
     private lateinit var selectedUnit: String
 
@@ -34,12 +41,15 @@ class IngredientInputDialog(var ingredientItem: IngredientItem?) : DialogFragmen
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         _binding = DialogAddIngredientsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        ingredientViewModel  = ViewModelProvider(this.requireActivity())[RecipesViewModel::class.java]
 
         setSpinner()
 
@@ -48,7 +58,7 @@ class IngredientInputDialog(var ingredientItem: IngredientItem?) : DialogFragmen
             val editable = Editable.Factory.getInstance()
             binding.name.text = editable.newEditable(ingredientItem!!.name)
             binding.category.text = editable.newEditable(ingredientItem!!.category)
-            binding.quantity.text = editable.newEditable(ingredientItem!!.quantity.toString())
+            binding.quantity.text = editable.newEditable(ingredientItem!!.amount.toString())
         }
 
         binding.saveButton.setOnClickListener {
@@ -135,12 +145,12 @@ class IngredientInputDialog(var ingredientItem: IngredientItem?) : DialogFragmen
         // ingredientAmount
         val category = binding.category.text.toString().trim()
 
-        val quantity = binding.quantity.text.toString().trim()
+        val quantity = binding.quantity.text.toString().toFloat()
 
         // NULL CHECKS
         // Check if name or quantity is empty
-        if (name.isEmpty() || quantity.isEmpty()) {
-            Toast.makeText(requireContext(), "Name and quantity cannot be empty", Toast.LENGTH_SHORT).show()
+        if (name.isEmpty()) {
+            Toast.makeText(requireContext(), "Name cannot be empty", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -151,20 +161,90 @@ class IngredientInputDialog(var ingredientItem: IngredientItem?) : DialogFragmen
         // if code made it past this point, that means name quantiy and units are filled.
         // now, we're gonna see if this item already exists in the table. if not add
         // if not exist yet, in order to add, fill the category with "uncategorized" for now.
+        addToItemTable(name, category, selectedUnit)
+        val ingredient =
+            Ingredient(name, quantity, category, selectedUnit)
 
-        // TODO: find out how alexis used view model to adapt to adding to room database
-        // this part performs database functions
-        CoroutineScope(Dispatchers.IO).launch {
-
-        }
-        // TODO: figure out what this does.
-
-        val ingredient = IngredientItem(name, quantity.toDouble(), selectedUnit, category)
+        (targetFragment as? IngredientDialogListener)?.onIngredientAdded(ingredient)
+        ingredientViewModel.addToTemporaryList(ingredient)
         ingredientItemAdapter.addIngredients(ingredient)
+
+//        CoroutineScope(Dispatchers.IO).launch{
+//            try{
+//                (targetFragment as? IngredientDialogListener)?.onIngredientAdded(ingredient)
+//                ingredientViewModel.addToTemporaryList(ingredient)
+//                ingredientItemAdapter.addIngredients(ingredient)
+//
+//            } catch (e: Exception) {
+//                // Handle the exception here
+//                Log.e("Error", "An error occurred: ${e.message}")
+//                // You can also show an error message to the user if needed
+//                // For example:
+//                withContext(Dispatchers.Main) {
+//                    // Show a toast or a snackbar with the error message
+//                    withContext(Dispatchers.Main) {
+//                        Toast.makeText(
+//                            context,
+//                            "An error occurred: ${e.message}",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+//                    }
+//                }
+//            }
+//        }
+
         clearFields()
     }
+
+    private fun addToItemTable(itemName: String, category: String, unit: String){
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val existingCategory = ingredientViewModel.findCategoryByName(category)
+                val existingUnit = ingredientViewModel.findUnitByName(unit)
+
+                if (existingCategory == null || existingUnit == null){
+                    withContext(Dispatchers.Main){
+                        val newCategory = Category(category)
+                        val newUnit = Unit(unit)
+                        ingredientViewModel.insertCategory(newCategory)
+                        ingredientViewModel.insertUnit(newUnit)
+
+                    }
+
+
+                    val newItem = Item(name = itemName, category = category, unitName = unit, useRate = 0.0f)
+                    ingredientViewModel.insertItem(newItem)
+                } else {
+                    val newItem = Item(name = itemName, category = category, unitName = unit, useRate = 0.0f)
+                    ingredientViewModel.insertItem(newItem)
+                }
+                // we can do this because the respective DAO objects does replace on conflict
+
+            }catch (e: Exception) {
+                // Handle the exception here
+                Log.e("Error", "An error occurred: ${e.message}")
+                // You can also show an error message to the user if needed
+                // For example:
+                withContext(Dispatchers.Main) {
+                    // Show a toast or a snackbar with the error message
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            context,
+                            "An error occurred: ${e.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    interface IngredientDialogListener {
+        fun onIngredientAdded(ingredient: Ingredient)
     }
 }

@@ -6,7 +6,6 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import java.util.Date
 
 @Entity(
     tableName = "pantry_item",
@@ -26,18 +25,18 @@ data class PantryItem(
     val pantryItemId: Long = 0,
 
     @ColumnInfo(name = "item_name")
-    val itemName: String, // Foreign key to Item table
+    var itemName: String, // Foreign key to Item table
 
     @ColumnInfo(name = "amount_from_input_date")
-    val amountFromInputDate: Float,
+    var amountFromInputDate: Float,
 
     @ColumnInfo(name = "input_date")
-    val inputDate: String,
+    var inputDate: String,
     // room database doesnt handle date for soem reason so will be doing this for simplicity.
 
 
     @ColumnInfo(name = "shelf_life_from_input_date")
-    val shelfLifeFromInputDate: Int, // Calculated in days
+    var shelfLifeFromInputDate: Int, // Calculated in days
     // user can also input expiration date and we calculate this.
 
 
