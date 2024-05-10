@@ -2,7 +2,6 @@ package com.example.grocerez.ui.recipes
 
 import IngredientInputDialog
 import android.os.Bundle
-import android.text.Editable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.grocerez.data.Ingredient
 import com.example.grocerez.data.model.Item
 import com.example.grocerez.data.model.Recipe
+import com.example.grocerez.data.model.RecipeItem
 import com.example.grocerez.databinding.FragmentNewRecipeSheetBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -51,17 +51,8 @@ class NewRecipeSheet : Fragment(), IngredentItemClickListener, IngredientInputDi
         ingredientItemAdapter = RecipeIngredientAdapter(mutableListOf(), this)
 
         // Retrieve the recipeItem from the arguments bundle
-        val args = arguments
-        val recipeItem = args?.getParcelable<RecipeItem>("recipeItem")
+        binding.recipeTitle.text = "New Recipe"
 
-        if (recipeItem != null) {
-            binding.recipeTitle.text = "Edit Recipe"
-            val editable = Editable.Factory.getInstance()
-            binding.name.text = editable.newEditable(recipeItem.name)
-            binding.notes.text = editable.newEditable(recipeItem.note)
-        } else {
-            binding.recipeTitle.text = "New Recipe"
-        }
 
         binding.saveButton.setOnClickListener {
             saveAction()
@@ -121,48 +112,48 @@ class NewRecipeSheet : Fragment(), IngredentItemClickListener, IngredientInputDi
             return
         }
 
-        val args = arguments
-        val recipeItem = args?.getParcelable<RecipeItem>("recipeItem")
-
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val newRecipe = Recipe(
                     name = name,
                     instruction = notes
                 )
+                recipeViewModel.addRecipes(newRecipe)
 
-                val insertedRecipeId = insertRecipeAndGetId(newRecipe)
+                val existingRecipe = recipeViewModel.findRecipeByName(name)
 
                 val temporaryIngredientList = recipeViewModel.returnTemporaryList()
 
-                if (insertedRecipeId != -1L) {
+                if (existingRecipe != null) {
                     for (ingredient in temporaryIngredientList) {
                         val ingredientName = ingredient.name
-                        val item = recipeViewModel.findItemByName(ingredientName)
 
-                        if (item == null) {
-                            // Assuming you have a function to add a new item in your ViewModel
-                            val newItem = Item(name = ingredientName, category = ingredient.category, useRate = ingredient.amount, unitName = ingredient.unit)
+                        val newItem = Item(
+                            name = ingredientName, category = ingredient.category,
+                            unitName = ingredient.unit, useRate = 0.0f
+                        )
+                        var item = recipeViewModel.findItemByName(ingredientName)
+
+                        if (item == null ){
                             recipeViewModel.addItem(newItem)
-
-                            val newRecipeItem = com.example.grocerez.data.model.RecipeItem(
-                                recipeId = insertedRecipeId,
-                                itemId = newItem.item_id,
-                                amount = ingredient.amount
-                            )
-
-                            recipeViewModel.addRecipeItems(newRecipeItem)
-                        } else {
-                            val newRecipeItem = com.example.grocerez.data.model.RecipeItem(
-                                recipeId = insertedRecipeId,
-                                itemId = item.item_id,
-                                amount = ingredient.amount
-                            )
-
-                            recipeViewModel.addRecipeItems(newRecipeItem)
+                            item = recipeViewModel.findItemByName(ingredientName)
                         }
+
+                        val newRecipeItem = RecipeItem(
+                            recipeId = existingRecipe.recipeId,
+                            itemId = item!!.item_id,
+                            amount = ingredient.amount
+                        )
+                        recipeViewModel.addRecipeItems(newRecipeItem)
                     }
-                    recipeViewModel.clearTemporaryList()
+                }
+
+                recipeViewModel.clearTemporaryList()
+
+                // If everything is successful, clear the fields and navigate back
+                withContext(Dispatchers.Main) {
+                    clearFields()
+                    findNavController().popBackStack()
                 }
             } catch (e: Exception) {
                 // Handle the exception here
@@ -177,10 +168,6 @@ class NewRecipeSheet : Fragment(), IngredentItemClickListener, IngredientInputDi
                 }
             }
         }
-
-        // If everything is successful, clear the fields and navigate back
-        clearFields()
-        findNavController().popBackStack()
     }
 
 
@@ -200,9 +187,6 @@ class NewRecipeSheet : Fragment(), IngredentItemClickListener, IngredientInputDi
         val dialog = IngredientInputDialog(ingredient)
         dialog.ingredientItemAdapter = ingredientItemAdapter
         dialog.show(childFragmentManager, "editIngredientTag")
-    }
-
-    fun setOnCancelListener(function: () -> Unit) {
     }
 
     override fun onIngredientAdded(ingredient: Ingredient) {
