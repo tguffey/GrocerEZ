@@ -10,7 +10,7 @@ import com.example.grocerez.data.model.ShoppingListItem
 import com.example.grocerez.databinding.GroceryItemCellBinding
 
 class GroceryItemAdapter(
-    private var groceryItems: List<ShoppingListItem>, // List of grocery items to display
+    private var groceryItems: List<ShoppingItem>, // List of grocery items to display
     private val clickListener: ShoppingItemClickListener
 ) : RecyclerView.Adapter<GroceryItemAdapter.GroceryItemViewHolder>() {
 
@@ -20,10 +20,10 @@ class GroceryItemAdapter(
         private val clickListener: ShoppingItemClickListener
     ) :RecyclerView.ViewHolder(binding.root) {
 
-        fun bindGroceryItem(groceryItem: ShoppingListItem){
-            binding.name.text = groceryItem.itemName
-            binding.quantity.text = "Qty: " + groceryItem.quantity.toString()
-            binding.notes.text = groceryItem.notes
+        fun bindGroceryItem(groceryItem: ShoppingItem){
+            binding.name.text = groceryItem.shoppingListItem.itemName
+            binding.quantity.text = "Qty: "+groceryItem.shoppingListItem.quantity.toString()+" "+groceryItem.unit?.name.toString()
+            binding.notes.text = groceryItem.shoppingListItem.notes
 
             binding.checkbox.setOnClickListener {
                 if (binding.name.getCurrentTextColor() == Color.BLACK) {
@@ -33,7 +33,7 @@ class GroceryItemAdapter(
                     binding.quantity.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
                     binding.notes.setTextColor(Color.GRAY)
                     binding.notes.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
-                    groceryItem.checkbox = true
+//                    groceryItem.checkbox = true
                 }
                 else {
                     binding.name.setTextColor(Color.BLACK)
@@ -42,9 +42,9 @@ class GroceryItemAdapter(
                     binding.quantity.paintFlags = 0
                     binding.notes.setTextColor(Color.BLACK)
                     binding.notes.paintFlags = 0
-                    groceryItem.checkbox = false
+//                    groceryItem.checkbox = false
                 }
-                clickListener.checkItem(groceryItem)
+                clickListener.checkItem(groceryItem.shoppingListItem)
             }
         }
     }
