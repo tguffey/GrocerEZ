@@ -7,22 +7,20 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.grocerez.SocketHandler
-import com.example.grocerez.data.RecipeRepository
-import com.example.grocerez.data.model.Category
 import com.example.grocerez.data.model.Item
 import com.example.grocerez.data.model.Recipe
 import com.example.grocerez.data.model.RecipeItem
-import com.example.grocerez.data.model.Unit
-import com.example.grocerez.database.AppDatabase
 import com.example.grocerez.databinding.RecipeParsingBinding
 import io.socket.client.Socket
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -33,7 +31,6 @@ class RecipeParsingFragment : Fragment() {
     // For accessing the backend sockets
     private lateinit var mSocket: Socket
     private lateinit var recipeViewModel: RecipesViewModel
-    private lateinit var newRecipe: Recipe
 
 
     override fun onCreateView(
@@ -46,21 +43,6 @@ class RecipeParsingFragment : Fragment() {
         mSocket = SocketHandler.getSocket()
         mSocket.connect()
 
-        val appDatabase = AppDatabase.getInstance(requireContext())
-
-        recipeViewModel = ViewModelProvider(this.requireActivity(),
-            RecipesViewModel.RecipeModelFactory(
-                RecipeRepository(
-                    categoryDao = appDatabase.categoryDao(),
-                    itemDao = appDatabase.itemDao(),
-                    recipeDao = appDatabase.recipeDao(),
-                    recipeItemDao = appDatabase.recipeItemDao(),
-                    unitDao = appDatabase.unitDao()
-                )
-            )).get(RecipesViewModel::class.java)
-
-        recipeViewModel.loadRecipes()
-
         // Inflate the layout for this fragment using view binding
         _binding = RecipeParsingBinding.inflate(inflater, container, false)
         return binding.root
@@ -68,6 +50,8 @@ class RecipeParsingFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        recipeViewModel = ViewModelProvider(this.requireActivity())[RecipesViewModel::class.java]
 
         // Initialize Socket instance
         mSocket = SocketHandler.getSocket()
@@ -154,67 +138,74 @@ class RecipeParsingFragment : Fragment() {
                     instruction = instructionsList.toString()
                 )
 
+                CoroutineScope(Dispatchers.IO).launch{
+                    try{
+                        val recipeID = recipeViewModel.addRecipeAndGetId(recipe)
+                        var item: Item?
+                        var newItem: Item
+                        var newRecipeItem: RecipeItem
 
-                CoroutineScope(Dispatchers.Main).launch{
-                    recipeViewModel.addRecipes(recipe)
-                    newRecipe = recipeViewModel.findRecipeByName(recipe.name)!!
-                }
+                        // Get the ingredients and format them as a list
+                        val ingredientsJsonArray = jsonObject.getJSONArray("ingredients")
+                        val ingredientsList = StringBuilder("Ingredients:\n")
+                        for (i in 0 until ingredientsJsonArray.length()) {
+                            val ingredient = ingredientsJsonArray.getJSONObject(i)
+                            val amount = convertFractionToDecimal(ingredient.optString("Amount"))
+                            val unit = checkUnit(ingredient.optString("Unit"))
+                            val name = ingredient.optString("Name")
 
-                // Get the ingredients and format them as a list
-                val ingredientsJsonArray = jsonObject.getJSONArray("ingredients")
-                val ingredientsList = StringBuilder("Ingredients:\n")
-                for (i in 0 until ingredientsJsonArray.length()) {
-                    val ingredient = ingredientsJsonArray.getJSONObject(i)
-                    val amount = convertFractionToDecimal(ingredient.optString("Amount"))
-                    val unit = checkUnit(ingredient.optString("Unit"))
-                    val name = ingredient.optString("Name")
+                            newItem = Item(
+                                name = name, category = "meatball ingredients",
+                                unitName = unit, useRate = 0.0f
+                            )
+                            item = recipeViewModel.findItemByName(name)
 
-                    CoroutineScope(Dispatchers.Main).launch{
-                        val category = recipeViewModel.findCategoryByName("meatball ingredients")
-                        val newCategory = Category(
-                            name = "meatball ingredients"
-                        )
-                        if (category == null){
-                            recipeViewModel.addCategory(newCategory)
+                            Log.d("threading", "check if ${newItem.name} is null or not")
+                            if (item == null ){
+                                recipeViewModel.addItem(newItem)
+                                item = recipeViewModel.findItemByName(name)
+                                Log.d("threading", "Item IS NULL (BAD)")
+                            }
+
+                            Log.d("threading", "creating new Recipe item")
+                            newRecipeItem = RecipeItem(
+                                recipeId = recipeID,
+                                itemId = item!!.item_id,
+                                amount = amount.toFloat()
+                            )
+
+                            Log.d("threading", "created newRecipeItem object, " +
+                                    "recipe id${newRecipeItem.recipeId}, " +
+                                    "recipe itemid: ${newRecipeItem.itemId}, " +
+                                    "amount: ${newRecipeItem.amount}")
+
+                            recipeViewModel.addRecipeItems(newRecipeItem)
+
+                            ingredientsList.append("Amount: $amount, Unit: $unit, Name: $name\n")
                         }
 
-                        val unitTest = recipeViewModel.findUnitByName(unit)
-                        val newUnit = Unit(
-                            name = unit
-                        )
-                        if (unitTest == null){
-                            recipeViewModel.addUnit(newUnit)
-                        }
+                        // Combine ingredients and instructions into one StringBuilder
+                        ingredientsList.append(instructionsList)
 
-                        val item = recipeViewModel.findItemByName(name)
-                        val newItem = Item(
-                            name = name,
-                            unitName = unit,
-                            category = "meatball ingredients",
-                            useRate = 0.0f)
-                        if (item == null){
-                            recipeViewModel.addItem(newItem)
+                        // Log the combined result to Logcat
+                        Log.d("RecipeDataResult", ingredientsList.toString())
+
+                        // Update the TextView to display both ingredients and instructions
+                        activity?.runOnUiThread {
+                            binding.textViewResult.text = ingredientsList.toString()
                         }
-                        val searchItem = recipeViewModel.findItemByName(name)
-                        val newRecipeItem = RecipeItem(
-                            amount = amount.toFloat(),
-                            itemId = searchItem!!.item_id,
-                            recipeId = newRecipe.recipeId,
-                        )
-                        recipeViewModel.addRecipeItems(newRecipeItem)
+                } catch (e: Exception) {
+                        // Handle the exception here
+                        Log.e("Error", "An error occurred: ${e.message}")
+                        // Show a toast or a snackbar with the error message
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(
+                                context,
+                                "An error occurred: ${e.message}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
-                    ingredientsList.append("Amount: $amount, Unit: $unit, Name: $name\n")
-                }
-
-                // Combine ingredients and instructions into one StringBuilder
-                ingredientsList.append(instructionsList)
-
-                // Log the combined result to Logcat
-                Log.d("RecipeDataResult", ingredientsList.toString())
-
-                // Update the TextView to display both ingredients and instructions
-                activity?.runOnUiThread {
-                    binding.textViewResult.text = ingredientsList.toString()
                 }
             } catch (e: JSONException) {
                 e.printStackTrace()

@@ -10,9 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.grocerez.R
-import com.example.grocerez.data.RecipeRepository
 import com.example.grocerez.data.model.Recipe
-import com.example.grocerez.database.AppDatabase
 import com.example.grocerez.databinding.FragmentMyRecipesBinding
 
 class MyRecipesFragment : Fragment(), RecipeItemClickListener{
@@ -33,21 +31,6 @@ class MyRecipesFragment : Fragment(), RecipeItemClickListener{
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val appDatabase = AppDatabase.getInstance(requireContext())
-
-        recipesViewModel = ViewModelProvider(this.requireActivity(),
-            RecipesViewModel.RecipeModelFactory(
-                RecipeRepository(
-                    categoryDao = appDatabase.categoryDao(),
-                    itemDao = appDatabase.itemDao(),
-                    recipeDao = appDatabase.recipeDao(),
-                    recipeItemDao = appDatabase.recipeItemDao(),
-                    unitDao = appDatabase.unitDao()
-                )
-            )).get(RecipesViewModel::class.java)
-
-        recipesViewModel.loadRecipes()
-
         _binding = FragmentMyRecipesBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
@@ -55,6 +38,8 @@ class MyRecipesFragment : Fragment(), RecipeItemClickListener{
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        recipesViewModel = ViewModelProvider(this.requireActivity())[RecipesViewModel::class.java]
+
         // Set up RecyclerView
         setRecyclerView()
 

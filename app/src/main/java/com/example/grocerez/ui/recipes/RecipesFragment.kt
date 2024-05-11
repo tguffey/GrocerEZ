@@ -5,8 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.grocerez.R
+import com.example.grocerez.data.RecipeRepository
+import com.example.grocerez.database.AppDatabase
 import com.example.grocerez.databinding.FragmentRecipesBinding
 
 
@@ -15,6 +18,8 @@ class RecipesFragment : Fragment(){
 
     // View binding instance
     private var _binding : FragmentRecipesBinding? = null
+
+    lateinit var recipesViewModel : RecipesViewModel
 
     // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
@@ -26,6 +31,23 @@ class RecipesFragment : Fragment(){
         savedInstanceState: Bundle?
     ): View {
         super.onCreateView(inflater, container, savedInstanceState)
+
+        val appDatabase = AppDatabase.getInstance(requireContext())
+
+        recipesViewModel = ViewModelProvider(this.requireActivity(),
+            RecipesViewModel.RecipeModelFactory(
+                RecipeRepository(
+                    categoryDao = appDatabase.categoryDao(),
+                    itemDao = appDatabase.itemDao(),
+                    recipeDao = appDatabase.recipeDao(),
+                    recipeItemDao = appDatabase.recipeItemDao(),
+                    unitDao = appDatabase.unitDao()
+                )
+            )).get(RecipesViewModel::class.java)
+
+        recipesViewModel.loadRecipes()
+        recipesViewModel.loadIngredients()
+
 
         // Inflate the layout for this fragment using view binding
         _binding = FragmentRecipesBinding.inflate(inflater, container, false)
