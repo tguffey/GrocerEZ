@@ -129,40 +129,79 @@ class NewRecipeSheet : Fragment(), IngredentItemClickListener, IngredientInputDi
         }
 
         CoroutineScope(Dispatchers.IO).launch {
+            Log.d("threading", "now adding recipe first")
             try {
+                // insert new recipe FIRST
+                // null checks are here
                 val newRecipe = Recipe(
                     name = name,
                     instruction = notes
                 )
-                recipeViewModel.addRecipes(newRecipe)
 
-                val existingRecipe = recipeViewModel.findRecipeByName(name)
+                Log.d("threading","now adding the recipe and getting the id" +
+                        "recipe name: ${newRecipe.name}")
+//                recipeViewModel.addRecipes(newRecipe)
+//                // inserting recipe.
+//
+//                Log.d("threading","now finding the recipe" +
+//                        "recipe name: ${newRecipe.name}")
+//                val existingRecipe = recipeViewModel.findRecipeByName(name)
+                var recipeID:Long = recipeViewModel.addRecipeAndGetId(newRecipe)
+
+                Log.d("threading", "Got recipe ID: $recipeID")
+
+//                if (existingRecipe == null) {
+//                    Log.d("threading","existing recipe is blank, not good.")
+//                }
 
                 val temporaryIngredientList = recipeViewModel.returnTemporaryList()
+                var ingredientName = "name"
 
-                if (existingRecipe != null) {
-                    for (ingredient in temporaryIngredientList) {
-                        val ingredientName = ingredient.name
+                var item: Item?
+                var newItem: Item
+                var newRecipeItem: RecipeItem
+                var insertedRecipeItem: RecipeItem?
+                var testRecipeItemID:Long
+                for (ingredient in temporaryIngredientList) {
+                    ingredientName = ingredient.name
 
-                        val newItem = Item(
-                            name = ingredientName, category = ingredient.category,
-                            unitName = ingredient.unit, useRate = 0.0f
-                        )
-                        var item = recipeViewModel.findItemByName(ingredientName)
+                    Log.d("threading", "ingredient: $ingredientName")
 
-                        if (item == null ){
-                            recipeViewModel.addItem(newItem)
-                            item = recipeViewModel.findItemByName(ingredientName)
-                        }
+                    newItem = Item(
+                        name = ingredientName, category = ingredient.category,
+                        unitName = ingredient.unit, useRate = 0.0f
+                    )
+                    item = recipeViewModel.findItemByName(ingredientName)
 
-                        val newRecipeItem = RecipeItem(
-                            recipeId = existingRecipe.recipeId,
-                            itemId = item!!.item_id,
-                            amount = ingredient.amount
-                        )
-                        recipeViewModel.addRecipeItems(newRecipeItem)
+                    Log.d("threading", "check if ${newItem.name} is null or not")
+                    if (item == null ){
+                        recipeViewModel.addItem(newItem)
+                        item = recipeViewModel.findItemByName(ingredientName)
+                        Log.d("threading", "Item IS NULL (BAD)")
                     }
+
+                    Log.d("threading", "creating new Recipe item")
+                    newRecipeItem = RecipeItem(
+                        recipeId = recipeID,
+                        itemId = item!!.item_id,
+                        amount = ingredient.amount
+                    )
+
+                    Log.d("threading", "created newRecipeItem object, " +
+                            "recipe id${newRecipeItem.recipeId}, " +
+                            "recipe itemid: ${newRecipeItem.itemId}, " +
+                            "amount: ${newRecipeItem.amount}")
+
+                    recipeViewModel.addRecipeItems(newRecipeItem)
+
+
+                    Log.d("threading", "inserted into database" +
+                            "now testing to see if its there")
+
+//                    insertedRecipeItem = recipeViewModel
+
                 }
+
 
                 recipeViewModel.clearTemporaryList()
 
@@ -171,7 +210,8 @@ class NewRecipeSheet : Fragment(), IngredentItemClickListener, IngredientInputDi
                     clearFields()
                     findNavController().popBackStack()
                 }
-            } catch (e: Exception) {
+            }
+            catch (e: Exception) {
                 // Handle the exception here
                 Log.e("Error", "An error occurred: ${e.message}")
                 // Show a toast or a snackbar with the error message

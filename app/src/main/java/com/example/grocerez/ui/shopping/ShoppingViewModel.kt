@@ -89,9 +89,9 @@ class ShoppingViewModel(val repository: ShoppingRepository) : ViewModel() {
     fun removeCheckedItems() = viewModelScope.launch(Dispatchers.IO) {
         categoryItems.value?.forEach {
             it.shoppingListItems.forEach {
-//                if (it.isChecked()) {
-                    repository.removeShoppingListItem(it)
-//                }
+                if (it.shoppingListItem.isChecked()) {
+                    repository.removeShoppingListItem(it.shoppingListItem)
+                }
             }
         }
         updateData()

@@ -5,5 +5,5 @@ import com.example.grocerez.data.model.ShoppingListItem
 
 class CategoryItem(
     var category: Category,
-    var shoppingListItems: List<ShoppingListItem>
+    var shoppingListItems: List<ShoppingItem>
 )

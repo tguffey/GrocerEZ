@@ -3,6 +3,7 @@ package com.example.grocerez.data.model
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
@@ -20,6 +21,9 @@ import androidx.room.PrimaryKey
             childColumns = ["unit"],
             onDelete = ForeignKey.CASCADE
         )
+    ],
+    indices = [
+        Index(value = ["categoryName"], unique = true)
     ]
 )
 data class MyPlateItem(
