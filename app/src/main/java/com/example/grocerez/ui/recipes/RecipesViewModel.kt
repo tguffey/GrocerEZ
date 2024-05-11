@@ -81,15 +81,25 @@ class RecipesViewModel(private val repository: RecipeRepository) : ViewModel() {
     suspend fun addRecipes(newRecipe: Recipe) = viewModelScope.launch(Dispatchers.IO) {
         Log.v("VIEW MODEL", "in add shop item")
         repository.insertRecipe(newRecipe)
-        updateRecipeData()
+//        updateRecipeData()
         Log.v("VIEW MODEL", "added new item")
+        Log.d("threading","adding to recipe table")
+    }
+    // making sure to add and then return the id.
+    suspend fun addRecipeAndGetId(newRecipe: Recipe): Long {
+        return withContext(Dispatchers.IO) {
+            repository.insertRecipe(newRecipe)
+            val existingRecipe = findRecipeByName(newRecipe.name)
+            existingRecipe?.recipeId ?: 0
+        }
     }
 
     suspend fun addRecipeItems (newRecipeItem: RecipeItem) = viewModelScope.launch(Dispatchers.IO){
         Log.v("VIEW MODEL", "in add shop item")
         repository.insertRecipeItem(newRecipeItem)
-        updateRecipeItemData()
+//        updateRecipeItemData()
         Log.v("VIEW MODEL", "added new item")
+        Log.d("threading","about to exit addRecipeItems")
     }
 
     suspend fun addCategory(newCategory: Category) = viewModelScope.launch(Dispatchers.IO) {
