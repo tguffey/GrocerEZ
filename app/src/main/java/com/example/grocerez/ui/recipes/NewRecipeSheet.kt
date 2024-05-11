@@ -12,11 +12,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.grocerez.data.Ingredient
-import com.example.grocerez.data.RecipeRepository
 import com.example.grocerez.data.model.Item
 import com.example.grocerez.data.model.Recipe
 import com.example.grocerez.data.model.RecipeItem
-import com.example.grocerez.database.AppDatabase
 import com.example.grocerez.databinding.FragmentNewRecipeSheetBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -36,22 +34,6 @@ class NewRecipeSheet : Fragment(), IngredentItemClickListener, IngredientInputDi
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val appDatabase = AppDatabase.getInstance(requireContext())
-
-
-        recipeViewModel = ViewModelProvider(this,
-            RecipesViewModel.RecipeModelFactory(
-                RecipeRepository(
-                    categoryDao = appDatabase.categoryDao(),
-                    itemDao = appDatabase.itemDao(),
-                    recipeDao = appDatabase.recipeDao(),
-                    recipeItemDao = appDatabase.recipeItemDao(),
-                    unitDao = appDatabase.unitDao()
-                )
-            )).get(RecipesViewModel::class.java)
-
-        recipeViewModel.loadRecipes()
-
         // Inflate the layout for this fragment
         _binding = FragmentNewRecipeSheetBinding.inflate(inflater, container, false)
         val view = binding.root
@@ -63,6 +45,8 @@ class NewRecipeSheet : Fragment(), IngredentItemClickListener, IngredientInputDi
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        recipeViewModel = ViewModelProvider(this.requireActivity())[RecipesViewModel::class.java]
 
         ingredientItemAdapter = RecipeIngredientAdapter(mutableListOf(), this)
 

@@ -35,7 +35,7 @@ class MyRecipesFragment : Fragment(), RecipeItemClickListener{
     ): View? {
         val appDatabase = AppDatabase.getInstance(requireContext())
 
-        recipesViewModel = ViewModelProvider(this,
+        recipesViewModel = ViewModelProvider(this.requireActivity(),
             RecipesViewModel.RecipeModelFactory(
                 RecipeRepository(
                     categoryDao = appDatabase.categoryDao(),

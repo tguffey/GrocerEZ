@@ -1,8 +1,10 @@
 package com.example.grocerez.ui.dashboard
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import androidx.recyclerview.widget.RecyclerView
 import com.example.grocerez.data.model.PantryItem
 import com.example.grocerez.databinding.FoodItemCellBinding
@@ -29,14 +31,25 @@ class FoodItemAdapter(
         private val clickListener: FoodItemClickListener
     ) :RecyclerView.ViewHolder(binding.root) {
 
+        private val progressBar: ProgressBar = binding.itemProgressBar
+
         fun bindPantryItem(pantryItem: PantryItem) {
             binding.name.text = pantryItem.itemName
             val healthiness = calculateHealthiness(pantryItem.inputDate, pantryItem.shelfLifeFromInputDate)
-            binding.itemProgressBar.progress = healthiness
+            animateProgressBar(progressBar, progressBar.progress, healthiness)
 
             binding.root.setOnClickListener {
                 onItemClickListener?.invoke(pantryItem)
             }
+        }
+
+        private fun animateProgressBar(progressBar: ProgressBar, from: Int, to: Int) {
+            val animator = ValueAnimator.ofInt(from, to)
+            animator.addUpdateListener { animation ->
+                progressBar.progress = animation.animatedValue as Int
+            }
+            animator.duration = 1000 // Adjust the duration of the animation as needed
+            animator.start()
         }
 
         private fun calculateHealthiness(inputDate: String, shelfLife: Int): Int {
