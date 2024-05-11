@@ -11,6 +11,7 @@ import com.example.grocerez.data.model.Item
 import com.example.grocerez.data.model.ShoppingListItem
 import com.example.grocerez.data.model.Unit
 import com.example.grocerez.ui.shopping.CategoryItem
+import com.example.grocerez.ui.shopping.ShoppingItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
@@ -28,10 +29,20 @@ class ShoppingRepository(
             val cats = categoryDao.getAllShoppingListCategories()
             val catsWithShopItems = mutableListOf<CategoryItem>()
             cats.forEach {
+                val shopItems = shoppingListItemDao.findShoppingListItemByCategory(it.name)
+                val shopItemsWUnits = mutableListOf<ShoppingItem>()
+                shopItems.forEach {
+                    shopItemsWUnits.add(
+                        ShoppingItem(
+                            it,
+                            unitDao.findUnitByItemName(it.itemName)
+                        )
+                    )
+                }
                 catsWithShopItems.add(
                     CategoryItem(
                         it,
-                        shoppingListItemDao.findShoppingListItemByCategory(it.name)
+                        shopItemsWUnits
                     )
                 )
             }

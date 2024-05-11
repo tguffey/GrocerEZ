@@ -158,40 +158,62 @@ class IngredientInputDialog(var ingredientItem: Ingredient?) : DialogFragment() 
             Toast.makeText(requireContext(), "Select a given unit", Toast.LENGTH_SHORT).show()
             return
         }
+
         // if code made it past this point, that means name quantiy and units are filled.
         // now, we're gonna see if this item already exists in the table. if not add
         // if not exist yet, in order to add, fill the category with "uncategorized" for now.
         addToItemTable(name, category, selectedUnit)
+
+        /*CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val existingCategory = ingredientViewModel.findCategoryByName(category)
+                if (existingCategory == null){
+                    val newCategory = Category(category)
+                    ingredientViewModel.insertCategory(newCategory)
+                }
+
+                val existingUnit = ingredientViewModel.findUnitByName(selectedUnit)
+                if (existingUnit == null) {
+                    val newUnit = Unit(selectedUnit)
+                    ingredientViewModel.insertUnit(newUnit)
+                }
+
+
+                val existingItem = ingredientViewModel.findItemByName(name)
+                if (existingItem == null){
+                    val newItem = Item(
+                        name = name, category = category,
+                        unitName = selectedUnit, useRate = 0.0f
+                    )
+                    ingredientViewModel.insertItem(newItem)
+
+                }
+                // we can do this because the respective DAO objects does replace on conflict
+
+            }catch (e: Exception) {
+                // Handle the exception here
+                Log.e("Error", "An error occurred: ${e.message}")
+                // You can also show an error message to the user if needed
+                // For example:
+                // Show a toast or a snackbar with the error message
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        context,
+                        "An error occurred: ${e.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            Log.d("threading", "right before exisitng addToItem funciton")
+        }*/
+//        Log.d("threading", "This is after adding to item db function exits")
         val ingredient =
             Ingredient(name, quantity, category, selectedUnit)
 
         (targetFragment as? IngredientDialogListener)?.onIngredientAdded(ingredient)
         ingredientViewModel.addToTemporaryList(ingredient)
         ingredientItemAdapter.addIngredients(ingredient)
-
-//        CoroutineScope(Dispatchers.IO).launch{
-//            try{
-//                (targetFragment as? IngredientDialogListener)?.onIngredientAdded(ingredient)
-//                ingredientViewModel.addToTemporaryList(ingredient)
-//                ingredientItemAdapter.addIngredients(ingredient)
-//
-//            } catch (e: Exception) {
-//                // Handle the exception here
-//                Log.e("Error", "An error occurred: ${e.message}")
-//                // You can also show an error message to the user if needed
-//                // For example:
-//                withContext(Dispatchers.Main) {
-//                    // Show a toast or a snackbar with the error message
-//                    withContext(Dispatchers.Main) {
-//                        Toast.makeText(
-//                            context,
-//                            "An error occurred: ${e.message}",
-//                            Toast.LENGTH_SHORT
-//                        ).show()
-//                    }
-//                }
-//            }
-//        }
 
         clearFields()
     }
@@ -200,23 +222,26 @@ class IngredientInputDialog(var ingredientItem: Ingredient?) : DialogFragment() 
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val existingCategory = ingredientViewModel.findCategoryByName(category)
+                if (existingCategory == null){
+                    val newCategory = Category(category)
+                    ingredientViewModel.insertCategory(newCategory)
+                }
+
                 val existingUnit = ingredientViewModel.findUnitByName(unit)
-
-                if (existingCategory == null || existingUnit == null){
-                    withContext(Dispatchers.Main){
-                        val newCategory = Category(category)
-                        val newUnit = Unit(unit)
-                        ingredientViewModel.insertCategory(newCategory)
-                        ingredientViewModel.insertUnit(newUnit)
-
-                    }
+                if (existingUnit == null) {
+                    val newUnit = Unit(unit)
+                    ingredientViewModel.insertUnit(newUnit)
+                }
 
 
-                    val newItem = Item(name = itemName, category = category, unitName = unit, useRate = 0.0f)
+                val existingItem = ingredientViewModel.findItemByName(itemName)
+                if (existingItem == null){
+                    val newItem = Item(
+                        name = itemName, category = category,
+                        unitName = unit, useRate = 0.0f
+                    )
                     ingredientViewModel.insertItem(newItem)
-                } else {
-                    val newItem = Item(name = itemName, category = category, unitName = unit, useRate = 0.0f)
-                    ingredientViewModel.insertItem(newItem)
+
                 }
                 // we can do this because the respective DAO objects does replace on conflict
 
@@ -236,6 +261,8 @@ class IngredientInputDialog(var ingredientItem: Ingredient?) : DialogFragment() 
                     }
                 }
             }
+
+            Log.d("threading", "right before exisitng addToItem funciton")
         }
     }
 
