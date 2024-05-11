@@ -11,7 +11,7 @@ import com.example.grocerez.data.model.RecipeItem
 
 @Dao
 interface RecipeItemDao {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRecipeItem(recipeItem: RecipeItem)
     @Delete
     suspend fun deleteRecipeItem(recipeItem: RecipeItem)

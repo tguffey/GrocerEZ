@@ -19,13 +19,16 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 // ViewModel for managing recipe items
-class RecipesViewModel (private val repository: RecipeRepository) : ViewModel(){
+class RecipesViewModel(private val repository: RecipeRepository) : ViewModel() {
 
-    // LiveData for storing recipe items
-    lateinit var recipes : MutableLiveData<List<Recipe>>
-    lateinit var ingredients : MutableLiveData<List<RecipeItem>>
+    var recipes = MutableLiveData<List<Recipe>>()
+    var ingredients = MutableLiveData<List<RecipeItem>>()
     private var temporaryIngredientList = mutableListOf<Ingredient>()
 
+    init {
+        loadRecipes()
+        loadIngredients()
+    }
 
     fun loadRecipes() = viewModelScope.launch(Dispatchers.IO) {
         recipes = MutableLiveData(emptyList())
@@ -67,7 +70,7 @@ class RecipesViewModel (private val repository: RecipeRepository) : ViewModel(){
         }
     }
 
-    private fun updateRecipeData() = viewModelScope.launch(Dispatchers.IO) {
+    private suspend fun updateRecipeData() = viewModelScope.launch(Dispatchers.IO) {
         recipes.postValue(repository.getAllRecipes())
     }
 
@@ -78,18 +81,28 @@ class RecipesViewModel (private val repository: RecipeRepository) : ViewModel(){
     suspend fun addRecipes(newRecipe: Recipe) = viewModelScope.launch(Dispatchers.IO) {
         Log.v("VIEW MODEL", "in add shop item")
         repository.insertRecipe(newRecipe)
-        updateRecipeData()
+//        updateRecipeData()
         Log.v("VIEW MODEL", "added new item")
+        Log.d("threading","adding to recipe table")
+    }
+    // making sure to add and then return the id.
+    suspend fun addRecipeAndGetId(newRecipe: Recipe): Long {
+        return withContext(Dispatchers.IO) {
+            repository.insertRecipe(newRecipe)
+            val existingRecipe = findRecipeByName(newRecipe.name)
+            existingRecipe?.recipeId ?: 0
+        }
     }
 
     suspend fun addRecipeItems (newRecipeItem: RecipeItem) = viewModelScope.launch(Dispatchers.IO){
         Log.v("VIEW MODEL", "in add shop item")
         repository.insertRecipeItem(newRecipeItem)
-        updateRecipeData()
+//        updateRecipeItemData()
         Log.v("VIEW MODEL", "added new item")
+        Log.d("threading","about to exit addRecipeItems")
     }
 
-    fun addCategory(newCategory: Category) = viewModelScope.launch(Dispatchers.IO) {
+    suspend fun addCategory(newCategory: Category) = viewModelScope.launch(Dispatchers.IO) {
         repository.insertCategory(newCategory)
     }
 
@@ -115,7 +128,7 @@ class RecipesViewModel (private val repository: RecipeRepository) : ViewModel(){
         }
     }
 
-    suspend fun returnTemporaryList() : MutableList<Ingredient> {
+    fun returnTemporaryList() : MutableList<Ingredient> {
         return temporaryIngredientList
     }
 
@@ -129,6 +142,14 @@ class RecipesViewModel (private val repository: RecipeRepository) : ViewModel(){
 
     suspend fun insertItem(newItem: Item) = viewModelScope.launch(Dispatchers.IO) {
         repository.insertItem(newItem)
+    }
+
+    suspend fun deleteRecipe(recipe: Recipe) = viewModelScope.launch (Dispatchers.IO){
+        repository.deleteRecipe(recipe)
+    }
+
+    suspend fun deleteIngredients(recipeItem: RecipeItem) = viewModelScope.launch (Dispatchers.IO) {
+        repository.deleteRecipe(recipeItem)
     }
 
 //    fun toggleCheck(recipeItem: RecipeItem) = viewModelScope.launch(Dispatchers.IO) {

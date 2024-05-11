@@ -2,7 +2,6 @@ package com.example.grocerez.ui.recipes
 
 import IngredientInputDialog
 import android.os.Bundle
-import android.text.Editable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.grocerez.data.Ingredient
 import com.example.grocerez.data.model.Item
 import com.example.grocerez.data.model.Recipe
+import com.example.grocerez.data.model.RecipeItem
 import com.example.grocerez.databinding.FragmentNewRecipeSheetBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -51,17 +51,8 @@ class NewRecipeSheet : Fragment(), IngredentItemClickListener, IngredientInputDi
         ingredientItemAdapter = RecipeIngredientAdapter(mutableListOf(), this)
 
         // Retrieve the recipeItem from the arguments bundle
-        val args = arguments
-        val recipeItem = args?.getParcelable<RecipeItem>("recipeItem")
+        binding.recipeTitle.text = "New Recipe"
 
-        if (recipeItem != null) {
-            binding.recipeTitle.text = "Edit Recipe"
-            val editable = Editable.Factory.getInstance()
-            binding.name.text = editable.newEditable(recipeItem.name)
-            binding.notes.text = editable.newEditable(recipeItem.note)
-        } else {
-            binding.recipeTitle.text = "New Recipe"
-        }
 
         binding.saveButton.setOnClickListener {
             saveAction()
@@ -121,50 +112,90 @@ class NewRecipeSheet : Fragment(), IngredentItemClickListener, IngredientInputDi
             return
         }
 
-        val args = arguments
-        val recipeItem = args?.getParcelable<RecipeItem>("recipeItem")
-
         CoroutineScope(Dispatchers.IO).launch {
+            Log.d("threading", "now adding recipe first")
             try {
+                // insert new recipe FIRST
+                // null checks are here
                 val newRecipe = Recipe(
                     name = name,
                     instruction = notes
                 )
 
-                val insertedRecipeId = insertRecipeAndGetId(newRecipe)
+                Log.d("threading","now adding the recipe and getting the id" +
+                        "recipe name: ${newRecipe.name}")
+//                recipeViewModel.addRecipes(newRecipe)
+//                // inserting recipe.
+//
+//                Log.d("threading","now finding the recipe" +
+//                        "recipe name: ${newRecipe.name}")
+//                val existingRecipe = recipeViewModel.findRecipeByName(name)
+                var recipeID:Long = recipeViewModel.addRecipeAndGetId(newRecipe)
+
+                Log.d("threading", "Got recipe ID: $recipeID")
+
+//                if (existingRecipe == null) {
+//                    Log.d("threading","existing recipe is blank, not good.")
+//                }
 
                 val temporaryIngredientList = recipeViewModel.returnTemporaryList()
+                var ingredientName = "name"
 
-                if (insertedRecipeId != -1L) {
-                    for (ingredient in temporaryIngredientList) {
-                        val ingredientName = ingredient.name
-                        val item = recipeViewModel.findItemByName(ingredientName)
+                var item: Item?
+                var newItem: Item
+                var newRecipeItem: RecipeItem
+                var insertedRecipeItem: RecipeItem?
+                var testRecipeItemID:Long
+                for (ingredient in temporaryIngredientList) {
+                    ingredientName = ingredient.name
 
-                        if (item == null) {
-                            // Assuming you have a function to add a new item in your ViewModel
-                            val newItem = Item(name = ingredientName, category = ingredient.category, useRate = ingredient.amount, unitName = ingredient.unit)
-                            recipeViewModel.addItem(newItem)
+                    Log.d("threading", "ingredient: $ingredientName")
 
-                            val newRecipeItem = com.example.grocerez.data.model.RecipeItem(
-                                recipeId = insertedRecipeId,
-                                itemId = newItem.item_id,
-                                amount = ingredient.amount
-                            )
+                    newItem = Item(
+                        name = ingredientName, category = ingredient.category,
+                        unitName = ingredient.unit, useRate = 0.0f
+                    )
+                    item = recipeViewModel.findItemByName(ingredientName)
 
-                            recipeViewModel.addRecipeItems(newRecipeItem)
-                        } else {
-                            val newRecipeItem = com.example.grocerez.data.model.RecipeItem(
-                                recipeId = insertedRecipeId,
-                                itemId = item.item_id,
-                                amount = ingredient.amount
-                            )
-
-                            recipeViewModel.addRecipeItems(newRecipeItem)
-                        }
+                    Log.d("threading", "check if ${newItem.name} is null or not")
+                    if (item == null ){
+                        recipeViewModel.addItem(newItem)
+                        item = recipeViewModel.findItemByName(ingredientName)
+                        Log.d("threading", "Item IS NULL (BAD)")
                     }
-                    recipeViewModel.clearTemporaryList()
+
+                    Log.d("threading", "creating new Recipe item")
+                    newRecipeItem = RecipeItem(
+                        recipeId = recipeID,
+                        itemId = item!!.item_id,
+                        amount = ingredient.amount
+                    )
+
+                    Log.d("threading", "created newRecipeItem object, " +
+                            "recipe id${newRecipeItem.recipeId}, " +
+                            "recipe itemid: ${newRecipeItem.itemId}, " +
+                            "amount: ${newRecipeItem.amount}")
+
+                    recipeViewModel.addRecipeItems(newRecipeItem)
+
+
+                    Log.d("threading", "inserted into database" +
+                            "now testing to see if its there")
+
+//                    insertedRecipeItem = recipeViewModel
+
                 }
-            } catch (e: Exception) {
+
+
+                recipeViewModel.clearTemporaryList()
+
+                // If everything is successful, clear the fields and navigate back
+                withContext(Dispatchers.Main) {
+                    clearFields()
+                    findNavController().popBackStack()
+                }
+            }
+            catch (e: Exception) {
                 // Handle the exception here
                 Log.e("Error", "An error occurred: ${e.message}")
                 // Show a toast or a snackbar with the error message
@@ -177,10 +208,6 @@ class NewRecipeSheet : Fragment(), IngredentItemClickListener, IngredientInputDi
                 }
             }
         }
-
-        // If everything is successful, clear the fields and navigate back
-        clearFields()
-        findNavController().popBackStack()
     }
 
 
@@ -200,9 +227,6 @@ class NewRecipeSheet : Fragment(), IngredentItemClickListener, IngredientInputDi
         val dialog = IngredientInputDialog(ingredient)
         dialog.ingredientItemAdapter = ingredientItemAdapter
         dialog.show(childFragmentManager, "editIngredientTag")
-    }
-
-    fun setOnCancelListener(function: () -> Unit) {
     }
 
     override fun onIngredientAdded(ingredient: Ingredient) {
