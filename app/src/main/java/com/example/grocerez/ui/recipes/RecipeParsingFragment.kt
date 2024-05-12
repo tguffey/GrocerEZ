@@ -109,9 +109,20 @@ class RecipeParsingFragment : Fragment() {
         // Function for getting ingredients and recipe steps
         mSocket.on("ingredients-result") { args ->
             val recipeDataJson = args[0]?.toString()
+            // JSON DATA TEST
+            Log.d("RecipeDataJSON", "Received JSON: $recipeDataJson")
             try {
                 // Initialize a JSONObject with the string
                 val jsonObject = JSONObject(recipeDataJson)
+
+                // Get the recipe name and format it into a list
+                // This is currently done to easily match the format of the other data
+                val recipeNameJsonArray = jsonObject.getJSONArray("recipeName")
+                val recipeNameList = StringBuilder("Recipe Name:\n")
+                for (i in 0 until recipeNameJsonArray.length()) {
+                    val recipeName = recipeNameJsonArray.optString(i)
+                    recipeNameList.append("$recipeName\n")
+                }
 
                 // Get the ingredients and format them as a list
                 val ingredientsJsonArray = jsonObject.getJSONArray("ingredients")
@@ -132,15 +143,16 @@ class RecipeParsingFragment : Fragment() {
                     instructionsList.append("Step ${i + 1}: $step\n")
                 }
 
-                // Combine ingredients and instructions into one StringBuilder
-                ingredientsList.append(instructionsList)
+
+                val recipeData = recipeNameList.append(ingredientsList).append(instructionsList)
+
 
                 // Log the combined result to Logcat
-                Log.d("RecipeDataResult", ingredientsList.toString())
+                Log.d("RecipeDataResult", recipeData.toString())
 
                 // Update the TextView to display both ingredients and instructions
                 activity?.runOnUiThread {
-                    binding.textViewResult.text = ingredientsList.toString()
+                    binding.textViewResult.text = recipeData.toString()
                 }
             } catch (e: JSONException) {
                 e.printStackTrace()
@@ -180,8 +192,10 @@ class RecipeParsingFragment : Fragment() {
 
         // Function for getting Nutritional Data from recipe ingredients
         // Currently has errors, need to change JSON type sent from backend
-        /*mSocket.on("ingredients-result-for-nutritional-data") { args ->
+        mSocket.on("ingredients-result-for-nutritional-data") { args ->
             val nutritionalDataJson = args[0]?.toString() ?: throw IllegalArgumentException("First argument expected to be a non-null string")
+            // JSON DATA TEST
+            Log.d("NutriDataJSON", "Received JSON: $nutritionalDataJson")
 
             try {
                 val jsonArray = JSONArray(nutritionalDataJson)
@@ -189,19 +203,25 @@ class RecipeParsingFragment : Fragment() {
                 for (i in 0 until jsonArray.length()) {
                     val foodItem = jsonArray.getJSONObject(i)
                     val name = foodItem.optString("Name", "Unknown Ingredient")
-                    val description = foodItem.optString("description", "No description available")
-                    val myPlateCategory = foodItem.optString("myPlateCategory", "Not classified")
+                    val description = foodItem.optString("Description", "No description available")
+                    val myPlateCategory = foodItem.optString("MyPlateCategory", "Not classified")
 
                     nutritionalDataList.append("\n$name:\n")
                     nutritionalDataList.append("Description: $description\n")
                     nutritionalDataList.append("MyPlate Category: $myPlateCategory\n")
 
-                    val nutrients = foodItem.optJSONObject("nutrients")
-                    nutrients?.let {
-                        for (key in it.keys()) {
-                            val value = it.optString(key, "N/A")  // Safely extract string value
+                    val nutrients = foodItem.optJSONObject("Nutrients")
+                    if (nutrients != null) {
+                        for (key in nutrients.keys()) {
+                            var value = nutrients.optString(key.toString(), "N/A")
+                            // Check for "NaN" values and replace them with "Not available"
+                            if (value.contains("NaN")) {
+                                value = "Not available"
+                            }
                             nutritionalDataList.append("$key: $value\n")
                         }
+                    } else {
+                        nutritionalDataList.append("Nutrients: Not Available\n")
                     }
                 }
 
@@ -211,12 +231,15 @@ class RecipeParsingFragment : Fragment() {
                 }
             } catch (e: JSONException) {
                 e.printStackTrace()
-                Log.d("NutritionalDataError", "Error parsing nutritional data")
+                Log.d("NutritionalDataError", "Error parsing nutritional data: ${e.message}")
             } catch (e: IllegalArgumentException) {
                 e.printStackTrace()
-                Log.d("SocketDataError", "Invalid data received from socket")
+                Log.d("SocketDataError", "Invalid data received from socket: ${e.message}")
             }
-        }*/
+        }
+
+
+
 
         // Function for grabbing barcode data
         mSocket.on("productInfo") { args ->
