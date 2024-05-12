@@ -4,11 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.example.grocerez.R
+import com.example.grocerez.data.model.PantryItem
 import com.example.grocerez.databinding.FragmentRecipeViewBinding
+import com.example.grocerez.ui.dashboard.DashboardViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -19,6 +21,7 @@ class RecipeView : Fragment(){
     private var _binding: FragmentRecipeViewBinding? = null
     private val binding get() = _binding!!
     private lateinit var recipeViewModel: RecipesViewModel
+    private lateinit var pantryItemViewModel: DashboardViewModel
     private lateinit var ingredientItemAdapter: RecipeIngredientAdapter
 
 
@@ -40,6 +43,8 @@ class RecipeView : Fragment(){
         super.onViewCreated(view, savedInstanceState)
 
         recipeViewModel = ViewModelProvider(this.requireActivity()).get(RecipesViewModel::class.java)
+        pantryItemViewModel = ViewModelProvider(this.requireActivity()).get(DashboardViewModel::class.java)
+
 
         // Retrieve the recipeItem from the arguments bundle
         val args = arguments
@@ -66,19 +71,11 @@ class RecipeView : Fragment(){
         }
 
         binding.useRecipeButton.setOnClickListener {
-            null
+            useRecipe()
         }
 
         binding.toShoppingButton.setOnClickListener {
             null
-        }
-
-        binding.editRecipeButton.setOnClickListener{
-            if (findNavController().currentDestination?.id == R.id.recipesViewFragment) {
-                val bundle = Bundle().apply {
-                    putString("recipeItem", recipeItemName)
-                }
-                findNavController().navigate(R.id.action_recipeView_to_newRecipeSheet, bundle)            }
         }
 
         binding.nutritionButton.setOnClickListener{
@@ -90,6 +87,74 @@ class RecipeView : Fragment(){
         val dialog = NutritionFactsDialog()
         dialog.show(childFragmentManager, "nutrition")
     }
+
+    private fun useRecipe() {
+        // First, retrieve the recipe item name from the arguments bundle
+        val args = arguments
+        val recipeItemName = args?.getString("recipeItem")
+
+        // Next, check if the recipe item name is not null
+        if (recipeItemName != null) {
+            // Use coroutine scope to perform asynchronous operations
+            CoroutineScope(Dispatchers.IO).launch {
+                // Retrieve the recipe item from the ViewModel
+                val recipeItem = recipeViewModel.findRecipeByName(recipeItemName)
+                // Check if the recipe item is not null
+                if (recipeItem != null) {
+                    // Retrieve the ingredients required for the recipe
+                    val recipeIngredients = recipeViewModel.getIngredientsForRecipe(recipeItem.recipeId)
+
+                    // Initialize a boolean flag to track if all ingredients are available in the pantry
+                    var allIngredientsAvailable = true
+
+                    // Iterate through each recipe ingredient and check if it's available in the pantry
+                    for (ingredient in recipeIngredients) {
+                        // Retrieve the pantry item corresponding to the recipe ingredient
+                        val pantryItem = pantryItemViewModel.findPantryItemByName(ingredient.name)
+                        // Check if the pantry item is not null and if its amount is sufficient
+                        if (pantryItem == null || pantryItem.amountFromInputDate < ingredient.amount) {
+                            allIngredientsAvailable = false
+                            break
+                        }
+                    }
+
+                    // If all ingredients are available in the pantry, subtract the required amounts
+                    if (allIngredientsAvailable) {
+                        for (ingredient in recipeIngredients) {
+                            // Retrieve the pantry item corresponding to the recipe ingredient
+                            val pantryItem = pantryItemViewModel.findPantryItemByName(ingredient.name)
+                            // Subtract the required amount from the pantry item
+                            withContext(Dispatchers.IO){
+                                pantryItem?.let {
+                                    val newAmount = it.amountFromInputDate - ingredient.amount
+                                    // Update the pantry item in the database
+                                    val newPantryItem = PantryItem(
+                                        itemName = it.itemName,
+                                        amountFromInputDate = newAmount,
+                                        inputDate = it.inputDate,
+                                        shelfLifeFromInputDate = it.shelfLifeFromInputDate
+                                    )
+
+                                    pantryItemViewModel.addFoodItem(newPantryItem)
+                                    pantryItemViewModel.deletePantryItem(it)
+                                }
+                            }
+                        }
+                        // Show a message indicating that the recipe can be used
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(requireContext(), "Recipe used successfully!", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        // Show a message indicating that ingredients are missing in the pantry
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(requireContext(), "Missing ingredients in the pantry!", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
