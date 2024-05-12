@@ -141,12 +141,6 @@ class MyPlateActivity : AppCompatActivity() {
         }
 
 
-
-
-
-
-
-
     }
 
     private fun displayAllMyplate(){

@@ -19,7 +19,17 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.grocerez.ui.myplate.MyPlateViewModel
-
+import com.example.grocerez.data.model.MyPlateItem
+import com.example.grocerez.database.AppDatabase
+import com.example.grocerez.dao.CategoryDao
+import com.example.grocerez.dao.MyPlateDao
+import com.example.grocerez.dao.UnitDao
+import com.example.grocerez.data.model.Category
+import com.example.grocerez.data.model.Unit
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MyPlateSettingsFragment : Fragment(), GoalAdapter.GoalClickListener {
     private lateinit var sexSpinner: Spinner
@@ -39,6 +49,11 @@ class MyPlateSettingsFragment : Fragment(), GoalAdapter.GoalClickListener {
     // Initialize shared view model
     private val sharedModel: MyPlateViewModel by activityViewModels()
 
+    private lateinit var textViewFeedback: TextView
+    private lateinit var myPlateDao: MyPlateDao
+    private lateinit var categoryDao: CategoryDao
+    private lateinit var unitDao: UnitDao
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -46,11 +61,18 @@ class MyPlateSettingsFragment : Fragment(), GoalAdapter.GoalClickListener {
         val view = inflater.inflate(R.layout.fragment_myplate_settings, container, false)
         // Find the back_button ImageView
         val backButton: ImageView = view.findViewById(R.id.back_button)
+        textViewFeedback = view.findViewById(R.id.textViewMyPlateFeedback)
         // Set OnClickListener for the back_button
         backButton.setOnClickListener {
             // Navigate back to the MyPlateFragment
             findNavController().navigateUp()
         }
+
+        val appDatabase = AppDatabase.getInstance(requireContext())
+        myPlateDao = appDatabase.myPlateDao()
+        categoryDao = appDatabase.categoryDao()
+        unitDao = appDatabase.unitDao()
+
         // Find the Spinner and Button views
         sexSpinner = view.findViewById(R.id.sexSpinner)
         weightSpinner = view.findViewById(R.id.weightSpinner)
@@ -170,8 +192,67 @@ class MyPlateSettingsFragment : Fragment(), GoalAdapter.GoalClickListener {
     * where myplateFragment can access in order to display amounts to the user.*/
     override fun onGoalClicked(goal: MyPlateViewModel.Goal) {
         val info = determineMyPlateInfo(goal.calories)
-        // Update shared view model
         sharedModel.updateFoodAmounts(info)
+
+        val categoryNameList = arrayListOf("fruit", "vegetable", "grains", "protein", "dairy")
+        val unitList = arrayListOf("cup", "cup", "oz", "oz", "cup") // All strings
+
+        for (i in categoryNameList.indices) {
+            val amount = when (i) {
+                0 -> info.fruitAmount
+                1 -> info.vegetableAmount
+                2 -> info.grainAmount
+                3 -> info.proteinAmount
+                4 -> info.dairyAmount
+                else -> 0.0 // Handle default case
+            }
+            addToMyPlate(categoryNameList[i], amount.toFloat(), unitList[i])
+        }
+    }
+
+
+
+    private fun addToMyPlate(categoryName: String, amount: Float, unitName: String){
+        // Perform database operation to add the MyPlate item
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                // Check if the category exists in the category table
+                var category = categoryDao.findCategoryByName(categoryName = categoryName)
+
+                // If the category doesn't exist, insert it into the category table
+                if (category == null) {
+                    category = Category(categoryName)
+                    categoryDao.insertCategory(category)
+                }
+
+                // Check if the unit exists in the unit table
+                var unit = unitDao.findUnitByName(unitName)
+
+                // If the unit doesn't exist, insert it into the unit table
+                if (unit == null) {
+                    unit = Unit(unitName)
+                    unitDao.insertUnit(unit)
+                }
+
+                // Now that we have ensured that the category and unit exist, add the MyPlateItem
+                val myPlateItem = MyPlateItem(
+                    categoryName = categoryName,
+                    amount = amount,
+                    unit = unitName
+                )
+                myPlateDao.insertMyPlateItem(myPlateItem)
+
+                withContext(Dispatchers.Main) {
+                    textViewFeedback.text = "Item added to My Plate successfully."
+                }
+            }
+            catch (e:Exception){
+                withContext(Dispatchers.Main) {
+                    textViewFeedback.text = "Error adding item to My Plate: ${e.message}"
+                }
+
+            }
+        }
     }
 }
 
