@@ -33,15 +33,30 @@ class MyRecipesFragment : Fragment(), RecipeItemClickListener{
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        val appDatabase = AppDatabase.getInstance(requireContext())
+
+        recipesViewModel = ViewModelProvider(this.requireActivity(),
+            RecipesViewModel.RecipeModelFactory(
+                RecipeRepository(
+                    categoryDao = appDatabase.categoryDao(),
+                    itemDao = appDatabase.itemDao(),
+                    recipeDao = appDatabase.recipeDao(),
+                    recipeItemDao = appDatabase.recipeItemDao(),
+                    unitDao = appDatabase.unitDao()
+                )
+            )).get(RecipesViewModel::class.java)
+
+        recipesViewModel.loadRecipes()
+        recipesViewModel.loadIngredients()
+
         _binding = FragmentMyRecipesBinding.inflate(inflater, container, false)
         val root: View = binding.root
-
         return root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         // Observe changes in recipes LiveData
-        recipesViewModel = ViewModelProvider(this.requireActivity()).get(RecipesViewModel::class.java)
+//        recipesViewModel = ViewModelProvider(this.requireActivity()).get(RecipesViewModel::class.java)
 
         // Set up RecyclerView
         setRecyclerView()
@@ -100,17 +115,16 @@ class MyRecipesFragment : Fragment(), RecipeItemClickListener{
             layoutManager = LinearLayoutManager(requireContext())
             adapter = recipeItemAdapter
         }
-        binding.recipeListRecyclerView.adapter?.notifyDataSetChanged()
 
         // Observe changes in recipe items and update the RecyclerView
         recipesViewModel.recipes.observe(viewLifecycleOwner) { newRecipeList ->
-        newRecipeList?.let {
-        originalRecipeList = it
-        filterList(binding.recipeSearchBar.query.toString(), it)
-    }
+            newRecipeList?.let {
+                originalRecipeList = it
+                filterList(binding.recipeSearchBar.query.toString(), it)
+            }
         }
-//}
     }
+
 
     override fun editRecipeItem(recipeItem: String) {
         val bundle = Bundle().apply {
