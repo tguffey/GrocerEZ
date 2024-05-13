@@ -112,6 +112,36 @@ class RecipeParsingFragment : Fragment() {
 
         }
 
+
+        // These can be used when entering text to fields for uploading
+        //val recipeName = binding.recipeNameEditText.text.toString()
+        //val link = binding.linkEditText.text.toString()
+        //val items = parseItems(binding.itemsEditText.text.toString())
+
+        // Set OnClickListener for adding a recipe to the online SQL database
+        binding.addRecipeButton.setOnClickListener {
+            val recipeName = "TestR"
+            val link = "TestL"
+            val itemsJson = """
+        [
+            {"name": "TestItem1", "unit": "kg", "amount": "1"},
+            {"name": "TestItem2", "unit": "kg", "amount": "2"}
+        ]
+    """.trimIndent()
+
+            try {
+                if (recipeName.isNotEmpty() && itemsJson.isNotEmpty()) {
+                    Log.d("AddRecipe", "Sending recipe data: $recipeName, $link, $itemsJson")
+                    mSocket.emit("add-recipe", recipeName, link, itemsJson)
+                } else {
+                    Log.d("RecipeDataError", "Recipe name or items are empty")
+                }
+            } catch (e: JSONException) {
+                Log.e("RecipeDataError", "Error creating items JSON array: ${e.message}")
+            }
+        }
+
+
         // Establish a connection for the socket answer
         setupSocketListeners()
     }
@@ -309,8 +339,20 @@ class RecipeParsingFragment : Fragment() {
             }
         }
 
-
-
+        mSocket.on("add-recipe-result") { args ->
+            val resultJson = args[0]?.toString()
+            try {
+                val result = JSONObject(resultJson)
+                val message = result.optString("message", "Unknown result")
+                Log.d("AddRecipeResult", message)
+                activity?.runOnUiThread {
+                    binding.textViewResult.text = message
+                }
+            } catch (e: JSONException) {
+                e.printStackTrace()
+                Log.d("AddRecipeError", "Error parsing add recipe result")
+            }
+        }
     }
 
 
