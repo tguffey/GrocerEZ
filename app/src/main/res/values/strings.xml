@@ -47,6 +47,8 @@
     <string name="limit">Choose foods and beverages with less added sugars, saturated fat, and sodium.</string>
     <string name="cal_sub_info">*This calorie pattern is only an estimate of your needs. Monitor your body weight and adjust your calories if needed.</string>
     <string name="goal">Goal</string>
+    <string name="about_us">GrocerEZ is a mobile application designed to streamline food inventory management for users. It addresses the common challenges of monitoring food freshness, tracking expiration dates, and efficiently creating shopping lists. Beyond basic inventory management, GrocerEZ offers advanced features such as both user and web recipe integration as well as nutritional guidance with an easy-to-read MyPlate to help fit the specific needs of any user.</string>
+    <string name="about_us2">At GrocerEZ, we believe that managing your food inventory should be as delightful as a stroll through a farmer\'s market on a sunny day. Our mission is to sprinkle a touch of magic into your kitchen, transforming mundane grocery tasks into culinary adventures. With GrocerEZ, you\'ll embark on a whimsical journey through the aisles of efficiency, guided by our trusty companion, the Recipe Wizard. Let us whisk you away to a world where pantry organization is an art form, and shopping lists are love letters to your taste buds. Join us in celebrating the joy of cooking, one enchanted ingredient at a time!</string>
 
     <string-array name="myplate_descriptions">
         <item>1 cup of fruits counts as\n\t* 1 cup raw or cooked fruit; or\n\t* ½ cup dried fruit; or\n\t* 1 cup 100% fruit juice</item>

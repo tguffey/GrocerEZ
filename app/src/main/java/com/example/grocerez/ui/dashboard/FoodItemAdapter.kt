@@ -32,24 +32,29 @@ class FoodItemAdapter(
     ) :RecyclerView.ViewHolder(binding.root) {
 
         private val progressBar: ProgressBar = binding.itemProgressBar
+        private var currentProgress: Int = 0 // Track current progress
 
         fun bindPantryItem(pantryItem: PantryItem) {
             binding.name.text = pantryItem.itemName
             val healthiness = calculateHealthiness(pantryItem.inputDate, pantryItem.shelfLifeFromInputDate)
-            animateProgressBar(progressBar, progressBar.progress, healthiness)
-
+            animateProgressBar(progressBar, currentProgress, healthiness)
             binding.root.setOnClickListener {
                 onItemClickListener?.invoke(pantryItem)
             }
         }
 
         private fun animateProgressBar(progressBar: ProgressBar, from: Int, to: Int) {
-            val animator = ValueAnimator.ofInt(from, to)
-            animator.addUpdateListener { animation ->
-                progressBar.progress = animation.animatedValue as Int
+            if (from != to) { // Only animate if the progress has changed
+                val animator = ValueAnimator.ofInt(from, to)
+                animator.addUpdateListener { animation ->
+                    progressBar.progress = animation.animatedValue as Int
+                }
+                animator.duration = 1000 // Adjust the duration of the animation as needed
+                animator.start()
+                currentProgress = to // Update current progress
+            } else {
+                progressBar.progress = to // Update progress without animation
             }
-            animator.duration = 1000 // Adjust the duration of the animation as needed
-            animator.start()
         }
 
         private fun calculateHealthiness(inputDate: String, shelfLife: Int): Int {

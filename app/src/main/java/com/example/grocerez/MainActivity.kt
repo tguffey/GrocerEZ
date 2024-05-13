@@ -22,6 +22,17 @@ class MainActivity : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+//        // Retrieve the theme preference from shared preferences
+//        val themePreferences = getSharedPreferences("theme_prefs", Context.MODE_PRIVATE)
+//        val isDarkModeEnabled = themePreferences.getBoolean("isDarkModeEnabled", false)
+//
+//        // Set the theme based on the saved preference
+//        if (isDarkModeEnabled) {
+//            setTheme(R.style.Theme_GrocerEZDark)
+//        } else {
+//            setTheme(R.style.Theme_GrocerEZ)
+//        }
+
         super.onCreate(savedInstanceState)
 
         // Thong: Initialize the AppDatabase instance. here goes nothing
