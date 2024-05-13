@@ -1,6 +1,7 @@
 package com.example.grocerez.ui.recipes
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,15 +9,18 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.example.grocerez.SocketHandler
 import com.example.grocerez.data.model.PantryItem
 import com.example.grocerez.data.model.ShoppingListItem
 import com.example.grocerez.databinding.FragmentRecipeViewBinding
 import com.example.grocerez.ui.dashboard.DashboardViewModel
 import com.example.grocerez.ui.shopping.ShoppingViewModel
+import io.socket.client.Socket
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONException
 
 class RecipeView : Fragment(){
 
@@ -26,6 +30,8 @@ class RecipeView : Fragment(){
     private lateinit var pantryItemViewModel: DashboardViewModel
     private lateinit var shoppingViewModel: ShoppingViewModel
     private lateinit var ingredientItemAdapter: RecipeIngredientAdapter
+    // For accessing the backend sockets
+    private lateinit var mSocket: Socket
 
 
     override fun onCreateView(
@@ -37,7 +43,10 @@ class RecipeView : Fragment(){
         _binding = FragmentRecipeViewBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        // Use the recipeItem data as needed
+        SocketHandler.setSocket()
+        SocketHandler.establishConnection()
+        mSocket = SocketHandler.getSocket()
+        mSocket.connect()
 
         return view
     }
@@ -48,6 +57,8 @@ class RecipeView : Fragment(){
         recipeViewModel = ViewModelProvider(this.requireActivity()).get(RecipesViewModel::class.java)
         pantryItemViewModel = ViewModelProvider(this.requireActivity()).get(DashboardViewModel::class.java)
         shoppingViewModel = ViewModelProvider(this.requireActivity()).get(ShoppingViewModel::class.java)
+
+        mSocket = SocketHandler.getSocket()
 
         // Retrieve the recipeItem from the arguments bundle
         val args = arguments
@@ -73,7 +84,25 @@ class RecipeView : Fragment(){
         }
 
         binding.postRecipeButton.setOnClickListener{
-            postRecipe()
+            val recipeName = "TestR"
+            val link = "TestL"
+            val itemsJson = """
+        [
+            {"name": "TestItem1", "unit": "kg", "amount": "1"},
+            {"name": "TestItem2", "unit": "kg", "amount": "2"}
+        ]
+    """.trimIndent()
+
+            try {
+                if (recipeName.isNotEmpty() && itemsJson.isNotEmpty()) {
+                    Log.d("AddRecipe", "Sending recipe data: $recipeName, $link, $itemsJson")
+                    mSocket.emit("add-recipe", recipeName, link, itemsJson)
+                } else {
+                    Log.d("RecipeDataError", "Recipe name or items are empty")
+                }
+            } catch (e: JSONException) {
+                Log.e("RecipeDataError", "Error creating items JSON array: ${e.message}")
+            }
         }
 
         binding.useRecipeButton.setOnClickListener {
