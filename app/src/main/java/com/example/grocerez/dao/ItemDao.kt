@@ -41,4 +41,8 @@ interface ItemDao {
 
     @Query("SELECT * FROM items WHERE category_name = :catName")
     fun findItemsByCategory(catName: String) : Flow<List<Item>>
+
+    // In your DAO class
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertItemAndGetId(newItem: Item): Long
 }

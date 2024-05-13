@@ -12,9 +12,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.grocerez.SocketHandler
+import com.example.grocerez.data.model.Category
 import com.example.grocerez.data.model.Item
 import com.example.grocerez.data.model.Recipe
 import com.example.grocerez.data.model.RecipeItem
+import com.example.grocerez.data.model.Unit
 import com.example.grocerez.databinding.RecipeParsingBinding
 import io.socket.client.Socket
 import kotlinx.coroutines.CoroutineScope
@@ -141,6 +143,7 @@ class RecipeParsingFragment : Fragment() {
                 CoroutineScope(Dispatchers.IO).launch{
                     try{
                         val recipeID = recipeViewModel.addRecipeAndGetId(recipe)
+                        Log.d("threading", "we got the recipe ID: $recipeID")
                         var item: Item?
                         var newItem: Item
                         var newRecipeItem: RecipeItem
@@ -148,29 +151,64 @@ class RecipeParsingFragment : Fragment() {
                         // Get the ingredients and format them as a list
                         val ingredientsJsonArray = jsonObject.getJSONArray("ingredients")
                         val ingredientsList = StringBuilder("Ingredients:\n")
+
+                        var ingredient: JSONObject
+                        var amount: String
+                        var unit: String
+                        var name: String
+                        var itemID: Long
+
+                        var category: String
+                        var defaultUnit: String
+
+
                         for (i in 0 until ingredientsJsonArray.length()) {
-                            val ingredient = ingredientsJsonArray.getJSONObject(i)
-                            val amount = convertFractionToDecimal(ingredient.optString("Amount"))
-                            val unit = checkUnit(ingredient.optString("Unit"))
-                            val name = ingredient.optString("Name")
+                            ingredient = ingredientsJsonArray.getJSONObject(i)
+                            amount = convertFractionToDecimal(ingredient.optString("Amount"))
+                            unit = checkUnit(ingredient.optString("Unit"))
+                            name = ingredient.optString("Name")
+
+                            Log.d("threading", "getting ingredient from json: $amount, $unit, $name")
+
+                            // Default category and unit to "uncategorized" and "count" if not provided
+                            category = ingredient.optString("Category", "uncategorized")
+                            defaultUnit = ingredient.optString("Unit", "count")
+
+
+                            var existingCategory = recipeViewModel.findCategoryByName(category)
+                            if (existingCategory == null){
+                                val newCategory = Category(category)
+                                recipeViewModel.insertCategory(newCategory)
+                            }
+
+                            var existingUnit = recipeViewModel.findUnitByName(unit)
+                            if (existingUnit == null) {
+                                var newUnit = Unit(unit)
+                                recipeViewModel.insertUnit(newUnit)
+                            }
 
                             newItem = Item(
-                                name = name, category = "meatball ingredients",
-                                unitName = unit, useRate = 0.0f
+                                name = name,
+                                category = category,
+                                unitName = unit,
+                                useRate = 0.0f
                             )
-                            item = recipeViewModel.findItemByName(name)
+
+                            Log.d("threading", "now adding item to the database")
+                            itemID = recipeViewModel.addItemAndGetId(newItem)
+                            Log.d("threading", "supposedly i have the item id now")
 
                             Log.d("threading", "check if ${newItem.name} is null or not")
-                            if (item == null ){
-                                recipeViewModel.addItem(newItem)
-                                item = recipeViewModel.findItemByName(name)
-                                Log.d("threading", "Item IS NULL (BAD)")
-                            }
+//                            if (item == null ){
+//                                recipeViewModel.addItem(newItem)
+//                                item = recipeViewModel.findItemByName(name)
+//                                Log.d("threading", "Item IS NULL (BAD)")
+//                            }
 
                             Log.d("threading", "creating new Recipe item")
                             newRecipeItem = RecipeItem(
                                 recipeId = recipeID,
-                                itemId = item!!.item_id,
+                                itemId = itemID,
                                 amount = amount.toFloat()
                             )
 
