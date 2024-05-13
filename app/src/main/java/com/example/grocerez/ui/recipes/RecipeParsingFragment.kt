@@ -89,6 +89,7 @@ class RecipeParsingFragment : Fragment() {
             }
         }
 
+        // Set OnClickListener for barcode lookup button
         binding.barcodeLookupButton.setOnClickListener {
             // Retrieve the barcode entered by the user
             val barcode = binding.linkEditText.text.toString()
@@ -99,6 +100,16 @@ class RecipeParsingFragment : Fragment() {
             } else {
                 mSocket.emit("get-barcode-info", "0024100106851")
             }
+        }
+
+        // Set OnClickListener for view online recipes button
+        binding.viewRecipesButton.setOnClickListener {
+            // Retrieve the link entered by the user
+            val url = binding.linkEditText.text.toString()
+
+            // Send command to access recipes from online SQL database server
+             mSocket.emit("get-server-recipes")
+
         }
 
         // Establish a connection for the socket answer
@@ -239,8 +250,6 @@ class RecipeParsingFragment : Fragment() {
         }
 
 
-
-
         // Function for grabbing barcode data
         mSocket.on("productInfo") { args ->
             val productName = args[0]?.toString() ?: "Unknown product"
@@ -257,6 +266,50 @@ class RecipeParsingFragment : Fragment() {
                 Log.d("ProductInfoError", "Error displaying product info")
             }
         }
+
+        // Function for getting recipes from online SQL database
+        // Function for getting recipes from the server
+        mSocket.on("server-recipes-result") { args ->
+            if (args.isNotEmpty()) {
+                val recipesJson = args[0]?.toString()
+                Log.d("RecipeDataJSON", "Received JSON: $recipesJson")
+                try {
+                    val recipesArray = JSONArray(recipesJson)
+                    val recipeMap = mutableMapOf<Int, Pair<String, MutableList<String>>>()
+
+                    // Aggregate recipes and their items
+                    for (i in 0 until recipesArray.length()) {
+                        val recipe = recipesArray.getJSONObject(i)
+                        val recipeId = recipe.getInt("recipe_id")
+                        val recipeName = recipe.optString("recipe_name", "No Name")
+                        val link = recipe.optString("link", "No Link Provided")
+                        val itemName = recipe.optString("item_name", "No Name")
+                        val amount = recipe.optInt("amount", 0)
+                        val unit = recipe.optString("unit", "No Unit")
+                        val itemDescription = " - $itemName: $amount $unit"
+
+                        recipeMap.putIfAbsent(recipeId, Pair(recipeName + "\nLink: " + (link ?: "No Link"), mutableListOf()))
+                        recipeMap[recipeId]?.second?.add(itemDescription)
+                    }
+
+                    // Build the display string
+                    val recipesList = StringBuilder("Recipes:\n")
+                    recipeMap.forEach { (id, pair) ->
+                        recipesList.append("\n${pair.first}\nItems:\n${pair.second.joinToString("\n")}\n")
+                    }
+
+                    // Update the TextView to display the recipes
+                    activity?.runOnUiThread {
+                        binding.textViewResult.text = recipesList.toString()
+                    }
+                } catch (e: JSONException) {
+                    e.printStackTrace()
+                    Log.d("RecipeDataError", "Error parsing recipe data: ${e.message}")
+                }
+            }
+        }
+
+
 
     }
 
