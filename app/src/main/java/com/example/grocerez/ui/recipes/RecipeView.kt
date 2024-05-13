@@ -9,8 +9,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.grocerez.data.model.PantryItem
+import com.example.grocerez.data.model.ShoppingListItem
 import com.example.grocerez.databinding.FragmentRecipeViewBinding
 import com.example.grocerez.ui.dashboard.DashboardViewModel
+import com.example.grocerez.ui.shopping.ShoppingViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,6 +24,7 @@ class RecipeView : Fragment(){
     private val binding get() = _binding!!
     private lateinit var recipeViewModel: RecipesViewModel
     private lateinit var pantryItemViewModel: DashboardViewModel
+    private lateinit var shoppingViewModel: ShoppingViewModel
     private lateinit var ingredientItemAdapter: RecipeIngredientAdapter
 
 
@@ -44,7 +47,7 @@ class RecipeView : Fragment(){
 
         recipeViewModel = ViewModelProvider(this.requireActivity()).get(RecipesViewModel::class.java)
         pantryItemViewModel = ViewModelProvider(this.requireActivity()).get(DashboardViewModel::class.java)
-
+        shoppingViewModel = ViewModelProvider(this.requireActivity()).get(ShoppingViewModel::class.java)
 
         // Retrieve the recipeItem from the arguments bundle
         val args = arguments
@@ -75,7 +78,7 @@ class RecipeView : Fragment(){
         }
 
         binding.toShoppingButton.setOnClickListener {
-            null
+            sendToShoppingCart()
         }
 
         binding.nutritionButton.setOnClickListener{
@@ -149,6 +152,48 @@ class RecipeView : Fragment(){
                         withContext(Dispatchers.Main) {
                             Toast.makeText(requireContext(), "Missing ingredients in the pantry!", Toast.LENGTH_SHORT).show()
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    fun sendToShoppingCart(){
+        val args = arguments
+        val recipeItemName = args?.getString("recipeItem")
+
+        // Next, check if the recipe item name is not null
+        if (recipeItemName != null) {
+            // Use coroutine scope to perform asynchronous operations
+            CoroutineScope(Dispatchers.IO).launch {
+                // Retrieve the recipe item from the ViewModel
+                val recipeItem = recipeViewModel.findRecipeByName(recipeItemName)
+                // Check if the recipe item is not null
+                if (recipeItem != null) {
+                    // Retrieve the ingredients required for the recipe
+                    val recipeIngredients = recipeViewModel.getIngredientsForRecipe(recipeItem.recipeId)
+
+                    for (ingredient in recipeIngredients) {
+                        val existingItem  = shoppingViewModel.findShoppingListItemByName(ingredient.name)
+                        if (existingItem != null){
+                            val updatedQuantity = existingItem.quantity + ingredient.amount
+                            existingItem.quantity = updatedQuantity
+                            shoppingViewModel.updateShoppingListItem(existingItem)
+                        }
+                        else {
+                            val notes = "Added from ${recipeItem.name} recipe"
+                            val shoppingListItem = ShoppingListItem(
+                                itemName = ingredient.name,
+                                quantity = ingredient.amount,
+                                checkbox = false,
+                                notes = notes
+                            )
+                            shoppingViewModel.addShoppingListItem(shoppingListItem)
+                        }
+                    }
+                    // Show a message indicating that the recipe can be used
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(requireContext(), "Added Recipe Ingredients to Shopping Cart successfully!", Toast.LENGTH_SHORT).show()
                     }
                 }
             }

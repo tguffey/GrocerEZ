@@ -14,11 +14,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.grocerez.R
 import com.example.grocerez.data.PantryRepository
 import com.example.grocerez.data.RecipeRepository
+import com.example.grocerez.data.ShoppingRepository
 import com.example.grocerez.database.AppDatabase
 import com.example.grocerez.databinding.FragmentHomeBinding
 import com.example.grocerez.ui.dashboard.DashboardViewModel
 import com.example.grocerez.ui.recipes.RecipesViewModel
 import com.example.grocerez.ui.settings.SettingsActivity
+import com.example.grocerez.ui.shopping.ShoppingViewModel
 
 class HomeFragment : Fragment() {
 
@@ -28,6 +30,7 @@ class HomeFragment : Fragment() {
     private lateinit var adapter: NewsAdapter
     private lateinit var recipesViewModel: RecipesViewModel
     private lateinit var dashboardViewModel: DashboardViewModel
+    private lateinit var shoppingViewModel: ShoppingViewModel
 
 
     override fun onCreateView(
@@ -65,6 +68,18 @@ class HomeFragment : Fragment() {
             )).get(DashboardViewModel::class.java)
 
         dashboardViewModel.loadPantryList()
+
+        shoppingViewModel = ViewModelProvider(this.requireActivity(),
+            ShoppingViewModel.ShoppingModelFactory(
+                ShoppingRepository(
+                    categoryDao = appDatabase.categoryDao(),
+                    itemDao = appDatabase.itemDao(),
+                    shoppingListItemDao = appDatabase.shoppingListItemDao(),
+                    unitDao = appDatabase.unitDao()
+                )
+            )).get(ShoppingViewModel::class.java)
+
+        shoppingViewModel.loadShoppingList()
 
         val pantryPick = ArrayList<ListDomain>()
         for (i in 1..6) {
