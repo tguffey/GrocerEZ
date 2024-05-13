@@ -25,7 +25,7 @@
         android:layout_width="102dp"
         android:layout_height="37dp"
         android:text="test database"
-        android:visibility="visible"
+        android:visibility="invisible"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
         app:layout_constraintEnd_toEndOf="parent"

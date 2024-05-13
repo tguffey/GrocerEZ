@@ -1,6 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <!-- I removed the Action Bar - Jocelyn -->
     <style name="Theme.GrocerEZ" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <!-- I changed the primary colors- Jocelyn -->
@@ -14,7 +13,6 @@
         <!-- Color of system icons in the status bar (time, battery, etc.). -->
         <item name="android:windowLightStatusBar">true</item>
         <!-- Text color for the ActionBar or Toolbar title. -->
-
     </style>
 <!--    This is for the settings page-->
     <style name="nightModeSwitch" parent= "Theme.AppCompat.Light">
@@ -22,4 +20,5 @@
     <item name="colorSwitchThumbNormal">#FFFFFF</item>
     <item name="android:colorForeground">#333333</item>
 </style>
+
 </resources>
