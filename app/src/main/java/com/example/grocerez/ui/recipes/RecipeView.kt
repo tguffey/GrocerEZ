@@ -73,6 +73,10 @@ class RecipeView : Fragment(){
             findNavController().popBackStack()
         }
 
+        binding.postRecipeButton.setOnClickListener{
+            postRecipe()
+        }
+
         binding.useRecipeButton.setOnClickListener {
             useRecipe()
         }
@@ -84,6 +88,10 @@ class RecipeView : Fragment(){
         binding.nutritionButton.setOnClickListener{
             showNutritionFactsDialog()
         }
+    }
+
+    private fun postRecipe() {
+        TODO("Not yet implemented")
     }
 
     private fun showNutritionFactsDialog() {
