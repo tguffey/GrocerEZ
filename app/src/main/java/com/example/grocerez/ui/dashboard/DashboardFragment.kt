@@ -66,16 +66,7 @@ class DashboardFragment : Fragment(), FoodItemClickListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val appDatabase = AppDatabase.getInstance(requireContext())
-        dashboardViewModel = ViewModelProvider(this.requireActivity(),
-            DashboardViewModel.PantryModelFactory(
-                PantryRepository(
-                    categoryDao = appDatabase.categoryDao(),
-                    itemDao = appDatabase.itemDao(),
-                    pantryItemDao = appDatabase.pantryItemDao(),
-                    unitDao = appDatabase.unitDao()
-                )
-            )).get(DashboardViewModel::class.java)
+        dashboardViewModel = ViewModelProvider(this.requireActivity()).get(DashboardViewModel::class.java)
 
         dashboardViewModel.loadPantryList()
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
