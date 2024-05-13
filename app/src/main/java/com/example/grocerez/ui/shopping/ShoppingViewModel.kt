@@ -1,6 +1,5 @@
 package com.example.grocerez.ui.shopping
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -62,11 +61,21 @@ class ShoppingViewModel(val repository: ShoppingRepository) : ViewModel() {
         categoryItems.postValue(repository.allCategoriesAndShopItems())
     }
 
+    suspend fun updateShoppingListItem(shopItem: ShoppingListItem) = viewModelScope.launch (Dispatchers.IO){
+        repository.updateShoppingListItem(shopItem)
+    }
+
     fun addShoppingListItem(newGrocery: ShoppingListItem) = viewModelScope.launch(Dispatchers.IO) {
 //        Log.v("VIEW MODEL", "in add shop item")
         repository.insertShoppingListItem(newGrocery)
         updateData()
 //        Log.v("VIEW MODEL", "added new item")
+    }
+
+    suspend fun findShoppingListItemByName(itemName: String) : ShoppingListItem? {
+        return withContext(Dispatchers.IO){
+            return@withContext repository.findShoppingListItemByName(itemName)
+        }
     }
 
     fun addCategory(newCategory: Category) = viewModelScope.launch(Dispatchers.IO) {

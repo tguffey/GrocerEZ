@@ -48,7 +48,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
-                android:text="Jane Doe"
+                android:text="GrocerEZ"
                 android:textSize = "22sp"
                 android:textStyle="bold"/>
 
@@ -94,7 +94,7 @@
                         android:layout_marginStart="20dp"
                         android:layout_toEndOf="@id/accountIcon"
                         android:text="Account"
-                        android:textColor="@color/black"
+                        style="@style/TextAppearance.MaterialComponents.Body1"
                         android:textStyle="bold" />
 
                     <ImageView
@@ -124,7 +124,7 @@
                         android:layout_marginStart="20dp"
                         android:layout_toEndOf="@id/securityIcon"
                         android:text="Security &amp; Privacy"
-                        android:textColor="@color/black"
+                        style="@style/TextAppearance.MaterialComponents.Body1"
                         android:textStyle="bold" />
 
                     <ImageView
@@ -163,17 +163,18 @@
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:text="Night Mode"
-                        android:textColor="@color/black"
                         android:textStyle="bold"
+                        style="@style/TextAppearance.MaterialComponents.Body1"
                         android:layout_toEndOf="@id/nightModeIcon"/>
 
                     <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/nightModeSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="48dp"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         android:switchMinWidth="50dp"
-                        android:theme="@style/nightModeSwitch"/>
+                        android:theme="@style/nightModeSwitch" />
                 </RelativeLayout>
 <!--                Notifications-->
                 <RelativeLayout
@@ -193,11 +194,12 @@
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:text="Notifications"
-                        android:textColor="@color/black"
                         android:textStyle="bold"
+                        style="@style/TextAppearance.MaterialComponents.Body1"
                         android:layout_toEndOf="@id/notificationsIcon"/>
 
                     <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/notifications_switch"
                         android:layout_width="wrap_content"
                         android:layout_height="48dp"
                         android:layout_alignParentEnd="true"
@@ -222,8 +224,8 @@
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:text="Text Size"
-                        android:textColor="@color/black"
                         android:textStyle="bold"
+                        style="@style/TextAppearance.MaterialComponents.Body1"
                         android:layout_toEndOf="@id/textIcon"/>
 
                     <ImageView
@@ -247,7 +249,10 @@
                 <!--                DARK MODE-->
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:onClick="onSendMessageClicked">
 
                     <ImageView
                         android:id="@+id/messageIcon"
@@ -256,13 +261,14 @@
                         android:background="@drawable/round_back_night_mode"
                         android:padding="12dp"
                         android:src="@drawable/lock"/>
+
                     <TextView
                         android:layout_marginStart="20dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
+                        style="@style/TextAppearance.MaterialComponents.Body1"
                         android:text="Send us a message"
-                        android:textColor="@color/black"
                         android:textStyle="bold"
                         android:layout_toEndOf="@id/messageIcon"/>
 
@@ -272,9 +278,12 @@
                         android:src="@drawable/right_arrow_icon"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"/>
+
                 </RelativeLayout>
+
                 <!--                Notifications-->
                 <RelativeLayout
+                    android:id="@+id/aboutUsLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
@@ -291,7 +300,7 @@
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:text="About us"
-                        android:textColor="@color/black"
+                        style="@style/TextAppearance.MaterialComponents.Body1"
                         android:textStyle="bold"
                         android:layout_toEndOf="@id/aboutUsIcon"/>
 
@@ -303,6 +312,7 @@
                         android:layout_centerVertical="true"/>
                 </RelativeLayout>
                 <RelativeLayout
+                    android:id="@+id/faqLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
@@ -319,7 +329,7 @@
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:text="FAQs"
-                        android:textColor="@color/black"
+                        style="@style/TextAppearance.MaterialComponents.Body1"
                         android:textStyle="bold"
                         android:layout_toEndOf="@id/faqIcon"/>
 

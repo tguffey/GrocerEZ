@@ -13,7 +13,8 @@ import com.example.grocerez.data.model.Unit
 import com.example.grocerez.ui.shopping.CategoryItem
 import com.example.grocerez.ui.shopping.ShoppingItem
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.withContext
 
 class ShoppingRepository(
@@ -132,6 +133,12 @@ class ShoppingRepository(
         }
     }
 
+    @WorkerThread
+    suspend fun findShoppingListItemByName(itemName: String) : ShoppingListItem? {
+        return withContext(Dispatchers.IO){
+            return@withContext shoppingListItemDao.findShoppingListItemByName(itemName)
+        }
+    }
 
 
 }

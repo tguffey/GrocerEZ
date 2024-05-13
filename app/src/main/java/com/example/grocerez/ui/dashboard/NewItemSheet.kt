@@ -2,6 +2,7 @@ package com.example.grocerez.ui.dashboard
 
 import android.app.DatePickerDialog
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,14 +10,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.example.grocerez.R
 import com.example.grocerez.data.model.Category
 import com.example.grocerez.data.model.Item
 import com.example.grocerez.data.model.PantryItem
 import com.example.grocerez.databinding.FragmentNewItemSheetBinding
+import com.example.grocerez.ui.ItemAmount
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -77,11 +83,15 @@ class NewTaskSheet() : Fragment() {
                         binding.quantity.setText(pantryItem.amountFromInputDate.toString())
                         binding.category.setText(item.category)
                         binding.expirationLength.setText(pantryItem.shelfLifeFromInputDate.toString())
+                        setSpinner(item.unitName)
+                        selectedUnit = item.unitName
                     }
                 }
             }
             else {
                 binding.foodTitle.text = "New Item"
+                selectedUnit = ""
+                setSpinner(selectedUnit)
             }
         }
 
@@ -92,7 +102,6 @@ class NewTaskSheet() : Fragment() {
 //        categoryDao = appDatabase.categoryDao()
 //        unitDao = appDatabase.unitDao()
 //        itemDao = appDatabase.itemDao()
-
 
         // Set OnClickListener for cancleButton
         binding.cancelButton.setOnClickListener {
@@ -171,6 +180,71 @@ class NewTaskSheet() : Fragment() {
         binding.name.setText("")
     }
 
+    private fun setSpinner(initialSelectedUnit: String) {
+        // Create a list of the units, Units label is the first element
+        var options: Array<String> = ItemAmount.getAllUnits()
+        options[0] = "Units:"
+
+        val context = requireContext()
+        val arrayAdapter = object : ArrayAdapter<String>(context,
+            R.layout.shopping_quantity_spinner, options) {
+
+            // Show the Units label as grayed out and choices as black text
+            override fun getDropDownView(
+                position: Int,
+                convertView: View?,
+                parent: ViewGroup
+            ): View {
+                val view: TextView = super.getDropDownView(position, convertView, parent) as TextView
+                if (position == 0) {
+                    view.setTextColor(Color.GRAY)
+                } else {
+                    view.setTextColor(Color.BLACK)
+                }
+                return view
+            }
+        }
+        // adapter for the actual list, creates an Item Amount object for the quantity
+        arrayAdapter.setDropDownViewResource(R.layout.shopping_quantity_spinner)
+        binding.quantitySpinner.adapter = arrayAdapter
+
+        binding.quantitySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                selectedUnit = parent?.getItemAtPosition(position) as String
+
+                if (position == 0) {
+                    selectedUnit = "unit"
+                }
+
+                // Only the units choices can be selected and not the Units label
+                if (position > 0) {
+                    Toast.makeText(
+                        context, "Selected : $selectedUnit",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                else {
+                    Toast.makeText(
+                        context, "Quantity Units automatically selected as None",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // Nothing to do here
+            }
+        }
+
+        // Set the selected unit in the spinner
+        val selectedIndex = options.indexOf(initialSelectedUnit)
+        if (selectedIndex != -1) {
+            binding.quantitySpinner.setSelection(selectedIndex)
+        }
+    }
+
+
+
 
     // Function to handle save action
     private fun saveAction() {
@@ -179,9 +253,6 @@ class NewTaskSheet() : Fragment() {
         val startingDateText = binding.startingDate.text.toString().replace("Date: ", "")
         val expirationLengthText = binding.expirationLength.text.toString().toIntOrNull()?:0
         val quantity = binding.quantity.text.toString().toFloatOrNull()?:0.0f
-        selectedUnit = "count"
-
-
 
         // Check if the name is empty
         if (name.isEmpty()) {
@@ -279,7 +350,7 @@ class NewTaskSheet() : Fragment() {
         }
 
         binding.name.setText("")
-        binding.expirationDate.text = "Date: "
+        binding.expirationLength.setText("")
         binding.startingDate.text = "Date: "
         findNavController().popBackStack()
     }

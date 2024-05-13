@@ -19,10 +19,11 @@ class RecipesFragment : Fragment(){
     // View binding instance
     private var _binding : FragmentRecipesBinding? = null
 
-    lateinit var recipesViewModel : RecipesViewModel
-
     // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
+
+    private lateinit var recipesViewModel: RecipesViewModel
+
 
     // Create the UI view
     override fun onCreateView(
@@ -32,22 +33,7 @@ class RecipesFragment : Fragment(){
     ): View {
         super.onCreateView(inflater, container, savedInstanceState)
 
-        val appDatabase = AppDatabase.getInstance(requireContext())
-
-        recipesViewModel = ViewModelProvider(this.requireActivity(),
-            RecipesViewModel.RecipeModelFactory(
-                RecipeRepository(
-                    categoryDao = appDatabase.categoryDao(),
-                    itemDao = appDatabase.itemDao(),
-                    recipeDao = appDatabase.recipeDao(),
-                    recipeItemDao = appDatabase.recipeItemDao(),
-                    unitDao = appDatabase.unitDao()
-                )
-            )).get(RecipesViewModel::class.java)
-
-        recipesViewModel.loadRecipes()
-        recipesViewModel.loadIngredients()
-
+        recipesViewModel = ViewModelProvider(this.requireActivity()).get(RecipesViewModel::class.java)
 
         // Inflate the layout for this fragment using view binding
         _binding = FragmentRecipesBinding.inflate(inflater, container, false)

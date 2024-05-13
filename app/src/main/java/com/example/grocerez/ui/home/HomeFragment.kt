@@ -7,12 +7,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.grocerez.R
+import com.example.grocerez.data.PantryRepository
+import com.example.grocerez.data.RecipeRepository
+import com.example.grocerez.data.ShoppingRepository
+import com.example.grocerez.database.AppDatabase
 import com.example.grocerez.databinding.FragmentHomeBinding
+import com.example.grocerez.ui.dashboard.DashboardViewModel
+import com.example.grocerez.ui.recipes.RecipesViewModel
 import com.example.grocerez.ui.settings.SettingsActivity
+import com.example.grocerez.ui.shopping.ShoppingViewModel
 
 class HomeFragment : Fragment() {
 
@@ -20,6 +28,10 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var recyclerViewList: RecyclerView
     private lateinit var adapter: NewsAdapter
+    private lateinit var recipesViewModel: RecipesViewModel
+    private lateinit var dashboardViewModel: DashboardViewModel
+    private lateinit var shoppingViewModel: ShoppingViewModel
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -28,6 +40,46 @@ class HomeFragment : Fragment() {
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
+
+        val appDatabase = AppDatabase.getInstance(requireContext())
+
+        recipesViewModel = ViewModelProvider(this.requireActivity(),
+            RecipesViewModel.RecipeModelFactory(
+                RecipeRepository(
+                    categoryDao = appDatabase.categoryDao(),
+                    itemDao = appDatabase.itemDao(),
+                    recipeDao = appDatabase.recipeDao(),
+                    recipeItemDao = appDatabase.recipeItemDao(),
+                    unitDao = appDatabase.unitDao()
+                )
+            )).get(RecipesViewModel::class.java)
+
+        recipesViewModel.loadRecipes()
+        recipesViewModel.loadIngredients()
+
+        dashboardViewModel = ViewModelProvider(this.requireActivity(),
+            DashboardViewModel.PantryModelFactory(
+                PantryRepository(
+                    categoryDao = appDatabase.categoryDao(),
+                    itemDao = appDatabase.itemDao(),
+                    pantryItemDao = appDatabase.pantryItemDao(),
+                    unitDao = appDatabase.unitDao()
+                )
+            )).get(DashboardViewModel::class.java)
+
+        dashboardViewModel.loadPantryList()
+
+        shoppingViewModel = ViewModelProvider(this.requireActivity(),
+            ShoppingViewModel.ShoppingModelFactory(
+                ShoppingRepository(
+                    categoryDao = appDatabase.categoryDao(),
+                    itemDao = appDatabase.itemDao(),
+                    shoppingListItemDao = appDatabase.shoppingListItemDao(),
+                    unitDao = appDatabase.unitDao()
+                )
+            )).get(ShoppingViewModel::class.java)
+
+        shoppingViewModel.loadShoppingList()
 
         val pantryPick = ArrayList<ListDomain>()
         for (i in 1..6) {

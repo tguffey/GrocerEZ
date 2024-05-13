@@ -1,6 +1,5 @@
 package com.example.grocerez.ui.recipes
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -14,28 +13,6 @@ class RecipeItemAdapter (
     private val clickListener: RecipeItemClickListener // Click listener interface for editing recipe items
 ): RecyclerView.Adapter<RecipeItemAdapter.RecipeViewHolder>() {
 
-    private var onItemClickListener: ((Recipe) -> Unit)? = null
-
-    fun setOnItemClickListener(listener: (Recipe) -> Unit) {
-        onItemClickListener = listener
-    }
-
-    inner class RecipeViewHolder(
-        private val context: Context,
-        private val binding: RecipeItemCellBinding,
-        private val clickListener: RecipeItemClickListener
-    ) :RecyclerView.ViewHolder(binding.root)    {
-        fun bindRecipe(recipe: Recipe){
-            val recipeAdapter = RecipeItemAdapter(recipes, clickListener)
-            binding.recipeName.text = recipe.name
-            recipeAdapter.notifyDataSetChanged()
-
-            binding.root.setOnClickListener{
-                onItemClickListener?.invoke(recipe)
-            }
-        }
-    }
-
     // Function to update the list of recipe items
     fun updateRecipeItems(newRecipeItems: List<Recipe>){
         // Calculate the difference between the old and new list of recipe items
@@ -46,13 +23,27 @@ class RecipeItemAdapter (
         diffResult.dispatchUpdatesTo(this)
     }
 
+    inner class RecipeViewHolder(
+        private val binding: RecipeItemCellBinding,
+        private val clickListener: RecipeItemClickListener
+    ) : RecyclerView.ViewHolder(binding.root)    {
+        fun bindRecipe(recipe: Recipe){
+            binding.recipeName.text = recipe.name
+
+            // Set click listener for the root view
+            binding.root.setOnClickListener{
+                clickListener.editRecipeItem(recipe.name)
+            }
+        }
+    }
+
     // Create a new ViewHolder instance
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecipeViewHolder {
         // Inflate the layout for recipe item cells
         val inflater = LayoutInflater.from(parent.context)
         val binding = RecipeItemCellBinding.inflate(inflater, parent, false)
         // Create and return a new ViewHolder instance
-        return RecipeViewHolder(parent.context, binding, clickListener)
+        return RecipeViewHolder(binding, clickListener)
     }
 
     // Bind data to the ViewHolder
@@ -63,5 +54,4 @@ class RecipeItemAdapter (
 
     // Return the total number of recipe items
     override fun getItemCount(): Int = recipes.size
-
 }

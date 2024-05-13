@@ -67,13 +67,13 @@
 
             <!-- Cancel button on the left -->
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/editRecipeButton"
+                android:id="@+id/postRecipeButton"
                 android:layout_width="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
-                android:layout_marginStart="145dp"
-                android:text="Edit Recipe"
+                android:layout_marginStart="130dp"
+                android:text="Post Recipe"
                 />
 
             <!-- Save button on the right -->
@@ -105,7 +105,7 @@
                 android:layout_marginBottom="10dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
-                android:layout_marginStart="135dp"
+                android:layout_marginStart="130dp"
                 android:text="Use Recipe"
                 />
 
