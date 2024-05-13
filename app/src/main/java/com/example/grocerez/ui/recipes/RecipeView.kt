@@ -68,7 +68,6 @@ class RecipeView : Fragment(){
             }
         }
 
-
         binding.backButton.setOnClickListener {
             findNavController().popBackStack()
         }
