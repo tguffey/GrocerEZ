@@ -127,6 +127,17 @@ class RecipeParsingFragment : Fragment() {
                 // Initialize a JSONObject with the string
                 val jsonObject = JSONObject(recipeDataJson)
 
+                // Get the recipe name and format it into a list
+                // This is currently done to easily match the format of the other data
+                val recipeNameJsonArray = jsonObject.getJSONArray("recipeName")
+                val recipeNameList = StringBuilder("Recipe Name:\n")
+                val recipeTitle = StringBuilder()
+                for (i in 0 until recipeNameJsonArray.length()) {
+                    val recipeName = recipeNameJsonArray.optString(i)
+                    recipeTitle.append(recipeName)
+                    recipeNameList.append("$recipeName\n")
+                }
+
                 // Get the instructions and format them as a list
                 val instructionsJsonArray = jsonObject.getJSONArray("instructions")
                 val instructionsList = StringBuilder("\nInstructions:\n")
@@ -136,7 +147,7 @@ class RecipeParsingFragment : Fragment() {
                 }
 
                 val recipe = Recipe(
-                    name = "Meatballs",
+                    name = recipeTitle.toString(),
                     instruction = instructionsList.toString()
                 )
 
