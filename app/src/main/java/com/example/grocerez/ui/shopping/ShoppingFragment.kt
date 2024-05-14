@@ -13,6 +13,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.grocerez.R
@@ -30,6 +31,7 @@ class ShoppingFragment : Fragment(), ShoppingItemClickListener {
 
     private var _binding : FragmentShoppingBinding? = null
     private lateinit var shoppingViewModel: ShoppingViewModel
+    private lateinit var historyItems: MutableList<HistoryItem>
     // Tracks whether or not the edit options are expanded or not
     private var isExpanded = false
 
@@ -56,7 +58,8 @@ class ShoppingFragment : Fragment(), ShoppingItemClickListener {
                     categoryDao = appDatabase.categoryDao(),
                     itemDao = appDatabase.itemDao(),
                     shoppingListItemDao = appDatabase.shoppingListItemDao(),
-                    unitDao = appDatabase.unitDao()
+                    unitDao = appDatabase.unitDao(),
+                    pantryItemDao = appDatabase.pantryItemDao()
                 )
             )).get(ShoppingViewModel::class.java)
 
@@ -116,9 +119,10 @@ class ShoppingFragment : Fragment(), ShoppingItemClickListener {
         }
         setRecyclerView()
 
-        // TODO: this is to test viewing the db. might delete this button later
-        binding.addCategoryFab.setOnClickListener {
-            // fill this in
+        binding.historyFab.setOnClickListener {
+            if (findNavController().currentDestination?.id == R.id.navigation_shopping) {
+                findNavController().navigate(R.id.action_shopFragment_to_history)
+            }
         }
     }
 
@@ -133,7 +137,6 @@ class ShoppingFragment : Fragment(), ShoppingItemClickListener {
         binding.transparentBg.startAnimation(toBottomBg)
         binding.clearListFab.startAnimation(fabClose)
         binding.addItemFab.startAnimation(fabClose)
-        binding.addCategoryFab.startAnimation(fabClose)
 
         // Toggle isExpanded
         isExpanded = !isExpanded
@@ -145,7 +148,6 @@ class ShoppingFragment : Fragment(), ShoppingItemClickListener {
         binding.transparentBg.startAnimation(fromBottomBg)
         binding.clearListFab.startAnimation(fabOpen)
         binding.addItemFab.startAnimation(fabOpen)
-        binding.addCategoryFab.startAnimation(fabOpen)
 
         // Toggle isExpanded
         isExpanded = !isExpanded
@@ -170,6 +172,7 @@ class ShoppingFragment : Fragment(), ShoppingItemClickListener {
             }
         }
         binding.categoryListRecyclerView.adapter?.notifyDataSetChanged()
+
     }
 
     // Build the dialog that allows the user to confirm clearing the list

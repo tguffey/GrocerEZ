@@ -4,10 +4,12 @@ import android.util.Log
 import androidx.annotation.WorkerThread
 import com.example.grocerez.dao.CategoryDao
 import com.example.grocerez.dao.ItemDao
+import com.example.grocerez.dao.PantryItemDao
 import com.example.grocerez.dao.ShoppingListItemDao
 import com.example.grocerez.dao.UnitDao
 import com.example.grocerez.data.model.Category
 import com.example.grocerez.data.model.Item
+import com.example.grocerez.data.model.PantryItem
 import com.example.grocerez.data.model.ShoppingListItem
 import com.example.grocerez.data.model.Unit
 import com.example.grocerez.ui.shopping.CategoryItem
@@ -21,7 +23,8 @@ class ShoppingRepository(
     private val categoryDao: CategoryDao,
     private val itemDao: ItemDao,
     private val shoppingListItemDao: ShoppingListItemDao,
-    private val unitDao: UnitDao
+    private val unitDao: UnitDao,
+    private val pantryItemDao: PantryItemDao
 ) {
 
     @WorkerThread
@@ -85,6 +88,13 @@ class ShoppingRepository(
     }
 
     @WorkerThread
+    suspend fun updatePantryItem(pantryItem: PantryItem) {
+        return withContext(Dispatchers.IO) {
+            pantryItemDao.updatePantryItemDao(pantryItem)
+        }
+    }
+
+    @WorkerThread
     suspend fun insertCategory(category: Category) {
         return withContext(Dispatchers.IO) {
             categoryDao.insertCategory(category)
@@ -95,6 +105,13 @@ class ShoppingRepository(
     suspend fun insertItem(item: Item) {
         return withContext(Dispatchers.IO) {
             itemDao.insertItem(item)
+        }
+    }
+
+    @WorkerThread
+    suspend fun insertPantryItem(pantryItem: PantryItem) {
+        return withContext(Dispatchers.IO) {
+            pantryItemDao.insertPantryItemDao(pantryItem)
         }
     }
 
@@ -116,6 +133,13 @@ class ShoppingRepository(
     suspend fun findItemByName(name: String) : Item? {
         return withContext(Dispatchers.IO) {
             return@withContext itemDao.findItemByName(name)
+        }
+    }
+
+    @WorkerThread
+    suspend fun findPantryItemByName(name: String) : PantryItem? {
+        return withContext(Dispatchers.IO) {
+            return@withContext pantryItemDao.findPantryItemByName(name)
         }
     }
 
