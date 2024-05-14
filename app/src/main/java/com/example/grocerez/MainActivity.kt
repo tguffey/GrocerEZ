@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
 
 
         // ESTABLISH SOCKET CONNECTION
-        SocketHandler.setSocket()
+        //SocketHandler.setSocket()
         val mSocket = SocketHandler.getSocket()
         mSocket.connect()
         mSocket.emit("hello")
