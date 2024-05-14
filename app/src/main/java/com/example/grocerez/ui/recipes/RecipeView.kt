@@ -82,14 +82,16 @@ class RecipeView : Fragment(){
         }
 
         binding.nutritionButton.setOnClickListener{
-            showNutritionFactsDialog()
+            showNutritionFactsDialog(recipeItemName!!)
         }
     }
 
-    private fun showNutritionFactsDialog() {
-        val dialog = NutritionFactsDialog()
+    private fun showNutritionFactsDialog(recipeItemName: String) {
+        val dialog = NutritionFactsDialog.newInstance(recipeItemName)
         dialog.show(childFragmentManager, "nutrition")
     }
+
+
 
     override fun onDestroyView() {
         super.onDestroyView()
