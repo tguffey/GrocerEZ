@@ -144,7 +144,17 @@
         android:id="@+id/navigation_shopping"
         android:name="com.example.grocerez.ui.shopping.ShoppingFragment"
         android:label="@string/title_shopping"
-        tools:layout="@layout/fragment_shopping"/>
+        tools:layout="@layout/fragment_shopping">
+        <action
+            android:id="@+id/action_shopFragment_to_history"
+            app:destination="@id/shopping_history"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/shopping_history"
+        android:name="com.example.grocerez.ui.shopping.HistoryFragment"
+        android:label="Shop History"
+        tools:layout="@layout/fragment_shopping_history"/>
 
 
 

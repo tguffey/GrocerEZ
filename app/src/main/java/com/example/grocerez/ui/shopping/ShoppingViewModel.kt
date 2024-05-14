@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.grocerez.data.ShoppingRepository
 import com.example.grocerez.data.model.Category
 import com.example.grocerez.data.model.Item
+import com.example.grocerez.data.model.PantryItem
 import com.example.grocerez.data.model.ShoppingListItem
 import com.example.grocerez.data.model.Unit
 import kotlinx.coroutines.Dispatchers
@@ -28,6 +29,31 @@ class ShoppingViewModel(val repository: ShoppingRepository) : ViewModel() {
     val text: LiveData<String> = _text
 
     lateinit var categoryItems: MutableLiveData<List<CategoryItem>> /*= MutableLiveData(emptyList())*/
+    var historyItems = MutableLiveData<MutableList<HistoryItem>>()
+
+    init {
+        historyItems.value = mutableListOf()
+    }
+
+    fun addHistoryItem(historyItem: HistoryItem) {
+        val list = historyItems.value
+        list!!.add(historyItem)
+        historyItems.postValue(list!!)
+    }
+
+    fun removeHistoryItem(historyItem: HistoryItem) {
+        val list = historyItems.value
+        val item = list!!.find { it.id == historyItem.id }!!
+        list.remove(item)
+        historyItems.postValue(list!!)
+    }
+
+    fun toggleCheckHistoryItem(historyItem: HistoryItem) {
+        val list = historyItems.value
+        val item = list!!.find { it.id == historyItem.id }!!
+        item.checkbox = !item.checkbox
+        historyItems.postValue(list!!)
+    }
 
     fun loadShoppingList() = viewModelScope.launch(Dispatchers.IO) {
         categoryItems = MutableLiveData(emptyList())
@@ -37,6 +63,12 @@ class ShoppingViewModel(val repository: ShoppingRepository) : ViewModel() {
     suspend fun findItemByName(name: String) : Item? {
         return withContext(Dispatchers.IO) {
             return@withContext repository.findItemByName(name)
+        }
+    }
+
+    suspend fun findPantryItemByName(name: String) : PantryItem? {
+        return withContext(Dispatchers.IO) {
+            return@withContext repository.findPantryItemByName(name)
         }
     }
 
@@ -58,6 +90,10 @@ class ShoppingViewModel(val repository: ShoppingRepository) : ViewModel() {
         }
     }
 
+    fun updatePantryItem(pantryItem: PantryItem) = viewModelScope.launch(Dispatchers.IO) {
+        repository.updatePantryItem(pantryItem)
+    }
+
     private fun updateData() = viewModelScope.launch(Dispatchers.IO) {
         categoryItems.postValue(repository.allCategoriesAndShopItems())
     }
@@ -77,6 +113,10 @@ class ShoppingViewModel(val repository: ShoppingRepository) : ViewModel() {
         repository.insertItem(newItem)
     }
 
+    fun addPantryItem(newPantryItem: PantryItem) = viewModelScope.launch(Dispatchers.IO) {
+        repository.insertPantryItem(newPantryItem)
+    }
+
     fun addUnit(newUnit: com.example.grocerez.data.model.Unit) = viewModelScope.launch(Dispatchers.IO) {
         repository.insertUnit(newUnit)
     }
@@ -91,6 +131,12 @@ class ShoppingViewModel(val repository: ShoppingRepository) : ViewModel() {
             it.shoppingListItems.forEach {
                 if (it.shoppingListItem.isChecked()) {
                     repository.removeShoppingListItem(it.shoppingListItem)
+                    addHistoryItem(HistoryItem(
+                            it.shoppingListItem.itemName,
+                            false,
+                            it.shoppingListItem.quantity.toString(),
+                            it.unit!!.name
+                        ))
                 }
             }
         }
