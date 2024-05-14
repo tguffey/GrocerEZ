@@ -17,15 +17,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.grocerez.R
+import com.example.grocerez.SocketHandler
 import com.example.grocerez.data.PantryRepository
 import com.example.grocerez.database.AppDatabase
 import com.example.grocerez.databinding.FragmentDashboardBinding
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanIntentResult
 import com.journeyapps.barcodescanner.ScanOptions
-import com.example.grocerez.SocketHandler
 import io.socket.client.Socket
-import org.json.JSONObject
 
 
 class DashboardFragment : Fragment(), FoodItemClickListener {
@@ -232,9 +231,7 @@ class DashboardFragment : Fragment(), FoodItemClickListener {
                 }
             }
         }
-
     }
-
 
 
     // Method called when a food item is edited
@@ -245,8 +242,4 @@ class DashboardFragment : Fragment(), FoodItemClickListener {
         }
         findNavController().navigate(R.id.action_dashboard_to_newPantryItem, bundle)
     }
-
-
-
-
 }

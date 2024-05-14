@@ -1,4 +1,5 @@
 package com.example.grocerez.ui.recipes
+// Added to implement SocketHandler function
 
 import com.example.grocerez.SocketHandler
 import android.os.Bundle
@@ -6,10 +7,21 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.example.grocerez.data.model.Category
+import com.example.grocerez.data.model.Item
+import com.example.grocerez.data.model.Recipe
+import com.example.grocerez.data.model.RecipeItem
+import com.example.grocerez.data.model.Unit
 import com.example.grocerez.databinding.RecipeParsingBinding
 import io.socket.client.Socket
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -18,15 +30,20 @@ class RecipeParsingFragment : Fragment() {
 
     private var _binding: RecipeParsingBinding? = null
     private val binding get() = _binding!!
+    // For accessing the backend sockets
     private lateinit var mSocket: Socket
+    private lateinit var recipeViewModel: RecipesViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Initialize SocketHandler and establish connection
+
+        // Initialize SocketHandler and establish connection first
+        SocketHandler.setSocket()
         SocketHandler.establishConnection()
         mSocket = SocketHandler.getSocket()
+        mSocket.connect()
 
         // Inflate the layout for this fragment using view binding
         _binding = RecipeParsingBinding.inflate(inflater, container, false)
@@ -36,6 +53,11 @@ class RecipeParsingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        recipeViewModel = ViewModelProvider(this.requireActivity())[RecipesViewModel::class.java]
+
+        // Initialize Socket instance
+        mSocket = SocketHandler.getSocket()
+
         // Set OnClickListener for the back button
         binding.backButton.setOnClickListener {
             // Navigate back
@@ -44,7 +66,10 @@ class RecipeParsingFragment : Fragment() {
 
         // Set OnClickListener for parsing button
         binding.parseButton.setOnClickListener {
+            // Retrieve the link entered by the user
             val url = binding.linkEditText.text.toString()
+
+            // Perform parsing with the link
             if (url.isNotEmpty()) {
                 mSocket.emit("get-ingredients", url)
             } else {
@@ -54,7 +79,10 @@ class RecipeParsingFragment : Fragment() {
 
         // Set OnClickListener for add to shopping button
         binding.addToShoppingButton.setOnClickListener {
+            // Retrieve the link entered by the user
             val url = binding.linkEditText.text.toString()
+
+            // Perform parsing with the link
             if (url.isNotEmpty()) {
                 mSocket.emit("get-ingredients-for-shopping-list", url)
             } else {
@@ -64,7 +92,10 @@ class RecipeParsingFragment : Fragment() {
 
         // Set OnClickListener for ingredients to nutritional data button
         binding.getNutriFromUrlButton.setOnClickListener {
+            // Retrieve the link entered by the user
             val url = binding.linkEditText.text.toString()
+
+            // Perform parsing with the link
             if (url.isNotEmpty()) {
                 mSocket.emit("get-ingredients-for-nutritional-data", url)
             } else {
@@ -74,7 +105,10 @@ class RecipeParsingFragment : Fragment() {
 
         // Set OnClickListener for barcode lookup button
         binding.barcodeLookupButton.setOnClickListener {
+            // Retrieve the barcode entered by the user
             val barcode = binding.linkEditText.text.toString()
+
+            // Perform parsing with the link
             if (barcode.isNotEmpty()) {
                 mSocket.emit("get-barcode-info", barcode)
             } else {
@@ -84,8 +118,18 @@ class RecipeParsingFragment : Fragment() {
 
         // Set OnClickListener for view online recipes button
         binding.viewRecipesButton.setOnClickListener {
-            mSocket.emit("get-server-recipes")
+            // Retrieve the link entered by the user
+            val url = binding.linkEditText.text.toString()
+
+            // Send command to access recipes from online SQL database server
+             mSocket.emit("get-server-recipes")
         }
+
+
+        // These can be used when entering text to fields for uploading
+        //val recipeName = binding.recipeNameEditText.text.toString()
+        //val link = binding.linkEditText.text.toString()
+        //val items = parseItems(binding.itemsEditText.text.toString())
 
         // Set OnClickListener for adding a recipe to the online SQL database
         binding.addRecipeButton.setOnClickListener {
@@ -115,28 +159,28 @@ class RecipeParsingFragment : Fragment() {
     }
 
     private fun setupSocketListeners() {
+        // Function for getting ingredients and recipe steps
         mSocket.on("ingredients-result") { args ->
             val recipeDataJson = args[0]?.toString()
+            // JSON DATA TEST
             Log.d("RecipeDataJSON", "Received JSON: $recipeDataJson")
             try {
+                // Initialize a JSONObject with the string
                 val jsonObject = JSONObject(recipeDataJson)
+
+                // Get the recipe name and format it into a list
+                // This is currently done to easily match the format of the other data
                 val recipeNameJsonArray = jsonObject.getJSONArray("recipeName")
                 val recipeNameList = StringBuilder("Recipe Name:\n")
+
+                val recipeTitle = StringBuilder()
                 for (i in 0 until recipeNameJsonArray.length()) {
                     val recipeName = recipeNameJsonArray.optString(i)
+                    recipeTitle.append(recipeName)
                     recipeNameList.append("$recipeName\n")
                 }
 
-                val ingredientsJsonArray = jsonObject.getJSONArray("ingredients")
-                val ingredientsList = StringBuilder("Ingredients:\n")
-                for (i in 0 until ingredientsJsonArray.length()) {
-                    val ingredient = ingredientsJsonArray.getJSONObject(i)
-                    val amount = ingredient.optString("Amount")
-                    val unit = ingredient.optString("Unit")
-                    val name = ingredient.optString("Name")
-                    ingredientsList.append("Amount: $amount, Unit: $unit, Name: $name\n")
-                }
-
+                // Get the instructions and format them as a list
                 val instructionsJsonArray = jsonObject.getJSONArray("instructions")
                 val instructionsList = StringBuilder("\nInstructions:\n")
                 for (i in 0 until instructionsJsonArray.length()) {
@@ -144,11 +188,115 @@ class RecipeParsingFragment : Fragment() {
                     instructionsList.append("Step ${i + 1}: $step\n")
                 }
 
-                val recipeData = recipeNameList.append(ingredientsList).append(instructionsList)
-                Log.d("RecipeDataResult", recipeData.toString())
+                val recipe = Recipe(
+                    name = recipeTitle.toString(),
+                    instruction = instructionsList.toString()
+                )
 
-                activity?.runOnUiThread {
-                    binding.textViewResult.text = recipeData.toString()
+                CoroutineScope(Dispatchers.IO).launch{
+                    try{
+                        val recipeID = recipeViewModel.addRecipeAndGetId(recipe)
+                        Log.d("threading", "we got the recipe ID: $recipeID")
+                        var item: Item?
+                        var newItem: Item
+                        var newRecipeItem: RecipeItem
+
+                        // Get the ingredients and format them as a list
+                        val ingredientsJsonArray = jsonObject.getJSONArray("ingredients")
+                        val ingredientsList = StringBuilder("Ingredients:\n")
+
+                        var ingredient: JSONObject
+                        var amount: String
+                        var unit: String
+                        var name: String
+                        var itemID: Long
+
+                        var category: String
+                        var defaultUnit: String
+
+
+                        for (i in 0 until ingredientsJsonArray.length()) {
+                            ingredient = ingredientsJsonArray.getJSONObject(i)
+                            amount = convertFractionToDecimal(ingredient.optString("Amount"))
+                            unit = checkUnit(ingredient.optString("Unit"))
+                            name = ingredient.optString("Name")
+
+                            Log.d("threading", "getting ingredient from json: $amount, $unit, $name")
+
+                            // Default category and unit to "uncategorized" and "count" if not provided
+                            category = ingredient.optString("Category", "uncategorized")
+                            defaultUnit = ingredient.optString("Unit", "count")
+
+
+                            var existingCategory = recipeViewModel.findCategoryByName(category)
+                            if (existingCategory == null){
+                                val newCategory = Category(category)
+                                recipeViewModel.insertCategory(newCategory)
+                            }
+
+                            var existingUnit = recipeViewModel.findUnitByName(unit)
+                            if (existingUnit == null) {
+                                var newUnit = Unit(unit)
+                                recipeViewModel.insertUnit(newUnit)
+                            }
+
+                            newItem = Item(
+                                name = name,
+                                category = category,
+                                unitName = unit,
+                                useRate = 0.0f
+                            )
+
+                            Log.d("threading", "now adding item to the database")
+                            itemID = recipeViewModel.addItemAndGetId(newItem)
+                            Log.d("threading", "supposedly i have the item id now")
+
+                            Log.d("threading", "check if ${newItem.name} is null or not")
+//                            if (item == null ){
+//                                recipeViewModel.addItem(newItem)
+//                                item = recipeViewModel.findItemByName(name)
+//                                Log.d("threading", "Item IS NULL (BAD)")
+//                            }
+
+                            Log.d("threading", "creating new Recipe item")
+                            newRecipeItem = RecipeItem(
+                                recipeId = recipeID,
+                                itemId = itemID,
+                                amount = amount.toFloat()
+                            )
+
+                            Log.d("threading", "created newRecipeItem object, " +
+                                    "recipe id${newRecipeItem.recipeId}, " +
+                                    "recipe itemid: ${newRecipeItem.itemId}, " +
+                                    "amount: ${newRecipeItem.amount}")
+
+                            recipeViewModel.addRecipeItems(newRecipeItem)
+
+                            ingredientsList.append("Amount: $amount, Unit: $unit, Name: $name\n")
+                        }
+
+                        // Combine ingredients and instructions into one StringBuilder
+                        ingredientsList.append(instructionsList)
+
+                        // Log the combined result to Logcat
+                        Log.d("RecipeDataResult", ingredientsList.toString())
+
+                        // Update the TextView to display both ingredients and instructions
+                        activity?.runOnUiThread {
+                            binding.textViewResult.text = ingredientsList.toString()
+                        }
+                } catch (e: Exception) {
+                        // Handle the exception here
+                        Log.e("Error", "An error occurred: ${e.message}")
+                        // Show a toast or a snackbar with the error message
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(
+                                context,
+                                "An error occurred: ${e.message}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
                 }
             } catch (e: JSONException) {
                 e.printStackTrace()
@@ -156,8 +304,11 @@ class RecipeParsingFragment : Fragment() {
             }
         }
 
+        // Function for getting Nutritional Data from recipe ingredients
+        // Currently has errors, need to change JSON type sent from backend
         mSocket.on("ingredients-result-for-nutritional-data") { args ->
-            val nutritionalDataJson = args[0]?.toString()
+            val nutritionalDataJson = args[0]?.toString() ?: throw IllegalArgumentException("First argument expected to be a non-null string")
+            // JSON DATA TEST
             Log.d("NutriDataJSON", "Received JSON: $nutritionalDataJson")
 
             try {
@@ -177,6 +328,7 @@ class RecipeParsingFragment : Fragment() {
                     if (nutrients != null) {
                         for (key in nutrients.keys()) {
                             var value = nutrients.optString(key.toString(), "N/A")
+                            // Check for "NaN" values and replace them with "Not available"
                             if (value.contains("NaN")) {
                                 value = "Not available"
                             }
@@ -187,20 +339,28 @@ class RecipeParsingFragment : Fragment() {
                     }
                 }
 
+                // Update the TextView to display nutritional data
                 activity?.runOnUiThread {
                     binding.textViewResult.text = nutritionalDataList.toString()
                 }
             } catch (e: JSONException) {
                 e.printStackTrace()
                 Log.d("NutritionalDataError", "Error parsing nutritional data: ${e.message}")
+            } catch (e: IllegalArgumentException) {
+                e.printStackTrace()
+                Log.d("SocketDataError", "Invalid data received from socket: ${e.message}")
             }
         }
 
+
+        // Function for grabbing barcode data
         mSocket.on("productInfo") { args ->
             val productName = args[0]?.toString() ?: "Unknown product"
             try {
+                // Log the product name to Logcat
                 Log.d("ProductInfoResult", productName)
 
+                // Update the TextView to display the product name
                 activity?.runOnUiThread {
                     binding.textViewResult.text = productName
                 }
@@ -210,6 +370,8 @@ class RecipeParsingFragment : Fragment() {
             }
         }
 
+        // Function for getting recipes from online SQL database
+        // Function for getting recipes from the server
         mSocket.on("server-recipes-result") { args ->
             if (args.isNotEmpty()) {
                 val recipesJson = args[0]?.toString()
@@ -218,6 +380,7 @@ class RecipeParsingFragment : Fragment() {
                     val recipesArray = JSONArray(recipesJson)
                     val recipeMap = mutableMapOf<Int, Pair<String, MutableList<String>>>()
 
+                    // Aggregate recipes and their items
                     for (i in 0 until recipesArray.length()) {
                         val recipe = recipesArray.getJSONObject(i)
                         val recipeId = recipe.getInt("recipe_id")
@@ -228,15 +391,19 @@ class RecipeParsingFragment : Fragment() {
                         val unit = recipe.optString("unit", "No Unit")
                         val itemDescription = " - $itemName: $amount $unit"
 
-                        recipeMap.putIfAbsent(recipeId, Pair(recipeName + "\nLink: " + link, mutableListOf()))
+
+                        recipeMap.putIfAbsent(recipeId, Pair(recipeName + "\nLink: " + (link ?: "No Link"), mutableListOf()))
                         recipeMap[recipeId]?.second?.add(itemDescription)
                     }
 
+                    // Build the display string
                     val recipesList = StringBuilder("Recipes:\n")
                     recipeMap.forEach { (id, pair) ->
                         recipesList.append("\n${pair.first}\nItems:\n${pair.second.joinToString("\n")}\n")
                     }
 
+
+                    // Update the TextView to display the recipes
                     activity?.runOnUiThread {
                         binding.textViewResult.text = recipesList.toString()
                     }
@@ -262,6 +429,42 @@ class RecipeParsingFragment : Fragment() {
             }
         }
     }
+
+    private fun convertFractionToDecimal(fraction: String): String {
+        if (!fraction.contains("/")) {
+            // If the string does not contain a fraction, return it as is
+            return fraction
+        }
+
+        val parts = fraction.split("/")
+        if (parts.size != 2) {
+            // Invalid fraction format, return original string
+            return fraction
+        }
+
+        try {
+            val numerator = parts[0].toDouble()
+            val denominator = parts[1].toDouble()
+
+            // Calculate decimal value
+            val decimalValue = numerator / denominator
+
+            // Format decimal value to two decimal places
+            return String.format("%.2f", decimalValue)
+        } catch (e: NumberFormatException) {
+            // Error occurred during conversion, return original string
+            return fraction
+        }
+    }
+
+    private fun checkUnit(unit: String): String {
+        return if (unit.isEmpty()) {
+            "count"
+        } else {
+            unit
+        }
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

@@ -55,8 +55,7 @@ class MyRecipesFragment : Fragment(), RecipeItemClickListener{
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        // Observe changes in recipes LiveData
-//        recipesViewModel = ViewModelProvider(this.requireActivity()).get(RecipesViewModel::class.java)
+        recipesViewModel = ViewModelProvider(this.requireActivity())[RecipesViewModel::class.java]
 
         // Set up RecyclerView
         setRecyclerView()

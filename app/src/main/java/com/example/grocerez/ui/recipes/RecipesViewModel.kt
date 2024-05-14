@@ -87,10 +87,13 @@ class RecipesViewModel(private val repository: RecipeRepository) : ViewModel() {
     }
     // making sure to add and then return the id.
     suspend fun addRecipeAndGetId(newRecipe: Recipe): Long {
+        Log.d("threading","inserting a recipe and returning the id")
         return withContext(Dispatchers.IO) {
             repository.insertRecipe(newRecipe)
             val existingRecipe = findRecipeByName(newRecipe.name)
             existingRecipe?.recipeId ?: 0
+
+
         }
     }
 
@@ -108,6 +111,10 @@ class RecipesViewModel(private val repository: RecipeRepository) : ViewModel() {
 
     suspend fun addItem(newItem: Item) = viewModelScope.launch(Dispatchers.IO) {
         repository.insertItem(newItem)
+    }
+
+    suspend fun addItemAndGetId(newItem: Item): Long = withContext(Dispatchers.IO) {
+        repository.insertItemAndGetId(newItem)
     }
 
     fun addUnit(newUnit: com.example.grocerez.data.model.Unit) = viewModelScope.launch(Dispatchers.IO) {

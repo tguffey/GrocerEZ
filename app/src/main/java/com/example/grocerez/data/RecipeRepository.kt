@@ -106,6 +106,13 @@ class RecipeRepository(
         }
     }
 
+    // In your repository class
+    @WorkerThread
+    suspend fun insertItemAndGetId(newItem: Item): Long {
+        return itemDao.insertItemAndGetId(newItem)
+    }
+
+
     @WorkerThread
     suspend fun insertUnit(unit: Unit) {
         return withContext(Dispatchers.IO) {
