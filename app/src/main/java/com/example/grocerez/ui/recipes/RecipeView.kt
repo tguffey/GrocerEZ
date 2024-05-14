@@ -87,6 +87,46 @@ class RecipeView : Fragment(){
         binding.nutritionButton.setOnClickListener{
             showNutritionFactsDialog(recipeItemName!!)
         }
+
+        binding.deleteRecipeButton.setOnClickListener {
+            deleteRecipe()
+        }
+    }
+
+    private fun deleteRecipe() {
+        // First, retrieve the recipe item name from the arguments bundle
+        val args = arguments
+        val recipeItemName = args?.getString("recipeItem")
+
+        // Next, check if the recipe item name is not null
+        if (recipeItemName != null) {
+            // Use coroutine scope to perform asynchronous operations
+            CoroutineScope(Dispatchers.IO).launch {
+                // Retrieve the recipe item from the ViewModel
+                val recipeItem = recipeViewModel.findRecipeByName(recipeItemName)
+                // Check if the recipe item is not null
+                if (recipeItem != null) {
+                    // Retrieve the ingredients required for the recipe
+                    val recipeIngredients = recipeViewModel.getIngredientsForRecipe(recipeItem.recipeId)
+
+                    // Iterate through each recipe ingredient and check if it's available in the pantry
+                    for (ingredient in recipeIngredients) {
+                        // Retrieve the pantry item corresponding to the recipe ingredient
+                        val pantryIngredients = pantryItemViewModel.findItemByName(ingredient.name)
+                        if (pantryIngredients!=null){
+                            pantryItemViewModel.deleteItem(pantryIngredients)
+                        }
+                    }
+                    recipeViewModel.deleteRecipe(recipeItem)
+                } else {
+                    // Show a message indicating that ingredients are missing in the pantry
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(requireContext(), "Missing ingredients in the pantry!", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+        findNavController().popBackStack()
     }
 
 

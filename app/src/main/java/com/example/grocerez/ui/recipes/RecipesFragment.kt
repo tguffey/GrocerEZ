@@ -8,8 +8,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.grocerez.R
-import com.example.grocerez.data.RecipeRepository
-import com.example.grocerez.database.AppDatabase
 import com.example.grocerez.databinding.FragmentRecipesBinding
 
 
@@ -32,12 +30,11 @@ class RecipesFragment : Fragment(){
         savedInstanceState: Bundle?
     ): View {
         super.onCreateView(inflater, container, savedInstanceState)
-
-        recipesViewModel = ViewModelProvider(this.requireActivity()).get(RecipesViewModel::class.java)
-
         // Inflate the layout for this fragment using view binding
         _binding = FragmentRecipesBinding.inflate(inflater, container, false)
         val root: View = binding.root
+
+        recipesViewModel = ViewModelProvider(this.requireActivity()).get(RecipesViewModel::class.java)
 
         // Set OnClickListener for addItemFab
         binding.myRecipesBtn.setOnClickListener {
