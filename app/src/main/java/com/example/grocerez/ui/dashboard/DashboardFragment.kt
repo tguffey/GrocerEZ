@@ -3,6 +3,7 @@ package com.example.grocerez.ui.dashboard
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,12 +23,16 @@ import com.example.grocerez.databinding.FragmentDashboardBinding
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanIntentResult
 import com.journeyapps.barcodescanner.ScanOptions
+import com.example.grocerez.SocketHandler
+import io.socket.client.Socket
+import org.json.JSONObject
+
 
 class DashboardFragment : Fragment(), FoodItemClickListener {
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()){
-            isGranted: Boolean ->
+                isGranted: Boolean ->
             if (isGranted){
                 showCamera()
             }
@@ -39,7 +44,7 @@ class DashboardFragment : Fragment(), FoodItemClickListener {
     private val scanLauncher =
         registerForActivityResult(ScanContract())
         {
-            result: ScanIntentResult ->
+                result: ScanIntentResult ->
             run {
                 if (result.contents == null) {
                     Toast.makeText(requireContext(), "Cancelled", Toast.LENGTH_SHORT).show()
@@ -61,12 +66,29 @@ class DashboardFragment : Fragment(), FoodItemClickListener {
     private lateinit var fromBottomBg: Animation
     private lateinit var toBottomBg: Animation
 
+    // For backend socket connections
+    private lateinit var mSocket: Socket
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        dashboardViewModel = ViewModelProvider(this.requireActivity()).get(DashboardViewModel::class.java)
+        // Set and get sockets for backend connection
+        SocketHandler.establishConnection()
+        mSocket = SocketHandler.getSocket()
+
+        val appDatabase = AppDatabase.getInstance(requireContext())
+        dashboardViewModel = ViewModelProvider(this.requireActivity(),
+            DashboardViewModel.PantryModelFactory(
+                PantryRepository(
+                    categoryDao = appDatabase.categoryDao(),
+                    itemDao = appDatabase.itemDao(),
+                    pantryItemDao = appDatabase.pantryItemDao(),
+                    unitDao = appDatabase.unitDao()
+                )
+            )).get(DashboardViewModel::class.java)
 
         dashboardViewModel.loadPantryList()
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
@@ -110,6 +132,8 @@ class DashboardFragment : Fragment(), FoodItemClickListener {
         binding.scanBarcode.setOnClickListener {
             checkPermissionCamera(requireContext())
         }
+        // Setup the socket listeners for receiving barcode scan results
+        setupSocketListeners()
     }
 
     private fun checkPermissionCamera(context: Context) {
@@ -124,8 +148,33 @@ class DashboardFragment : Fragment(), FoodItemClickListener {
         }
     }
 
-    private fun setResult(string: String) {
-        binding.textResult.text = string
+    // BARCODE SCANNER FUNCTIONS
+    // Set the result of the barcode scan
+    private fun setResult(scannedBarcodeNumber: String) {
+        // Emit the scanned number to the backend
+        mSocket.emit("get-barcode-info", scannedBarcodeNumber)
+        // For displaying the barcode number for testing
+        // binding.textResult.text = scannedBarcodeNumber
+    }
+
+    // Socket listeners for receiving data from backend
+    private fun setupSocketListeners() {
+        // Function that activates when receiving a barcode scan number
+        mSocket.on("productInfo") { args ->
+            val productName = args[0]?.toString() ?: "Unknown product"
+            try {
+                // Log the product name to Logcat
+                Log.d("ProductInfoResult", productName)
+
+                // Update the TextView to display the product name
+                activity?.runOnUiThread {
+                    binding.textResult.text = productName
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.d("ProductInfoError", "Error displaying product info")
+            }
+        }
     }
 
     private fun showCamera() {
@@ -143,6 +192,8 @@ class DashboardFragment : Fragment(), FoodItemClickListener {
     override fun onDestroyView() {
         super.onDestroyView()
         // Set the binding variable to null to avoid memory leaks
+        // Disconnect the socket to avoid memory leaks
+        SocketHandler.closeConnection()
         _binding = null
     }
 
@@ -194,5 +245,8 @@ class DashboardFragment : Fragment(), FoodItemClickListener {
         }
         findNavController().navigate(R.id.action_dashboard_to_newPantryItem, bundle)
     }
+
+
+
 
 }
