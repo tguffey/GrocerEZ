@@ -89,7 +89,7 @@ class RecipeView : Fragment(){
         }
     }
 
-<<<<<<< HEAD
+
     private fun postRecipe() {
         TODO("Not yet implemented")
     }
@@ -207,13 +207,13 @@ class RecipeView : Fragment(){
             }
         }
     }
-=======
+
     private fun showNutritionFactsDialog(recipeItemName: String) {
         val dialog = NutritionFactsDialog.newInstance(recipeItemName)
         dialog.show(childFragmentManager, "nutrition")
     }
 
->>>>>>> Jocelyn
+
 
 
     override fun onDestroyView() {
