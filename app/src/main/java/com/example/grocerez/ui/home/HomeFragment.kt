@@ -75,7 +75,8 @@ class HomeFragment : Fragment() {
                     categoryDao = appDatabase.categoryDao(),
                     itemDao = appDatabase.itemDao(),
                     shoppingListItemDao = appDatabase.shoppingListItemDao(),
-                    unitDao = appDatabase.unitDao()
+                    unitDao = appDatabase.unitDao(),
+                    pantryItemDao = appDatabase.pantryItemDao()
                 )
             )).get(ShoppingViewModel::class.java)
 
