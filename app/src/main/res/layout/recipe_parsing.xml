@@ -29,7 +29,7 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:visibility="gone"/>
+        />
     <!-- Back button has been hidden -->
 
     <com.google.android.material.button.MaterialButton
@@ -38,7 +38,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="start"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="100dp"
         android:layout_marginEnd="236dp"
         android:layout_weight="1"
         android:text="Parse Website"
@@ -51,7 +51,7 @@
         android:layout_height="52dp"
         android:layout_gravity="start"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="100dp"
         android:layout_marginEnd="48dp"
         android:layout_weight="1"
         android:text="Add to Shopping List"
@@ -64,7 +64,7 @@
         android:layout_height="52dp"
         android:layout_gravity="start"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="150dp"
         android:layout_marginEnd="224dp"
         android:layout_weight="1"
         android:text="Get Nutri Data from Rec URL"
@@ -77,7 +77,7 @@
         android:layout_height="52dp"
         android:layout_gravity="start"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="150dp"
         android:layout_marginEnd="48dp"
         android:layout_weight="1"
         android:text="Barcode Lookup"
@@ -90,7 +90,7 @@
         android:layout_height="52dp"
         android:layout_gravity="start"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="156dp"
+        android:layout_marginTop="200dp"
         android:layout_marginEnd="224dp"
         android:layout_weight="1"
         android:text="View Online Recipes"
@@ -104,7 +104,7 @@
         android:layout_height="52dp"
         android:layout_gravity="start"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="156dp"
+        android:layout_marginTop="200dp"
         android:layout_marginEnd="48dp"
         android:layout_weight="1"
         android:text="Upload Local Recipes"
@@ -115,14 +115,14 @@
         android:id="@+id/textViewResult"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="108dp"
+        android:layout_marginTop="5dp"
         android:background="#EFEFEF"
         android:padding="16dp"
         android:text="Results will appear here"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/getNutriFromUrlButton" />
+        app:layout_constraintTop_toBottomOf="@id/viewRecipesButton" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

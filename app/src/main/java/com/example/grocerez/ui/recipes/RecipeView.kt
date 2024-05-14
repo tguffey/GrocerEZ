@@ -68,7 +68,7 @@ class RecipeView : Fragment(){
                 val recipeItem = recipeViewModel.findRecipeByName(recipeItemName)
                 val recipeIngredients = recipeViewModel.getIngredientsForRecipe(recipeItem!!.recipeId)
 
-                withContext(Dispatchers.IO){
+                withContext(Dispatchers.Main){
                     binding.recipeTitle.text = recipeItem.name
                     val ingredientDisplayText = recipeIngredients.joinToString("\n") { ingredient ->
                         "- ${ingredient.name}, ${ingredient.amount} ${ingredient.unit}"
