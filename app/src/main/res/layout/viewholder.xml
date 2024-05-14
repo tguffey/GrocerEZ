@@ -24,6 +24,7 @@
         android:textSize="14sp"
         android:lines="2"
         android:gravity="center"
+        android:background="@drawable/home_scroll_background"
         app:layout_constraintBottom_toBottomOf="@+id/removeFeeder"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>

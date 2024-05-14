@@ -58,12 +58,23 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
                 android:text="20 g"
-                android:textSize="22dp"
                 android:textColor="@android:color/holo_blue_dark"
+                android:textSize="22dp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@id/suggested_title"
-                app:layout_constraintStart_toStartOf="@id/suggested_title"
+                app:layout_constraintStart_toEndOf="@+id/imageView"
+                app:layout_constraintTop_toBottomOf="@id/suggested_title" />
+            <TextView
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:text="cups"
+                android:textColor="@android:color/holo_blue_dark"
+                android:textSize="22dp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/suggested_amount"
                 app:layout_constraintTop_toBottomOf="@id/suggested_title" />
 
             <TextView
@@ -79,6 +90,18 @@
                 app:layout_constraintTop_toTopOf="@+id/suggested_title" />
 
             <TextView
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:text="cups"
+                android:textSize="22dp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/actual_amount"
+                app:layout_constraintTop_toBottomOf="@id/suggested_title" />
+
+            <TextView
                 android:id="@+id/actual_amount"
                 style="@style/TextAppearance.AppCompat.Title"
                 android:layout_width="wrap_content"
@@ -87,7 +110,6 @@
                 android:textSize="22dp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/actual_title"
                 app:layout_constraintStart_toStartOf="@+id/actual_title"
                 app:layout_constraintTop_toBottomOf="@+id/actual_title" />
 
