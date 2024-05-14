@@ -3,6 +3,7 @@ package com.example.grocerez.ui.dashboard
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,18 +14,25 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.grocerez.R
+import com.example.grocerez.data.PantryRepository
+import com.example.grocerez.database.AppDatabase
 import com.example.grocerez.databinding.FragmentDashboardBinding
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanIntentResult
 import com.journeyapps.barcodescanner.ScanOptions
+import com.example.grocerez.SocketHandler
+import io.socket.client.Socket
+import org.json.JSONObject
+
 
 class DashboardFragment : Fragment(), FoodItemClickListener {
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()){
-            isGranted: Boolean ->
+                isGranted: Boolean ->
             if (isGranted){
                 showCamera()
             }
@@ -36,7 +44,7 @@ class DashboardFragment : Fragment(), FoodItemClickListener {
     private val scanLauncher =
         registerForActivityResult(ScanContract())
         {
-            result: ScanIntentResult ->
+                result: ScanIntentResult ->
             run {
                 if (result.contents == null) {
                     Toast.makeText(requireContext(), "Cancelled", Toast.LENGTH_SHORT).show()
@@ -49,7 +57,7 @@ class DashboardFragment : Fragment(), FoodItemClickListener {
     private var _binding: FragmentDashboardBinding? = null
 
     private val binding get() = _binding!!
-    private lateinit var itemViewModel: DashboardViewModel
+    private lateinit var dashboardViewModel: DashboardViewModel
     private var isExpanded = false
 
     // Animation variables
@@ -58,20 +66,42 @@ class DashboardFragment : Fragment(), FoodItemClickListener {
     private lateinit var fromBottomBg: Animation
     private lateinit var toBottomBg: Animation
 
+    // For backend socket connections
+    private lateinit var mSocket: Socket
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Call the superclass onCreateView method
-        super.onCreateView(inflater, container, savedInstanceState)
+        // Set and get sockets for backend connection
+        SocketHandler.establishConnection()
+        mSocket = SocketHandler.getSocket()
 
-        // Initialize the ViewModel
-        itemViewModel = ViewModelProvider(this.requireActivity())[DashboardViewModel::class.java]
+        val appDatabase = AppDatabase.getInstance(requireContext())
+        dashboardViewModel = ViewModelProvider(this.requireActivity(),
+            DashboardViewModel.PantryModelFactory(
+                PantryRepository(
+                    categoryDao = appDatabase.categoryDao(),
+                    itemDao = appDatabase.itemDao(),
+                    pantryItemDao = appDatabase.pantryItemDao(),
+                    unitDao = appDatabase.unitDao()
+                )
+            )).get(DashboardViewModel::class.java)
 
-        // Inflate the layout using view binding
+        dashboardViewModel.loadPantryList()
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
         val root: View = binding.root
+
+        // Return the root view
+        return root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setRecyclerView()
 
         val context = requireContext()
         fabOpen = AnimationUtils.loadAnimation(context, R.anim.from_bottom_fab)
@@ -93,17 +123,17 @@ class DashboardFragment : Fragment(), FoodItemClickListener {
         // Set OnClickListener for the newItemButton
         binding.addItemFab.setOnClickListener {
             // Show the NewTaskSheet dialog
-            NewTaskSheet(null).show(parentFragmentManager, "newItemTag")
+            if (findNavController().currentDestination?.id == R.id.navigation_dashboard) {
+                findNavController().navigate(R.id.action_dashboard_to_newPantryItem)
+            }
             shrinkFab()
         }
 
         binding.scanBarcode.setOnClickListener {
             checkPermissionCamera(requireContext())
         }
-        setRecyclerView()
-
-        // Return the root view
-        return root
+        // Setup the socket listeners for receiving barcode scan results
+        setupSocketListeners()
     }
 
     private fun checkPermissionCamera(context: Context) {
@@ -118,8 +148,33 @@ class DashboardFragment : Fragment(), FoodItemClickListener {
         }
     }
 
-    private fun setResult(string: String) {
-        binding.textResult.text = string
+    // BARCODE SCANNER FUNCTIONS
+    // Set the result of the barcode scan
+    private fun setResult(scannedBarcodeNumber: String) {
+        // Emit the scanned number to the backend
+        mSocket.emit("get-barcode-info", scannedBarcodeNumber)
+        // For displaying the barcode number for testing
+        // binding.textResult.text = scannedBarcodeNumber
+    }
+
+    // Socket listeners for receiving data from backend
+    private fun setupSocketListeners() {
+        // Function that activates when receiving a barcode scan number
+        mSocket.on("productInfo") { args ->
+            val productName = args[0]?.toString() ?: "Unknown product"
+            try {
+                // Log the product name to Logcat
+                Log.d("ProductInfoResult", productName)
+
+                // Update the TextView to display the product name
+                activity?.runOnUiThread {
+                    binding.textResult.text = productName
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.d("ProductInfoError", "Error displaying product info")
+            }
+        }
     }
 
     private fun showCamera() {
@@ -137,6 +192,8 @@ class DashboardFragment : Fragment(), FoodItemClickListener {
     override fun onDestroyView() {
         super.onDestroyView()
         // Set the binding variable to null to avoid memory leaks
+        // Disconnect the socket to avoid memory leaks
+        SocketHandler.closeConnection()
         _binding = null
     }
 
@@ -164,33 +221,32 @@ class DashboardFragment : Fragment(), FoodItemClickListener {
     }
 
     private fun setRecyclerView() {
-        // Initialize the adapter
-        val foodItemAdapter = FoodItemAdapter(mutableListOf(), this)
+        val thisClickListener = this
 
-        // Set the layout manager and adapter for the RecyclerView
-        binding.foodListRecyclerView.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = foodItemAdapter
+        dashboardViewModel.categoryPantryItems.observe(viewLifecycleOwner){
+            // Set the layout manager and adapter for the RecyclerView
+            binding.foodListRecyclerView.apply {
+                layoutManager = LinearLayoutManager(requireContext())
+                if (it != null){
+                    adapter = CategoryPantryItemAdapter(it, thisClickListener)
+                }
+            }
         }
 
-        // Observe changes in the list of food items in the ViewModel
-        itemViewModel.foodItems.observe(viewLifecycleOwner) { newFoodItems ->
-            // Convert the MutableList to List before passing it to the adapter
-            val foodItemsList: List<FoodItem> = newFoodItems.orEmpty()
-            // Update the adapter with the new list of food items
-            foodItemAdapter.updateFoodItems(foodItemsList)
-
-            // Notify the RecyclerView about the change in the dataset
-            foodItemAdapter.notifyDataSetChanged()
-        }
     }
 
 
 
     // Method called when a food item is edited
-    override fun editFoodItem(foodItem: FoodItem) {
-        // Show the NewTaskSheet dialog for editing the food item
-        NewTaskSheet(foodItem).show(parentFragmentManager, "newFoodTag")
+    override fun editFoodItem(pantryItemName: String) {
+        // Show the NewPantryItem dialog for editing the pantry item
+        val bundle = Bundle().apply {
+            putString("pantryItemName", pantryItemName)
+        }
+        findNavController().navigate(R.id.action_dashboard_to_newPantryItem, bundle)
     }
+
+
+
 
 }

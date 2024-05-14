@@ -6,6 +6,64 @@
     android:layout_height="match_parent"
     tools:context=".ui.shopping.ShoppingFragment">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Shopping List"
+                android:textSize="30sp"
+                android:layout_gravity="start"
+                android:layout_marginStart="10dp"
+                style="@style/TextAppearance.AppCompat.Title">
+
+            </TextView>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                />
+
+            <Button
+                android:id="@+id/historyFab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:padding="5dp"
+                android:layout_margin="5dp"
+                android:backgroundTint="?attr/colorPrimary"
+                app:icon="@drawable/history_icon"
+                android:text="History" >
+            </Button>
+
+        </LinearLayout>
+
+        <!--A list of categories-->
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/categoryListRecyclerView"
+            android:backgroundTint="@color/design_default_color_background"
+            />
+
+    </LinearLayout>
+
     <!--Dim background-->
     <!-- Only shows when the edit option buttons are expanded -->
     <View
@@ -36,13 +94,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!--A list of categories-->
+    <!--A list of categories
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/categoryListRecyclerView"
         android:backgroundTint="@color/design_default_color_background"
-        />
+        />-->
 
     <!--Edit Item Button-->
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
@@ -101,20 +159,20 @@
         app:layout_constraintEnd_toEndOf="@id/clear_list_fab" />
 
     <!--Edit Item option 3: Add Category button-->
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/add_category_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:layout_marginBottom="16dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:contentDescription="@string/button_add_category"
-        android:text="@string/button_add_category"
-        android:textColor="?colorOnPrimary"
-        android:visibility="invisible"
-        app:backgroundTint="?attr/colorPrimary"
-        app:layout_constraintBottom_toTopOf="@id/add_item_fab"
-        app:layout_constraintEnd_toEndOf="@id/add_item_fab" />
+<!--    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton-->
+<!--        android:id="@+id/add_category_fab"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:padding="5dp"-->
+<!--        android:layout_marginBottom="16dp"-->
+<!--        android:layout_alignParentEnd="true"-->
+<!--        android:layout_alignParentBottom="true"-->
+<!--        android:contentDescription="@string/button_add_category"-->
+<!--        android:text="@string/button_add_category"-->
+<!--        android:textColor="?colorOnPrimary"-->
+<!--        android:visibility="invisible"-->
+<!--        app:backgroundTint="?attr/colorPrimary"-->
+<!--        app:layout_constraintBottom_toTopOf="@id/add_item_fab"-->
+<!--        app:layout_constraintEnd_toEndOf="@id/add_item_fab" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

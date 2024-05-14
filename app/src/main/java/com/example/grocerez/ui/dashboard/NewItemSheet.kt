@@ -2,53 +2,111 @@ package com.example.grocerez.ui.dashboard
 
 import android.app.DatePickerDialog
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
-import android.text.Editable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.TextView
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
+import com.example.grocerez.R
+import com.example.grocerez.data.model.Category
+import com.example.grocerez.data.model.Item
+import com.example.grocerez.data.model.PantryItem
 import com.example.grocerez.databinding.FragmentNewItemSheetBinding
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.example.grocerez.ui.ItemAmount
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
-import java.time.Instant
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
 
 // BottomSheetDialogFragment for adding a new task
-class NewTaskSheet(var foodItem: FoodItem?) : BottomSheetDialogFragment() {
+class NewTaskSheet() : Fragment() {
 
-    private lateinit var binding: FragmentNewItemSheetBinding
+    private var _binding: FragmentNewItemSheetBinding? = null
+    private val binding get() = _binding!!
     private lateinit var itemViewModel: DashboardViewModel
     private val calendar = Calendar.getInstance()
     // Define the date formatter
     val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
+    private lateinit var pantryItemViewModel: DashboardViewModel
+    private lateinit var selectedUnit: String
+    private lateinit var itemPrevious: Item
+    private lateinit var pantryItemPrevious: PantryItem
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentNewItemSheetBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
+    }
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        if (foodItem != null) {
-            binding.foodTitle.text = "Edit Item"
-            val editable = Editable.Factory.getInstance()
-            binding.name.text = editable.newEditable(foodItem!!.name)
-            binding.startingDate.text = "Date: ${foodItem!!.startingDate?.format(dateFormatter)}"
-            binding.expirationDate.text = "Date: ${foodItem!!.expirationDate?.format(dateFormatter)}"
-        } else {
-            binding.foodTitle.text = "New Item"
-        }
 
         // Initialize ViewModel
         val activity = requireActivity()
         itemViewModel = ViewModelProvider(activity)[DashboardViewModel::class.java]
 
+        // Retrieving the pantryItemId from fragment arguments in onViewCreated
+        val args = arguments
+        val pantryItemName = args?.getString("pantryItemName", "none") // Default value 'none' if not found
+        CoroutineScope(Dispatchers.IO).launch{
+            if (pantryItemName != null){
+                val pantryItem = itemViewModel.findPantryItemByName(pantryItemName)
+                val item = itemViewModel.findItemByName(pantryItemName)
+                if(pantryItem != null && item != null)
+                {
+                    itemPrevious = item
+                    pantryItemPrevious = pantryItem
+                    binding.foodTitle.text = "Edit Item"
+                    withContext(Dispatchers.Main) {
+                        binding.name.setText(pantryItem.itemName)
+                        binding.startingDate.text = pantryItem.inputDate.format(dateFormatter)
+                        binding.quantity.setText(pantryItem.amountFromInputDate.toString())
+                        binding.category.setText(item.category)
+                        binding.expirationLength.setText(pantryItem.shelfLifeFromInputDate.toString())
+                        setSpinner(item.unitName)
+                        selectedUnit = item.unitName
+                    }
+                }
+            }
+            else {
+                binding.foodTitle.text = "New Item"
+                selectedUnit = ""
+                setSpinner(selectedUnit)
+            }
+        }
+
+        // Initialize database and DAO objects
+//        appDatabase = AppDatabase.getInstance(context)
+        // Thong: I dont know how contexts work in this case
+
+//        categoryDao = appDatabase.categoryDao()
+//        unitDao = appDatabase.unitDao()
+//        itemDao = appDatabase.itemDao()
+
         // Set OnClickListener for cancleButton
         binding.cancelButton.setOnClickListener {
             clearFields()
+            findNavController().popBackStack()
         }
 
         // Set OnClickListener for saveButton
@@ -57,12 +115,7 @@ class NewTaskSheet(var foodItem: FoodItem?) : BottomSheetDialogFragment() {
         }
 
         binding.btnShowStartDatePicker.setOnClickListener{
-            showStartDatePicker()
-        }
-
-        // Set OnClickListener for datePickerButton
-        binding.btnShowDatePicker.setOnClickListener {
-            showExpDatePicker()
+            showDatePicker()
         }
 
         // Set OnEditorActionListener for the TextInputEditText "name"
@@ -82,62 +135,124 @@ class NewTaskSheet(var foodItem: FoodItem?) : BottomSheetDialogFragment() {
         }
     }
 
-    private fun showStartDatePicker() {
-        val datePickerDialog = DatePickerDialog(
-            requireContext(), { datePicker, year: Int, monthOfYear: Int, dayOfMonth: Int ->
-                val selectedDate = Calendar.getInstance()
-                selectedDate.set(year, monthOfYear, dayOfMonth)
-                val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                val formattedDate = dateFormat.format(selectedDate.time)
-                binding.startingDate.text = "Date: $formattedDate"
-            },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
-        )
-//        val colorInt: Int = Color.parseColor("#99D982")
-//        datePickerDialog.datePicker.setBackgroundColor(colorInt)
-        datePickerDialog.show()
-    }
+    private fun showDatePicker() {
+        val calendar = Calendar.getInstance() // get instance of current date and time
 
-    private fun showExpDatePicker() {
+        // extract the 3 from calendar instance
+        var year = calendar.get(Calendar.YEAR)
+        var month = calendar.get(Calendar.MONTH)
+        var dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
+
+        binding.startingDate.text.toString().let {
+            if (it.isNotEmpty()) {
+                // make a list of the date month year sperated by /
+                //mm/dd/yy
+                val parts =  it.split("/")
+                if (parts.size == 3) {
+                    month = parts[0].toInt() - 1 // months are 0-indexed in Calendar
+                    dayOfMonth = parts[1].toInt()
+                    year = parts[2].toInt() + 2000 // Add 2000 to get full year
+                }
+            }
+        }
+
+        // Set up DatePickerDialog to show current date as default
         val datePickerDialog = DatePickerDialog(
-            requireContext(), { datePicker, year: Int, monthOfYear: Int, dayOfMonth: Int ->
-                val selectedDate = Calendar.getInstance()
-                selectedDate.set(year, monthOfYear, dayOfMonth)
-                val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                val formattedDate = dateFormat.format(selectedDate.time)
-                binding.expirationDate.text = "Date: $formattedDate"
+            requireContext(), // context
+            {  _, selectedYear, selectedMonth, selectedDay ->
+                // Update the EditText with the selected date
+                // month is default 0 so +1 to format
+                // represents day
+                // the year mod 100 to have 2 final digit only
+                val selectedDate = "${selectedMonth + 1}/$selectedDay/${selectedYear % 100}"
+                binding.startingDate.setText(selectedDate) //update the edittext with the slected date
             },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
+            year,
+            month,
+            dayOfMonth
         )
-//        val colorInt: Int = Color.parseColor("#99D982")
-//        datePickerDialog.datePicker.setBackgroundColor(colorInt)
+
+        // Show DatePickerDialog to user
         datePickerDialog.show()
     }
 
     private fun clearFields() {
         binding.name.setText("")
-        dismiss()
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        // Inflate the layout for this fragment
-        binding = FragmentNewItemSheetBinding.inflate(inflater, container, false)
-        return binding.root
+    private fun setSpinner(initialSelectedUnit: String) {
+        // Create a list of the units, Units label is the first element
+        var options: Array<String> = ItemAmount.getAllUnits()
+        options[0] = "Units:"
+
+        val context = requireContext()
+        val arrayAdapter = object : ArrayAdapter<String>(context,
+            R.layout.shopping_quantity_spinner, options) {
+
+            // Show the Units label as grayed out and choices as black text
+            override fun getDropDownView(
+                position: Int,
+                convertView: View?,
+                parent: ViewGroup
+            ): View {
+                val view: TextView = super.getDropDownView(position, convertView, parent) as TextView
+                if (position == 0) {
+                    view.setTextColor(Color.GRAY)
+                } else {
+                    view.setTextColor(Color.BLACK)
+                }
+                return view
+            }
+        }
+        // adapter for the actual list, creates an Item Amount object for the quantity
+        arrayAdapter.setDropDownViewResource(R.layout.shopping_quantity_spinner)
+        binding.quantitySpinner.adapter = arrayAdapter
+
+        binding.quantitySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                selectedUnit = parent?.getItemAtPosition(position) as String
+
+                if (position == 0) {
+                    selectedUnit = "unit"
+                }
+
+                // Only the units choices can be selected and not the Units label
+                if (position > 0) {
+                    Toast.makeText(
+                        context, "Selected : $selectedUnit",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                else {
+                    Toast.makeText(
+                        context, "Quantity Units automatically selected as None",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // Nothing to do here
+            }
+        }
+
+        // Set the selected unit in the spinner
+        val selectedIndex = options.indexOf(initialSelectedUnit)
+        if (selectedIndex != -1) {
+            binding.quantitySpinner.setSelection(selectedIndex)
+        }
     }
+
+
+
 
     // Function to handle save action
     private fun saveAction() {
         val name = binding.name.text.toString()
-        val expirationDateText = binding.expirationDate.text.toString().replace("Date: ", "")
+        val category = binding.category.text.toString()
         val startingDateText = binding.startingDate.text.toString().replace("Date: ", "")
+        val expirationLengthText = binding.expirationLength.text.toString().toIntOrNull()?:0
+        val quantity = binding.quantity.text.toString().toFloatOrNull()?:0.0f
 
         // Check if the name is empty
         if (name.isEmpty()) {
@@ -147,49 +262,96 @@ class NewTaskSheet(var foodItem: FoodItem?) : BottomSheetDialogFragment() {
         }
 
         // Check if either expiration date or starting date is empty
-        if (expirationDateText.isEmpty() || startingDateText.isEmpty()) {
+        if (startingDateText.isEmpty()) {
             Toast.makeText(requireContext(), "Please select both starting and expiration dates", Toast.LENGTH_SHORT).show()
             return
         }
 
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        val expirationDate = dateFormat.parse(expirationDateText)
         val startingDate = dateFormat.parse(startingDateText)
 
-        val expirationLocalDate = if (expirationDate != null) {
-            Instant.ofEpochMilli(expirationDate.time)
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate()
-        } else {
-            null
-        }
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val existingCategory = itemViewModel.findCategoryByName(category)
+                if (existingCategory == null) {
+                    val newCategory = Category(category)
+                    itemViewModel.addCategory(newCategory)
+                }
 
-        val startingLocalDate = if (startingDate != null) {
-            Instant.ofEpochMilli(startingDate.time)
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate()
-        } else {
-            null
-        }
+                // Check if the unit exists, and add it if it doesn't
+                val existingUnit = itemViewModel.findUnitByName(selectedUnit)
+                if (existingUnit == null) {
+                    val newUnit = com.example.grocerez.data.model.Unit(selectedUnit)
+                    itemViewModel.addUnit(newUnit)
+                }
 
-        val value = foodItem?.calculateProgress(startingLocalDate, expirationLocalDate) ?: 0
+                val existingItem = itemViewModel.findItemByName(name)
+                val newItem = Item(
+                    name = name, category = category,
+                    unitName = selectedUnit, useRate = 0.0f
+                )
 
-        if (foodItem == null) {
-            val newFood = FoodItem(name, expirationLocalDate, startingLocalDate)
-            itemViewModel.addFoodItem(newFood)
-        } else {
-            itemViewModel.updateFoodItem(foodItem!!.id, name, startingLocalDate, expirationLocalDate)
+                // see if item exists in the database already or not.
+                if (existingItem == null || newItem != itemPrevious) {
+                    itemViewModel.addItem(newItem)
+                }
+
+
+//                    if (displayItem != null) {
+//                        shopListName = itemViewModel.getItemName(displayItem)
+////                        Log.v("NEW SHEET", "item dne, ${displayItem.getItemName()}, $name")
+//                    }
+//                    Log.v("NEW SHEET", "item dne, $displayItem, $name")
+                    //now insert shoppingListItem
+
+                // Check if the pantry item already exists
+                val existingPantryItem = itemViewModel.findPantryItemByName(name)
+                val newPantryItem = PantryItem(
+                    itemName = name,
+                    amountFromInputDate = quantity,
+                    inputDate = startingDateText,
+                    shelfLifeFromInputDate = expirationLengthText
+                )
+
+                if (existingPantryItem == null || pantryItemPrevious != newPantryItem) {
+                    itemViewModel.addFoodItem(newPantryItem)
+                }
+
+                if (binding.foodTitle.text == "Edit Item" && (newPantryItem != pantryItemPrevious && newItem == itemPrevious)){
+                    itemViewModel.deletePantryItem(pantryItemPrevious)
+                }
+                else if (binding.foodTitle.text == "Edit Item" && (newPantryItem == pantryItemPrevious && newItem != itemPrevious)) {
+                    itemViewModel.deleteItem(itemPrevious)
+                }
+                else if (binding.foodTitle.text == "Edit Item"){
+                    itemViewModel.deleteItem(itemPrevious)
+                    itemViewModel.deletePantryItem(pantryItemPrevious)
+                }
+                else if (binding.foodTitle.text == "Edit Item" && itemPrevious == newItem && pantryItemPrevious == newPantryItem) {
+
+                }
+
+            } catch (e: Exception) {
+                // Handle the exception here
+                Log.e("Error", "An error occurred: ${e.message}")
+                // You can also show an error message to the user if needed
+                // For example:
+                withContext(Dispatchers.Main) {
+                    // Show a toast or a snackbar with the error message
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            context,
+                            "An error occurred: ${e.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
         }
 
         binding.name.setText("")
-        binding.expirationDate.text = "Date: "
+        binding.expirationLength.setText("")
         binding.startingDate.text = "Date: "
-
-        dismiss()
+        findNavController().popBackStack()
     }
 }
-
-
-
-
-

@@ -9,6 +9,14 @@
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
+    <color name="button_black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="settings_white">#FFFFFFFF</color>
     <color name="green003">#D6FFD6</color>
+    <color name="card_color">#f1f2f3</color>
+    <!--    these are colors for the settings page-->
+    <color name ="night_mode">#6124B1</color>
+    <color name ="notifications">#13B2C3</color>
+    <color name ="private_account">#D95F69</color>
+    <color name ="security">#D95F69</color>
 </resources>

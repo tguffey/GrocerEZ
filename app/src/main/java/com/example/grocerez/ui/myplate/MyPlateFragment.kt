@@ -1,5 +1,8 @@
 package com.example.grocerez.ui.myplate
 
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Build
@@ -7,17 +10,23 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.grocerez.databinding.FragmentMyplateBinding
 import com.anychart.AnyChart
 import com.anychart.AnyChartView
 import com.anychart.chart.common.dataentry.DataEntry
 import com.anychart.chart.common.dataentry.ValueDataEntry
 import com.example.grocerez.R
+import com.example.grocerez.ui.settings.SettingsActivity
 
-class MyPlateFragment : Fragment() {
+class MyPlateFragment : Fragment(){
 
     private var _binding: FragmentMyplateBinding? = null
     private lateinit var anyChartView: AnyChartView
@@ -26,32 +35,82 @@ class MyPlateFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
+    // Initialize shared view model
+    private val sharedModel: MyPlateViewModel by activityViewModels()
+    private lateinit var recyclerView: RecyclerView
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Make the status bar transparent
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            val window = activity?.window
-            window?.decorView?.systemUiVisibility =
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-            window?.statusBarColor = Color.TRANSPARENT
-        }
-
-        val notificationsViewModel =
-            ViewModelProvider(this).get(MyPlateViewModel::class.java)
-
         _binding = FragmentMyplateBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        //val textView: TextView = binding.textNotifications
-//        notificationsViewModel.text.observe(viewLifecycleOwner) {
-//            textView.text = it
-//        }
+        // Find the settings button in the layout
+        val createMyPlate: Button = root.findViewById(R.id.btn_createmyplate)
 
-        anyChartView = root.findViewById(R.id.anyChartView)
-        setupChartView()
+        // Set a click listener for the settings button
+        createMyPlate.setOnClickListener {
+            // Handle button click here
+            findNavController().navigate(R.id.action_myPlateFragment_to_myPlateSettingsFragment)
+        }
+
+        // Observe shared view model data
+        sharedModel.foodAmounts.observe(viewLifecycleOwner) { foodAmounts ->
+
+            //RECYCLER VIEW
+            val foodAmountsArray = arrayOf(
+                foodAmounts.fruitAmount,
+                foodAmounts.vegetableAmount,
+                foodAmounts.grainAmount,
+                foodAmounts.proteinAmount,
+                foodAmounts.dairyAmount
+            )
+
+            /*IM WRITING THE CODE HERE FOR THE RECYCLER VIEW LOGIC
+            * To access updated food amounts, use foodAmounts.<categoryAmount>*/
+            // Create an ArrayList of FoodAmountsModel
+            recyclerView=root.findViewById(R.id.food_recommendations)
+            val foodAmountsModelList = ArrayList<FoodAmountModel>()
+
+            val categoryDescription = resources.getStringArray(R.array.myplate_descriptions)
+            val categoryImages = intArrayOf(
+                R.drawable.fruits_icon,
+                R.drawable.vegetables_icon,
+                R.drawable.grains_icon,
+                R.drawable.protein_icon,
+                R.drawable.dairy_icon
+            )
+
+            for (i in foodAmountsArray.indices) {
+                val foodAmountModel = FoodAmountModel(
+                    foodAmountsArray[i].toDouble(), // Assuming foodAmountsArray contains Double values
+                    categoryDescription[i],
+                    categoryImages[i]
+                )
+                foodAmountsModelList.add(foodAmountModel)
+            }
+
+            // Setting up the adapter
+            val adapter = MyPlateRecyclerAdapter(requireContext(), foodAmountsModelList)
+            recyclerView.adapter = adapter
+            recyclerView.layoutManager = LinearLayoutManager(requireContext())
+            // After populating the RecyclerView, hide the settings button
+            createMyPlate.visibility = View.GONE
+            /*THE RECYCLER VIEW LOGIC WILL END HERE*/
+            anyChartView = root.findViewById(R.id.anyChartView)
+            setupChartView()
+        }
+
+        // Find the settings button in the layout
+        val settingsButton: Button = root.findViewById(R.id.btn_settings)
+
+        // Set a click listener for the settings button
+        settingsButton.setOnClickListener {
+            // Handle button click here
+            findNavController().navigate(R.id.action_myPlateFragment_to_myPlateSettingsFragment)
+        }
 
         return root
     }
@@ -65,28 +124,50 @@ class MyPlateFragment : Fragment() {
         // I added a condition to check if the user is in dark or light mode
         val isDarkMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
         val pie = AnyChart.pie()
-         //Use the appropriate background color
-        //val backgroundColor = if (isDarkMode) "#333333" /* Dark grey color */ else "#FFFFFF" /* White color */
+
+        // Set the start angle to -90 degrees
+        pie.startAngle(-90)
+
+        // Use the appropriate background color
         if (isDarkMode){
             pie.background().fill("#333333")
-        }else{
+        } else {
             pie.background().fill("#FFFFFF")
         }
-        var background = pie.background();
-        val category = arrayOf("Grains", "Protein", "Vegetables", "Fruits")
-        val amount = floatArrayOf(0.28F, 0.22F, 0.28F, 0.22F)
 
+        // Define the colors
+        val colors = listOf("#FF0000", "#00FF00", "#FFA500", "#800080")
+        val items = listOf("Fruits", "Vegetables", "Grains", "Protein")
+        val values = listOf("2.0", "2.5", "6.0", "5.5")
+
+        // Create your data array
         val dataEntries: MutableList<DataEntry> = ArrayList()
 
-        for (i in category.indices) {
-            dataEntries.add(ValueDataEntry(category[i], amount[i]))
-        }
+        // Add data points
+        for (i in items.indices) {
+            val entry = ValueDataEntry(items[i], 1.0) // Set value to 1
 
+            // Set the color for each entry
+            entry.apply { setValue("fill", colors[i]) }
+            pie.labels().format(values[i])
+            dataEntries.add(entry)
+        }
+        // Set the data to the pie chart
         pie.data(dataEntries)
-        //pie.background().fill("#72A0C1")
+        // Set the data to the pie chart
+        pie.data(dataEntries)
+
+        // Customize label settings
+        pie.labels().position("inside") // Set label position to inside the pie slices
+        pie.labels().fontSize(14) // Set label font size
+        pie.labels().fontColor("#FFFFFF") // Set label font color
+
+        // Customize chart properties as needed
         pie.stroke("6px #F1F1F1")
-        pie.title("My Plate")
-        pie.padding(0, 0, 0, 0)
+//        pie.title("My Plate")
+//        pie.padding(0, 0, 0, 0)
+
+        // Set the chart to the AnyChartView
         anyChartView.setChart(pie)
     }
 }

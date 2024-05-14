@@ -1,5 +1,4 @@
 package com.example.grocerez.ui.recipes
-
 import androidx.recyclerview.widget.DiffUtil
 
 class IngredientDiffCallback
