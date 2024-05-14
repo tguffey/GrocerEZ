@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -15,33 +16,113 @@
         app:layout_constraintTop_toTopOf="parent"
         android:contentDescription="@string/back_button" />
 
+    <!-- Back button has been hidden -->
+
+
     <EditText
         android:id="@+id/linkEditText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="60dp"
+        android:layout_marginEnd="16dp"
         android:hint="Enter link for parsing ingredients"
         android:inputType="text"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="50dp"/>
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.button.MaterialButton
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="100dp"
         android:id="@+id/parseButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
         android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="116dp"
+        android:layout_marginEnd="244dp"
         android:layout_weight="1"
         android:text="Parse Website"
-        />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/addToShoppingButton"
+        android:layout_width="164dp"
+        android:layout_height="52dp"
+        android:layout_gravity="start"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="116dp"
+        android:layout_marginEnd="40dp"
+        android:layout_weight="1"
+        android:text="Add to Shopping List"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/getNutriFromUrlButton"
+        android:layout_width="164dp"
+        android:layout_height="52dp"
+        android:layout_gravity="start"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="168dp"
+        android:layout_marginEnd="236dp"
+        android:layout_weight="1"
+        android:text="Get Nutri Data from Rec URL"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/barcodeLookupButton"
+        android:layout_width="164dp"
+        android:layout_height="52dp"
+        android:layout_gravity="start"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="168dp"
+        android:layout_marginEnd="48dp"
+        android:layout_weight="1"
+        android:text="Barcode Lookup"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/viewRecipesButton"
+        android:layout_width="164dp"
+        android:layout_height="52dp"
+        android:layout_gravity="start"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="224dp"
+        android:layout_marginEnd="236dp"
+        android:layout_weight="1"
+        android:text="View Online Recipes"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/addRecipeButton"
+        android:layout_width="164dp"
+        android:layout_height="52dp"
+        android:layout_gravity="start"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="224dp"
+        android:layout_marginEnd="48dp"
+        android:layout_weight="1"
+        android:text="Upload Local Recipes"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewResult"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="84dp"
+        android:background="#EFEFEF"
+        android:padding="16dp"
+        android:text="Results will appear here"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/getNutriFromUrlButton" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
