@@ -76,12 +76,8 @@ class DashboardFragment : Fragment(), FoodItemClickListener {
         savedInstanceState: Bundle?
     ): View {
         // Set and get sockets for backend connection
-        SocketHandler.setSocket()
         SocketHandler.establishConnection()
         mSocket = SocketHandler.getSocket()
-        if (!mSocket.connected()) {
-            mSocket.connect()
-        }
 
         val appDatabase = AppDatabase.getInstance(requireContext())
         dashboardViewModel = ViewModelProvider(this.requireActivity(),
@@ -196,6 +192,8 @@ class DashboardFragment : Fragment(), FoodItemClickListener {
     override fun onDestroyView() {
         super.onDestroyView()
         // Set the binding variable to null to avoid memory leaks
+        // Disconnect the socket to avoid memory leaks
+        SocketHandler.closeConnection()
         _binding = null
     }
 
