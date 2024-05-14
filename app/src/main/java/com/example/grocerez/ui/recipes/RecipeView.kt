@@ -21,6 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONException
+import org.json.JSONObject
 
 class RecipeView : Fragment(){
 
@@ -84,26 +85,50 @@ class RecipeView : Fragment(){
         }
 
         binding.postRecipeButton.setOnClickListener{
-            val recipeName = "TestR"
+            var recipeName = "TestR"
+            val itemsArray = mutableListOf<JSONObject>()
             val link = "TestL"
-            val itemsJson = """
-        [
-            {"name": "TestItem1", "unit": "kg", "amount": "1"},
-            {"name": "TestItem2", "unit": "kg", "amount": "2"}
-        ]
-    """.trimIndent()
+            CoroutineScope(Dispatchers.IO).launch{
+                if (recipeItemName != null){
+                    val recipeItem = recipeViewModel.findRecipeByName(recipeItemName)
+                    val recipeIngredients = recipeViewModel.getIngredientsForRecipe(recipeItem!!.recipeId)
+
+                    withContext(Dispatchers.Main){
+                        recipeName = recipeItem.name
+                        for (ingredient in recipeIngredients){
+                            val ingredientJson = JSONObject().apply {
+                                put("name", ingredient.name)
+                                put("unit", ingredient.unit)
+                                put("amount", ingredient.amount)
+                            }
+                            itemsArray.add(ingredientJson)
+                        }
+
+                        binding.recipeTitle.text = recipeItem.name
+                        val ingredientDisplayText = recipeIngredients.joinToString("\n") { ingredient ->
+                            "- ${ingredient.name}, ${ingredient.amount} ${ingredient.unit}"
+                        }
+                        binding.recipeIngredients.text = ingredientDisplayText
+                        binding.recipeNotes.text = recipeItem.instruction
+                    }
+                }
+            }
 
             try {
+                val itemsJson = itemsArray.toString()
                 if (recipeName.isNotEmpty() && itemsJson.isNotEmpty()) {
                     Log.d("AddRecipe", "Sending recipe data: $recipeName, $link, $itemsJson")
                     mSocket.emit("add-recipe", recipeName, link, itemsJson)
+                    Toast.makeText(requireContext(), "Posted Recipe!", Toast.LENGTH_SHORT).show()
                 } else {
                     Log.d("RecipeDataError", "Recipe name or items are empty")
                 }
             } catch (e: JSONException) {
                 Log.e("RecipeDataError", "Error creating items JSON array: ${e.message}")
             }
+
         }
+
 
         binding.useRecipeButton.setOnClickListener {
             useRecipe()
